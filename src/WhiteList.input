@@ -1,0 +1,202 @@
+# Classes and methods listed here will be implemented if possible
+
+# Following list is coming from the "proto" work
+
+
+    QTimer
+    QHBoxLayout
+    QVBoxLayout
+    QTextEdit
+
+    QPushButton
+	QPushButton::ctor(const QString&, QWidget*)
+	QPushButton::setMenu(QMenu*)
+
+	QAbstractButton::clicked(bool)
+    QAbstractButton::pressed()
+	QAbstractButton::setText(const QString&)
+
+
+
+#	QApplication::exec()                # Special case
+    QGuiApplication                     # For quit() in QApplication
+    QCoreApplication::quit()            # For quit() in QApplication
+
+	QTextEdit::ctor(QWidget*)
+    QTextEdit::toPlainText()
+
+    QLayout::addWidget(QWidget*)
+
+    QBoxLayout::addLayout(QLayout*, int)
+
+    QVBoxLayout::ctor()
+    QHBoxLayout::ctor()
+
+    QTimer::ctor(QObject*)
+    QTimer::start()
+    QTimer::stop()
+    QTimer::timeout()
+    QTimer::setInterval(int)
+
+	QWidget::ctor(QWidget*, Qt::WindowFlags)
+    QWidget::setLayout(QLayout*)
+    QWidget::setWindowTitle(const QString&)
+    QWidget::show()
+    QWidget::setDisabled(bool)
+    QWidget::setToolTip(const QString&)
+
+	QWidget::font()
+	QWidget::setFont(const QFont&)
+
+    QWidget::setFixedHeight(int)
+	QWidget::setFixedSize(int, int)
+	QWidget::setFixedWidth(int)
+	QWidget::setMinimumSize(int, int)
+
+	QWidget::update()
+	QWidget::update(int, int, int, int)
+
+    	QWidget::enterEvent(QEvent*)
+        QWidget::leaveEvent(QEvent*)
+        QWidget::mouseMoveEvent(QMouseEvent*)
+        QWidget::mousePressEvent(QMouseEvent*)
+        QWidget::mouseReleaseEvent(QMouseEvent*)
+        QWidget::paintEvent(QPaintEvent*)
+
+	QWidget::setFocus()
+	QWidget::setFocus(Qt::FocusReason)
+	QWidget::setFocusPolicy(Qt::FocusPolicy)
+	QWidget::activateWindow()
+	QWidget::isActiveWindow()
+
+    QPoint::ctor()
+    QPoint::ctor(int, int)
+    QPoint::x()
+    QPoint::y()
+    QPoint::setX(int)
+    QPoint::setY(int)
+	QPoint::isNull()
+	QPoint::manhattanLength()
+
+	QPointF::ctor()
+	QPointF::ctor(const QPoint&)
+	QPointF::ctor(qreal, qreal)
+	QPointF::isNull()
+	QPointF::manhattanLength()
+	QPointF::setX(qreal)
+	QPointF::setY(qreal)
+	QPointF::x()
+	QPointF::y()
+
+	QMouseEvent::x()
+	QMouseEvent::y()
+	QMouseEvent::button()
+	# QMouseEvent::buttons()   # returns Qt:MouseButtons       ==> Non traite pour le moment
+	# QMouseEvent::flags()     # returns Qt::MouseEventFlags   ==> Non traite pour le moments
+
+	# Pour test
+	QMouseEvent::ctor(Type, const QPointF&, Qt::MouseButton, Qt::MouseButtons, Qt::KeyboardModifiers)
+	QMouseEvent::ctor(Type, const QPointF&, const QPointF&, Qt::MouseButton, Qt::MouseButtons, Qt::KeyboardModifiers)
+	QMouseEvent::ctor(Type, const QPointF&, const QPointF&, const QPointF&, Qt::MouseButton, Qt::MouseButtons, Qt::KeyboardModifiers)
+	QMouseEvent::ctor(Type, const QPointF&, const QPointF&, const QPointF&, Qt::MouseButton, Qt::MouseButtons, Qt::KeyboardModifiers, Qt::MouseEventSource)
+
+
+    QEvent::ctor(Type)
+ 	QEvent::ctor(const QEvent&)
+    QEvent::spontaneous()
+    QEvent::type()
+	QEvent::accept()
+	QEvent::ignore()
+	QEvent::isAccepted()
+
+	# Pour test
+	QCoreApplication::sendEvent(QObject*, QEvent*)
+
+	# New
+
+	QImage::ctor(int, int, Format)
+	QImage::fill(const QColor&)
+	QImage::height()
+	QImage::width()
+
+	QColor::ctor(Qt::GlobalColor)
+	QColor::ctor(int, int, int, int)
+
+	# QColor::ctor(char*)   # Doesn't work !   Why ???
+
+
+	QPainter::ctor()
+	QPainter::ctor(QPaintDevice*)
+	QPainter::begin(QPaintDevice*)
+	QPainter::end()
+	QPainter::save()
+	QPainter::restore()
+	QPainter::drawEllipse(int, int, int, int)
+	QPainter::drawLine(int, int, int, int)
+	QPainter::drawRect(int, int, int, int)
+	QPainter::setBrush(const QBrush&)
+	QPainter::setPen(const QColor&)
+	QPainter::setPen(const QPen&)
+	QPainter::setPen(Qt::PenStyle)
+
+	QBrush::ctor()
+	QBrush::ctor(Qt::BrushStyle)
+	QBrush::ctor(const QColor&, Qt::BrushStyle)
+	QBrush::setColor(const QColor&)
+	QBrush::setStyle(Qt::BrushStyle)
+
+	QPen::ctor()
+	QPen::ctor(Qt::PenStyle)
+	QPen::ctor(const QColor&)
+	QPen::setBrush(const QBrush&)
+	QPen::setColor(const QColor&)
+	QPen::setWidth(int)
+
+	QPaintEvent::ctor(const QRect&)
+	QPaintEvent::rect()
+
+	QRect::ctor()
+	QRect::ctor(const QPoint&, const QPoint&)
+	QRect::ctor(int, int, int, int)
+
+	QRect::width()
+	QRect::height()
+	QRect::x()
+	QRect::y()
+
+    QAction::ctor(QObject*)
+    QAction::trigger()
+	QAction::triggered(bool)
+	QAction::setDisabled(bool)
+	QAction::setEnabled(bool)
+
+	QMenu::ctor(QWidget*)
+	QMenu::ctor(const QString&, QWidget*)
+	QMenu::exec()
+	QMenu::addAction(const QString&)
+	# QMenu::addAction(const QString&, const QObject*, const char*, const QKeySequence&)
+
+	QLabel::ctor(QWidget*, Qt::WindowFlags)
+	QLabel::ctor(const QString&, QWidget*, Qt::WindowFlags)
+	QLabel::clear()
+    QLabel::setAlignment(Qt::Alignment)
+	QLabel::setMargin(int)
+	QLabel::setText(const QString&)
+	QLabel::setTextFormat(Qt::TextFormat)
+
+	QLineEdit::ctor(QWidget*)
+	QLineEdit::ctor(const QString&, QWidget*)
+	QLineEdit::clear()
+	QLineEdit::setAlignment(Qt::Alignment)
+	QLineEdit::setText(const QString&)
+	QLineEdit::text()
+	QLineEdit::editingFinished()
+	QLineEdit::returnPressed()
+
+	QFont::setPointSize(int)
+	QFont::ctor()
+	QFont::setFamily(const QString&)
+    QFont::setItalic(bool)
+    QFont::setBold(bool)
+
+

@@ -1,0 +1,89 @@
+unit module RaQtWrappers;
+
+
+use NativeCall;
+use Qt::RaQt::RaQtHelpers;
+
+#BEGIN_INSERTION_HERE
+#LIST_OF_QT_CLASSES_NATIVE_WRAPPERS
+
+#END_INSERTION_HERE
+
+
+
+##########################################################################
+
+# From/to native conversion helper
+
+sub QWGetStringFromPointer(Pointer)
+        returns Str is native(&libwrapper) is export { * }
+
+sub QWGetPointerFromString(CArray[uint8])
+        returns Pointer is native(&libwrapper) is export { * }
+
+sub QWGetDoubleFromPointer(Pointer)
+        returns num64 is native(&libwrapper) is export { * }
+
+sub QWGetPointerFromDouble(num64 is rw)
+        returns Pointer is native(&libwrapper) is export { * }
+
+sub QWPointer2Int(Pointer)
+        returns int64 is native(&libwrapper) is export { * }
+
+sub QWInt2Pointer(int64)
+        returns Pointer is native(&libwrapper) is export { * }
+
+
+# For slots slotCallbacks
+
+sub QWSetupSlotCaller(&f (int32, Str, CArray[Pointer]))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallback(&f (int32, Str))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackInt(&f (int32, Str, long))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackInt2(&f (int32, Str, long, long))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackStr(&f (int32, Str, Str))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackIntStr(&f (int32, Str, long, Str))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackBool(&f (int32, Str, Bool))
+        is native(&libwrapper) is export { * }
+
+sub QWSetupSlotCallbackPointer(&f (int32, Str, Pointer))
+        is native(&libwrapper) is export { * }
+
+sub QWEmit_(Pointer, Str)
+        is native(&libwrapper) is export { * }
+
+sub QWEmit_Int(Pointer, Str, int32)
+        is native(&libwrapper) is export { * }
+
+sub QWEmit_Str(Pointer, Str, Str)
+        is native(&libwrapper) is export { * }
+
+sub QWEmit_Bool(Pointer, Str, int32)
+        is native(&libwrapper) is export { * }
+
+
+
+
+
+#BEGIN_INSERTION_HERE
+#SETUP_CALLBACK_WRAPPERS
+
+#END_INSERTION_HERE
+
+sub QWSetupSlotCallbackComplexSig(&f (int32, Str, uint32))
+        is native(&libwrapper) is export { * }
+
+
+
+

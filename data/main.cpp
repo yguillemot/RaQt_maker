@@ -1,0 +1,5 @@
+
+#include <QtWidgets>
+
+int main() { }
+

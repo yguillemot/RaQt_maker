@@ -1,0 +1,759 @@
+
+
+
+#include <QtWidgets>
+
+#include <iostream>
+#include <string.h>
+#include <stdint.h>
+
+#include "RaQtWrapper.hpp"
+
+
+
+// Only for debug
+#include <stdio.h>
+FILE * connectLog;
+
+
+QMap<QString, QtSignal * > * signalDict = 0;
+QMap<QString, QString> * slotDict = 0;
+
+void (*slotCallback)(int objId, char *slotName) = 0;
+void (*slotCallbackInt)(int objId, char *slotName, STD_INT i) = 0;
+void (*slotCallbackInt2)(int objId, char *slotName, STD_INT i1, STD_INT i2) = 0;
+void (*slotCallbackStr)(int objId, char *slotName, char *s) = 0;
+void (*slotCallbackIntStr)(int objId, char *slotName, STD_INT i, char *s) = 0;
+void (*slotCallbackBool)(int objId, char *slotName, uchar b) = 0;
+void (*slotCallbackPointer)(int objId, char *slotName, void *p) = 0;
+
+//BEGIN_INSERTION_HERE
+//CALLBACKS_POINTERS_DECLARATION
+void (*slotCallbackQMouseEvent)(int objId, char *slotName, QMouseEvent *p) = 0;
+void (*slotCallbackQEvent)(int objId, char *slotName, QEvent *p) = 0;
+//END_INSERTION_HERE
+
+void (*slotCallbackComplexSig)(int32_t objId, char *slotName, uint32_t dataId) = 0;
+
+
+
+// Conversion routines
+
+char * toStdStr(QString qs)
+{
+    return qs.toLocal8Bit().data();
+}
+
+
+
+
+
+// Qt emit wrappers
+
+// Possible simplification using QMetaObject::invokeMethod() ???????
+
+
+void emit_QWSignal_(QWConnectorE * obj) {
+// std::cout << "emit_QWSignal  obj = " << obj << "\n";
+
+   obj->emit_QWSignal();    
+}
+    
+void emit_QWSignal_int(QWConnectorE * obj, int v) {
+// std::cout << "emit_QWSignal_int  obj = " << obj << "   v = " << v << "\n";
+
+   obj->emit_QWSignal(v);    
+}
+
+void emit_QWSignal_bool(QWConnectorE * obj, bool b) {
+// std::cout << "emit_QWSignal_bool  obj = " << obj << "   b = " << b << "\n";
+
+   obj->emit_QWSignal(b);
+}
+
+void emit_QWSignal_str(QWConnectorE * obj, QString s) {
+// std::cout << "emit_QWSignal_str  obj = " << obj << "   s = "
+//                         << s.toLocal8Bit().data() << "\n";
+
+   obj->emit_QWSignal(s);
+}
+
+void * QWApplicationCtor(int argc, char **argv)
+{
+    // Copie dans variables statiques (argc et argv ne seront vraiment
+    // utilisés qu'au premier appel de QWidget::show())
+    static int cc = argc;
+    static char ** vv;
+    vv = new char * [cc];
+    for (int i=0; i<cc; i++) {
+        int size = strlen(argv[i]);
+        vv[i] = new char[size+1];
+        strcpy(vv[i], argv[i]);
+    }
+
+    // Create Qt standard signals dictionnary
+    signalDict = new QMap<QString, QtSignal * >;
+    signalDict->clear();
+
+    signalDict->insert("QWLocalToLocalSignal(int)",
+        new QtSignal(SIGNAL(QWLocalToLocalSignal(int)),
+                       (void *)emit_QWSignal_int));
+    
+    signalDict->insert("QWSignal()",
+        new QtSignal(SIGNAL(QWSignal()),
+                       (void *)emit_QWSignal_));
+    signalDict->insert("QWSignal(int)",
+        new QtSignal(SIGNAL(QWSignal(int)),
+                       (void *)emit_QWSignal_int));
+    signalDict->insert("QWSignal(bool)",
+        new QtSignal(SIGNAL(QWSignal(bool)),
+                       (void *)emit_QWSignal_bool));
+    signalDict->insert("QWSignal(QString)",
+        new QtSignal(SIGNAL(QWSignal(const QString)),
+                       (void *)emit_QWSignal_str));
+
+    //BEGIN_INSERTION_HERE
+    //SIGNALS_DICTIONARY
+
+    signalDict->insert("clicked()",
+        new QtSignal(SIGNAL(clicked()),
+                       nullptr));
+
+    signalDict->insert("timeout()",
+        new QtSignal(SIGNAL(timeout()),
+                       nullptr));
+
+    //END_INSERTION_HERE
+
+//     signalDict->insert("localToLocal(int)", new QtSignal(SIGNAL(localToLocal(int)),
+//                        (void *)emit_localToLocal, INT));
+
+
+    // Create Qt standard slots dictionnary
+    slotDict = new QMap<QString, QString>;
+    slotDict->clear();
+    //BEGIN_INSERTION_HERE
+    //SLOTS_DICTIONARY
+
+    slotDict->insert("quit()", SLOT(quit()));
+    slotDict->insert("show()", SLOT(show()));
+    slotDict->insert("clicked()", SLOT(clicked()));
+    slotDict->insert("setDisabled(Bool)", SLOT(setDisabled(bool)));
+    slotDict->insert("setTitle(Str)", SLOT(setTitle(QString)));
+    slotDict->insert("start()", SLOT(start()));
+    slotDict->insert("stop()", SLOT(stop()));
+
+    //END_INSERTION_HERE
+    slotDict->insert("QWSlot()", SLOT(QWSlot()));
+    slotDict->insert("QWSlot(int)", SLOT(QWSlot(int)));
+    slotDict->insert("QWSlot(QString)", SLOT(QWSlot(const QString)));
+    slotDict->insert("QWSlot(bool)", SLOT(QWSlot(bool)));
+    slotDict->insert("QWLocalToLocalSlot(int)", SLOT(QWLocalToLocalSlot(int)));
+
+
+
+
+
+
+
+    // For debug
+//     printf("argc = %d\n", cc);
+//     for (int i = 0; i < cc; i++) printf("argv[%d] = \"%s\"\n", i, vv[i]);
+    
+    // For debug
+//     connectLog = fopen("connect.log", "w+");
+    
+
+    QCoreApplication * inst = QCoreApplication::instance();
+//     std::cerr << "QWApplicationCtor inst before = " << inst << "\n";
+
+    QApplication *app = new QApplication(cc, vv);
+
+    inst = QCoreApplication::instance();
+//     std::cerr << "QWApplicationCtor inst after =  " << inst << "\n";
+//     std::cerr << "                  qApp = " << qApp << "\n";
+
+    return reinterpret_cast<void *>(app);
+}
+
+int QWApplicationExec(void * obj)
+{
+    return reinterpret_cast<QApplication * >(obj)->exec();
+}
+
+void * QWApplicationInstance()
+{
+    QCoreApplication * inst = QCoreApplication::instance();
+    return reinterpret_cast<void *>(inst);
+}
+
+
+////////
+
+
+//BEGIN_INSERTION_HERE
+//MAIN_CLASSES_CPP_CODE
+
+void * QWTextEditCtor()
+{
+    QTextEdit *te = new QTextEdit();
+    return reinterpret_cast<void *>(te);
+}
+
+char * QWTextEditToPlainText(void * obj)
+{
+    QTextEdit *te = reinterpret_cast<QTextEdit *>(obj);
+//     std::cerr << "QWTextEditToPlainText obj = " << te << "\n";
+//     std::cerr << "   Data : " << te->toPlainText().toLocal8Bit().data() << "\n";
+    return toStdStr(te->toPlainText());
+}
+
+void * QWPushButtonCtor(char * label)
+{
+    QPushButton *pb = new QPushButton(label);
+    return reinterpret_cast<long>(pb);
+}
+
+
+
+void QWBoxLayoutAddWidget(long obj, long widget)
+{
+    QBoxLayout *vb = reinterpret_cast<QVBoxLayout *>(obj);
+    vb->addWidget(reinterpret_cast<QWidget *>(widget));
+}
+
+void QWBoxLayoutAddLayout(long obj, long layout)
+{
+    QBoxLayout *vb = reinterpret_cast<QVBoxLayout *>(obj);
+    vb->addLayout(reinterpret_cast<QLayout *>(layout));
+}
+
+
+
+long QWVBoxLayoutCtor()
+{
+    QVBoxLayout *vb = new QVBoxLayout();
+    return reinterpret_cast<long>(vb);
+}
+
+
+long QWHBoxLayoutCtor()
+{
+    QHBoxLayout *hb = new QHBoxLayout();
+    return reinterpret_cast<long>(hb);
+}
+
+
+long QWWidgetCtor()
+{
+    QWidget *w = new QWidget();
+    return reinterpret_cast<long>(w);
+}
+
+void QWWidgetSetLayout(long obj, long layout)
+{
+    QWidget *w = reinterpret_cast<QWidget *>(obj);
+    QLayout *l = reinterpret_cast<QLayout *>(layout);
+// std::cout << "BEFORE w=" << w << " l=" << l << "\n";
+    w->setLayout(l);
+// std::cout << "AFTER\n";
+}
+
+void QWWidgetShow(long obj)
+{
+    QWidget *w = reinterpret_cast<QWidget *>(obj);
+    w->show();
+}
+
+void QWWidgetSetWindowTitle(long obj, char *text)
+{
+    QWidget *w = reinterpret_cast<QWidget *>(obj);
+    QString title = QString(text);
+    w->setWindowTitle(title);
+}
+
+void QWWidgetSetDisabled(long obj, int disabled)
+{
+    QWidget *w = reinterpret_cast<QWidget *>(obj);
+    bool dis = disabled;
+    w->setDisabled(dis);
+}
+
+
+
+
+
+long QWTimerCtor()
+{
+    QTimer *t = new QTimer();
+    return reinterpret_cast<long>(t);
+}
+
+void QWTimerStart(long obj)
+{
+    QTimer *t = reinterpret_cast<QTimer *>(obj);
+    t->start();
+}
+
+void QWTimerStop(long obj)
+{
+    QTimer *t = reinterpret_cast<QTimer *>(obj);
+    t->stop();
+}
+
+void QWTimerSetInterval(long obj, int msec)
+{
+    QTimer *t = reinterpret_cast<QTimer *>(obj);
+    t->setInterval(msec);
+}
+
+
+//END_INSERTION_HERE
+
+
+// emit wrappers
+
+void QWEmit_(void * source, char * signalName)
+{
+//     std::cout << "QWEmit_ " << signalName << "\n";
+    QWConnectorE *src = reinterpret_cast<QWConnectorE *>(source);
+
+    QString sigName = QString(signalName);    
+    void (*f)(QWConnectorE *) = (void (*)(QWConnectorE *))
+                                signalDict->value(sigName)->pcallemit;
+    (*f)(src);
+}
+
+void QWEmit_Int(void * source, char * signalName, int32_t data)
+{
+//     std::cout << "QWEmit_Int " << signalName << "   data = " << data << "\n";
+    QWConnectorE *src = reinterpret_cast<QWConnectorE *>(source);
+
+    QString sigName = QString(signalName);
+    void (*f)(QWConnectorE *, int32_t) = (void (*)(QWConnectorE *, int32_t))
+                                signalDict->value(sigName)->pcallemit;
+    (*f)(src, data);
+}
+
+void QWEmit_Str(void * source, char * signalName, char * data)
+{
+//     std::cout << "QWEmit_Str " << signalName << "   data = \"" << data << "\"\n";
+    QWConnectorE *src = reinterpret_cast<QWConnectorE *>(source);
+
+    QString sigName = QString(signalName);
+    QString str = QString(data);
+    void (*f)(QWConnectorE *, QString) = (void (*)(QWConnectorE *, QString))
+                                signalDict->value(sigName)->pcallemit;
+    (*f)(src, str);
+}
+
+void QWEmit_Bool(void * source, char * signalName, int32_t data)
+{
+//     std::cout << "QWEmit_Bool source: " << std::hex << source
+//               << "  signalName: " << signalName
+//               << "  data: " << data << "\n";
+    QWConnectorE *src = reinterpret_cast<QWConnectorE *>(source);
+
+    QString sigName = QString(signalName);  
+    bool val = data;
+    
+//     std::cout << " A: " << std::hex << signalDict->value(sigName)->pcallemit
+//               << "\n";
+    
+    void (*f)(QWConnectorE *, bool)
+        = (void (*)(QWConnectorE *, bool))signalDict->value(sigName)->pcallemit;
+    (*f)(src, val);    
+    
+//     std::cout << "AFTER calling (*f)(src, val)\n";
+}
+
+
+
+
+
+
+
+void QWconnect(void * source, char *signal, void * destination, char *slot)
+{
+    QObject *src = reinterpret_cast<QObject *>(source);
+    QObject *dst = reinterpret_cast<QObject *>(destination);
+    
+//     std::cout << "CONNECT [" << signal << " -> " << slot << "]\n";
+
+    QString qsignal = "2UNKNOWN(UNKNOWN)";
+    QString qslot = "1UNKNOWN(UNKNOWN)";
+    if (signalDict->contains(signal)) {
+        QtSignal * qtSignal =  signalDict->value(signal);
+        qsignal = qtSignal->signalName;
+    }
+    if (slotDict->contains(slot)) {
+//         std::cout << "    slotDict contains " << slot << " !\n";
+        qslot = slotDict->value(slot);
+    } else if (signalDict->contains(slot)) {
+//         std::cout << "    signalDict contains " << slot << " !\n";
+        qslot = signalDict->value(slot)->signalName;
+    }
+
+//     std::cout << "CONNECT 0x" << std::hex << source << " "
+//               << signal << " => " << qsignal.toLocal8Bit().data() << "\n"
+//               << "        0x" << std::hex << destination << " "
+//               << slot << " => " << qslot.toLocal8Bit().data() << "\n";
+
+    if (!(QObject::connect(src, qsignal.toLocal8Bit().data(),
+                           dst, qslot.toLocal8Bit().data()))) {
+        std::cerr << "Can't connect "
+                            << src << ":\"" << signal << "\""
+                  << " to " << dst << ":\"" << slot   << "\"\n";
+    }
+    
+    // for debug
+//     fprintf(connectLog, "0x%08lX %s --> 0x%08lX %s\n",
+//                         (ulong) src, qsignal.toLocal8Bit().data(),
+//                         (ulong) dst, qslot.toLocal8Bit().data());
+//     fflush(connectLog);
+    
+}
+
+
+
+
+
+
+void * QWConnectorRCTOR(int objId, char * slotName, char * slotSig)
+{
+    QWConnectorR *c = new QWConnectorR(objId, slotName, slotSig);
+//     std::cerr << "QWConnectorR CTOR " << c
+//               << "   objId = " << objId
+//               << "   slotName = " << slotName << "\n";
+    return reinterpret_cast<void *>(c);
+}
+
+void QWConnectorRDTOR(void * obj)
+{
+    QWConnectorR *c = reinterpret_cast<QWConnectorR *>(obj);
+//      std::cerr << "QWConnectorR DTOR " << c << "\n";
+     delete c;
+}
+
+
+QWConnectorR::QWConnectorR(int objId, char * slotName, char * slotSig)
+{
+    m_objId = objId;
+    m_slotName = QString(slotName);
+    m_slotSig = QString(slotSig);
+}
+
+void QWConnectorR::QWSlot()
+{
+
+//     std::cout << "QWConnectorR::QWSlot (A) : slotName = "
+//               << m_slotName.toLocal8Bit().data()
+//               << "   id = " << m_objId << "\n";
+// 
+//     std::cout << "QWConnectorR::QWSlot() : slotCallback called\n";
+   (*slotCallback)(m_objId, m_slotName.toLocal8Bit().data());
+}
+
+// Example : ???
+void QWConnectorR::QWSlot(int val)
+{
+//     std::cout << "QWConnectorR::QWSlot(int) (B) : slotName = "
+//               << m_slotName.toLocal8Bit().data()
+//               << "   id = " << m_objId << "\n";
+// 
+//     std::cout << "QWConnectorR::QWSlot(int) : slotCallbackInt called\n";
+    (*slotCallbackInt)(m_objId, m_slotName.toLocal8Bit().data(), val);
+}
+
+void QWConnectorR::QWSlot(bool b)
+{
+//     std::cout << "QWConnectorR::QWSlot(bool) (D) : slotName = "
+//               << m_slotName.toLocal8Bit().data()
+//               << "   id = " << m_objId << "\n";
+// 
+//     std::cout << "QWConnectorR::QWSlot(bool) : slotCallbackBool called\n";
+    (*slotCallbackBool)(m_objId, m_slotName.toLocal8Bit().data(), b ? 1 : 0);
+}
+
+// Example : signal "windowTitleChanged(const QString &title)" from QWidget
+void QWConnectorR::QWSlot(const QString str)
+{
+//     std::cout << "QWConnectorR::QWSlot(QString) (C) : slotName = "
+//               << m_slotName.toLocal8Bit().data()
+//               << "   id = " << m_objId << "\n";
+// 
+//     std::cout << "QWConnectorR::QWSlot(Qstring &) : slotCallbackStr called\n";
+//     std::cout << "      data = \"" << str.toLocal8Bit().data() << "\"\n";
+
+   (*slotCallbackStr)(m_objId, m_slotName.toLocal8Bit().data(),
+                                            str.toLocal8Bit().data());
+}
+
+void QWConnectorR::QWLocalToLocalSlot(int dataId)
+{
+//     std::cout << "QWConnectorR::QWLocalToLocalSlot(dataId="
+//               << dataId << ") : slotName = "
+//               << m_slotName.toLocal8Bit().data()
+//               << "   id = " << m_objId << "\n";
+// 
+//     std::cout << "0x" << std::hex << this
+//               << " dataId=" << dataId << " : slotCallbackComplexSig called\n";
+
+  (*slotCallbackComplexSig)(m_objId, m_slotName.toLocal8Bit().data(), dataId);
+}
+
+
+///============================================================
+
+
+void * QWConnectorECTOR(int objId, char * signalName, char * signalSig)
+{
+    QWConnectorE *c = new QWConnectorE(objId, signalName, signalSig);
+//     std::cout << "QWConnectorE CTOR " << c
+//               << "   objId = " << objId
+//               << "   signalName = " << signalName << "\n";
+    return reinterpret_cast<void *>(c);
+}
+
+void QWConnectorEDTOR(void * obj)
+{
+    QWConnectorE *c = reinterpret_cast<QWConnectorE *>(obj);
+//    std::cerr << "QWConnectorE DTOR " << c << "\n";
+    delete c;
+}
+
+
+QWConnectorE::QWConnectorE(int objId, char * signalName, char * signalSig)
+{
+//     std::cout << " ++ QWConnectorE CTOR start\n";
+    m_objId = objId;
+    m_signalName = QString(signalName);
+    m_signalSig = QString(signalSig);
+//     std::cout << " -- QWConnectorE CTOR end\n";
+//     std::cout.flush();
+}
+
+///////////////////////////////////////////////////////////////
+
+// Native helpers
+
+char * QWGetStringFromPointer(void * ptr)
+{
+    char * s = (char *) ptr;
+    return s;
+}
+
+void * QWGetPointerFromString(char * str)
+{
+    return (void *) str;
+}
+
+double QWGetDoubleFromPointer(void * ptr)
+{
+    double * d = (double *) ptr;
+    return *d;
+}
+
+void * QWGetPointerFromDouble(double * pd)
+{
+    return (void *) pd;
+}
+
+
+// REMPLACER int PAR long ???
+int64_t QWPointer2Int(void * val)
+{
+    int64_t ival = (int64_t) val;
+    return ival;
+}
+
+// REMPLACER int PAR long ???
+void * QWInt2Pointer(int64_t val)
+{
+    void * p = (void *) val;
+   return p;
+}
+
+
+
+// Callbacks initializers
+
+void QWSetupSlotCallback(void (*f)(int32_t objId, char *slotName))
+{
+    slotCallback = f;
+}
+
+void QWSetupSlotCallbackInt(void (*f)(int32_t objId, char *slotName, STD_INT i))
+{
+    slotCallbackInt = f;
+}
+
+void QWSetupSlotCallbackInt2(void (*f)(int32_t objId, char *slotName,
+                                                    STD_INT i1, STD_INT i2))
+{
+    slotCallbackInt2 = f;
+}
+
+void QWSetupSlotCallbackStr(void (*f)(int32_t objId, char *slotName, char *s))
+{
+    slotCallbackStr = f;
+}
+
+void QWSetupSlotCallbackIntStr(void (*f)(int32_t objId, char *slotName,
+                                                        STD_INT i, char *s))
+{
+    slotCallbackIntStr = f;
+}
+
+void QWSetupSlotCallbackBool(void (*f)(int32_t objId, char *slotName, uchar b))
+{
+//     std::cout << "QWSetupSlotCallbackBool f=" << (void *)f << "\n";
+    slotCallbackBool = f;
+}
+
+void QWSetupSlotCallbackPointer(void (*f)(int32_t objId, char *slotName, void *p))
+{
+//     std::cout << "QWSetupSlotCallbackPointer f=" << (void *)f << "\n";
+//     std::cout << "&slotCallbackPointer=" << &slotCallbackPointer << "\n";
+    slotCallbackPointer = f;
+}
+
+//BEGIN_INSERTION_HERE
+//CALLBACKS_SETUP
+
+void QWSetupSlotCallbackMouseEvent(void (*f)(int32_t objId,
+                                         char *slotName, QMouseEvent *p))
+{
+//     std::cout << "QWSlotCallbackQMouseEvent f=" << (void *)f << "\n";
+//     std::cout << "&slotCallbackQMouseEvent=" << &slotCallbackQMouseEvent << "\n";
+    slotCallbackQMouseEvent = f;
+}
+
+void QWSetupSlotCallbackQEvent(void (*f)(int32_t objId,
+                                        char *slotName, QEvent *p))
+{
+//     std::cout << "QWSetupSlotCallbackQEvent\n";
+//     std::cout << "QWSlotCallbackQEvent f=" << (void *)f << "\n";
+//     std::cout << "&slotCallbackQEvent=" << &slotCallbackQEvent << "\n";
+    slotCallbackQEvent = f;
+}
+
+//END_INSERTION_HERE
+
+
+void QWSetupSlotCallbackComplexSig(void (*f)(int32_t objId, char *slotName,
+                                                            uint32_t dataId))
+{
+    slotCallbackComplexSig = f;
+}
+
+
+///////////////////////////////////////////////////////////////
+
+
+// Only for debug
+void QWDump()
+{
+    std::cout << "QWDump : SIGNALDICT\n";
+    QMap<QString, QtSignal * >::const_iterator it = signalDict->constBegin();
+    while (it != signalDict->constEnd()) {
+        std::cout << "   " << it.key().toLocal8Bit().data() << " : ";
+        it.value()->dump();
+        std::cout << std::endl;
+        ++it;
+    }
+
+    std::cout << "QWDump : SLOTDICT\n";
+    QMap<QString, QString>::const_iterator i = slotDict->constBegin();
+    while (i != slotDict->constEnd()) {
+        std::cout << "   " << i.key().toLocal8Bit().data()
+                << " : " << i.value().toLocal8Bit().data() << std::endl;
+        ++i;
+    }
+
+//     std::cout << "\n";
+//     QObject::dumpObjectInfo()
+//     std::cout << "\n";
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// Subclasses
+
+//BEGIN_INSERTION_HERE
+//SUBCLASSES_CTORS
+
+void * QWSCQWidgetCtor()
+{
+    SCQWidget *ip = new SCQWidget();
+    return reinterpret_cast<void *>(ip);
+}
+
+void * QWSCQPushButtonCtor()
+{
+    SCQPushButton *ip = new SCQPushButton();
+    return reinterpret_cast<void *>(ip);
+}
+
+void * QWSCQTextEditCtor()
+{
+    SCQTextEdit *ip = new SCQTextEdit();
+    return reinterpret_cast<void *>(ip);
+}
+
+//END_INSERTION_HERE
+// YGYGYG PB : Reférence à "SCQTextEdit" ci-dessus !!!!!!!
+
+
+void QWvalidateEvent(void *obj, int32_t objId, char *methodName)
+{
+//     std::cout << "QWvalidateEvent start\n";
+
+    // Une MAUVAISE solution
+    // SCQTextEdit *ste = reinterpret_cast<SCQTextEdit *>(obj);
+    // ste->validateEvent(objId, eventType, methodName);
+
+   CallbackValidator * ptr = reinterpret_cast<CallbackValidator *>(obj);
+   /// ET CA, CA NE MARCHE PAS !!!
+   /// (reinterpret_cast vs dynamic_cast QU'O? NE PEUT UTILISER ICI !!!)
+
+    ptr->validateEvent(objId, methodName);
+//     std::cout << "QWvalidateEvent stop\n";
+}
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// SubAPI
+
+//BEGIN_INSERTION_HERE
+//SUBAPI_CLASSES_CPP_CODE
+
+void QWQtMouseEventDtor(void *p)
+{
+    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
+    delete(ev);
+}
+
+int32_t QWQtMouseEventX(void *p)
+{
+    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
+    return ev->x();
+}
+
+int32_t QWQtMouseEventY(void *p)
+{
+    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
+    return ev->y();
+}
+
+//////////
+
+void QWQtEventDtor(void *p)
+{
+    QEvent *ev = reinterpret_cast<QEvent *>(p);
+    delete(ev);
+}
+
+//END_INSERTION_HERE

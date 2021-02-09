@@ -1,0 +1,160 @@
+
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+#define EXTERNC extern "C"
+#else
+#define EXTERNC
+#endif
+
+
+// What std size for integers ???
+#define STD_INT long
+
+
+
+EXTERNC void * QWApplicationCtor(int argc, char **argv);
+
+EXTERNC int QWApplicationExec(void * obj);
+
+EXTERNC void * QWApplicationInstance();
+
+
+
+//BEGIN_INSERTION_HERE
+//WRAPPER_H_CODE
+
+EXTERNC void * QWTextEditCtor();
+
+EXTERNC char * QWTextEditToPlainText(void * obj);
+
+EXTERNC void * QWPushButtonCtor(char * label);
+
+EXTERNC void QWBoxLayoutAddWidget(long obj, long widget);
+
+EXTERNC void QWBoxLayoutAddLayout(long obj, long layout);
+
+EXTERNC long QWVBoxLayoutCtor();
+
+EXTERNC long QWHBoxLayoutCtor();
+
+
+
+EXTERNC long QWTimerCtor();
+
+EXTERNC void QWTimerStart(long obj);
+
+EXTERNC void QWTimerStop(long obj);
+
+EXTERNC void QWTimerSetInterval(long obj, int msec);
+
+
+EXTERNC long QWWidgetCtor();
+
+EXTERNC void QWWidgetSetLayout(long obj, long layout);
+
+EXTERNC void QWWidgetSetWindowTitle(long obj, char * text);
+
+EXTERNC void QWWidgetShow(long obj);
+
+EXTERNC void QWWidgetSetDisabled(long obj, int disabled);
+
+
+//END_INSERTION_HERE
+
+
+
+
+EXTERNC void QWEmit_(void * source, char * signalName);
+EXTERNC void QWEmit_Int(void * source, char * signalName, int32_t data);
+EXTERNC void QWEmit_Str(void * source, char * signalName, char * data);
+EXTERNC void QWEmit_Bool(void * source, char * signalName, int32_t data);
+
+
+
+EXTERNC void QWconnect(void * source, char *signal,
+                       void * destination, char *slot);
+
+EXTERNC void * QWConnectorRCTOR(int32_t objId, char * slotName, char * sigName);
+
+EXTERNC void QWConnectorRDTOR(void * obj);
+
+EXTERNC void * QWConnectorECTOR(int32_t objId, char * slotName, char * sigName);
+
+EXTERNC void QWConnectorEDTOR(void * obj);
+
+
+///////////////////////////////////////////////////////////////
+
+// Native helpers
+
+EXTERNC char * QWGetStringFromPointer(void * ptr);
+
+EXTERNC void * QWGetPointerFromString(char * str);
+
+EXTERNC double QWGetDoubleFromPointer(void * ptr);
+
+EXTERNC void * QWGetPointerFromDouble(double * pd);
+
+EXTERNC int64_t QWPointer2Int(void * val);
+
+EXTERNC void * QWInt2Pointer(int64_t val);
+
+
+
+// Callbacks initializers
+
+EXTERNC void QWSetupSlotCallback(
+    void (*f)(int objId, char *slotName));
+
+EXTERNC void QWSetupSlotCallbackInt(
+    void (*f)(int objId, char *slotName, STD_INT i));
+
+EXTERNC void QWSetupSlotCallbackInt2(
+    void (*f)(int objId, char *slotName, STD_INT i1, STD_INT i2));
+
+EXTERNC void QWSetupSlotCallbackStr(
+    void (*f)(int objId, char *slotName, char *s));
+
+EXTERNC void QWSetupSlotCallbackIntStr(
+    void (*f)(int objId, char *slotName, STD_INT i, char *s));
+
+EXTERNC void QWSetupSlotCallbackBool(
+    void (*f)(int objId, char *slotName, uchar b));
+
+EXTERNC void QWSetupSlotCallbackPointer(
+    void (*f)(int objId, char *slotName, void *p));
+
+//BEGIN_INSERTION_HERE
+//CALLBACKS_INITIALIZERS
+
+EXTERNC void QWSetupSlotCallbackMouseEvent(
+    void (*f)(int objId, char *slotName, QMouseEvent *p));
+
+EXTERNC void QWSetupSlotCallbackQEvent(
+    void (*f)(int objId, char *slotName, QEvent *p));
+
+//END_INSERTION_HERE
+
+EXTERNC void QWSetupSlotCallbackComplexSig(
+    void (*f)(int32_t objId, char *slotName, uint32_t dataId));
+
+
+/////////////////////////////////////////////
+
+EXTERNC void QWDump();
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+// // EXTERNC void * QWSCQWidgetCtor();
+// //
+// // EXTERNC void * QWSCQPushButtonCtor();
+// //
+// // EXTERNC void * QWSCQTextEditCtor();
+// //
+EXTERNC void QWvalidateEvent(void *obj, int32_t objId, char *methodName);
+
+
+

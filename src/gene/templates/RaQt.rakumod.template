@@ -1,0 +1,1427 @@
+unit module RaQt;
+
+# TODO : Est-ce que l'Id donné aux objets RaQtObject est utile ?
+#        Pourquoi ne pas utiliser le pointeur vers l'objet C++ du wrapper ?
+
+use NativeCall;
+use Qt::RaQt::RaQtHelpers;
+use Qt::RaQt::RaQtWrappers;
+
+our %signals;    # className -> @[SigSlot( "signal(signature)", isSimpleSig )]
+our %slots;
+our %callbacks;  # classname -> @virtualMethodName 
+
+# TODO : Move into Qt::RaQt::RaQtHelpers
+class SigSlot {
+    has Str $.name;
+    has Str $.sig;      # Raku reduced signature string
+    has Str $.qSig;     # Qt C++ reduced signature string
+    has Bool $.sigIsSimple;
+    has SSignature $.sSignature is rw;
+    has Bool $.isSlot;
+    has Bool $.isPlainQt;
+    has Bool $.isPrivate = False;        # Only for signals
+}
+
+BEGIN {
+#BEGIN_INSERTION_HERE
+#SIGNALS_HASH
+#END_INSERTION_HERE
+
+#BEGIN_INSERTION_HERE
+#SLOTS_HASH
+#END_INSERTION_HERE
+}
+
+
+
+# BEWARE : For some reason, class RaQtSigsloty is compiled BEFORE other classes
+#          May be the cause is the import instruction?
+
+
+# Predeclaration of classes to avoid problems with potential cross references
+
+#BEGIN_INSERTION_HERE
+#QT_CLASSES_STUBS
+#END_INSERTION_HERE
+
+class ConnectionsManager { ... };
+my ConnectionsManager $CM;   # Where global values are stored
+
+
+# This class is parent of everything
+class RaQtBase {
+
+    has Pointer $.address is rw;
+    has Bool $.ownedByRaku is rw;
+    has Str $.qtType is rw;
+
+    method validateCallBacks()
+    {
+        for self.^parents>>.raku -> $cl {
+            next if %callbacks{$cl}:!exists;
+            for |%callbacks{$cl} -> $cb {
+                for self.^methods>>.name -> $m {
+                    if $m eq $cb {
+                        # Valid callback $cb (or $m) of class $cl
+                        # TODO : Pas tres clair dans QWtrapper.hpp ...
+                        self.validateCB($m);
+                   }
+                }
+            }
+        }
+    }
+
+}
+
+
+
+
+###############################################################################
+####### Part 1 : sub API ######################################################
+
+#BEGIN_INSERTION_HERE
+#SUBAPI_RAKU_CODE
+
+
+# subAPI QtEvent
+
+sub QWQtEventCtor(int16)
+        returns Pointer is native(&libwrapper) { * }
+
+sub QWQtEventDtor(Pointer)
+        is native(&libwrapper) { * }
+
+sub QWQtEventType(Pointer)
+        returns uint16 is native(&libwrapper) { * }
+
+sub QWQtEventSpontaneous(Pointer)
+        returns int8 is native(&libwrapper) { * }
+
+
+class QtEvent is RaQtBase is export {
+
+    method ctor {
+        # say "ctor : ", self.ctorArgs;
+        given self.ctorArgs {
+            when :(:$type!) {
+                # Create a new QtEvent
+                self.address = QWQtEventCtor(self.ctorArgs.hash<type>);
+                self.ownedByRaku = True;          
+                note "Still to be coded";
+            }
+            when :(:$p!) {
+                # Get access to an existing QtEvent
+                self.address = self.ctorArgs.hash<p>;
+                self.ownedByRaku = False;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt QtEvent bad args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    submethod DESTROY {
+        if self.ownedByRaku {
+            QWQtEventDtor(self.address);
+            self.ownedByRaku = False;
+        }
+    }
+
+    method type(--> uint16) {
+#         say "QtEvent addr = ", self.address;
+        return QWQtEventType(self.address);
+    }
+
+    method spontaneous(--> Bool) {
+        return ?QWQtEventSpontaneous(self.address);
+    }
+
+}
+
+###############################
+
+
+
+# subAPI QtMouseEvent
+
+# sub QWQtMouseEventCtor()
+#         returns Pointer is native(&libwrapper) { * }
+
+sub QWQtMouseEventDtor(Pointer)
+        is native(&libwrapper) { * }
+
+sub QWQtMouseEventX(Pointer)
+        returns int32 is native(&libwrapper) { * }
+
+sub QWQtMouseEventY(Pointer)
+        returns int32 is native(&libwrapper) { * }
+
+class QtMouseEvent is QtEvent is export {
+
+    method ctor {
+        given self.ctorArgs {
+            when :(:$x!, :$y!) {
+                # Create a new QtMouseEvent
+                note "Still to be coded";
+                die "TODO";
+                # self.address = QWQtEventCtor($parm);
+                self.ownedByRaku = True;
+            }
+            when :(:$p!) {
+                # Get access to an existing QtMouseEvent
+                self.address = self.ctorArgs.hash<p>;
+                self.ownedByRaku = False;
+            }
+            default {
+                note "RaQt QtMouseEvent bad args";
+                die "Bad args";
+            }
+        }
+    }
+ 
+
+    submethod TWEAK (*%h) {
+        say "BUILD : ", ::?CLASS.^name;
+
+        self.ctorArgs = %h;
+        self.callCtor(::?CLASS.^name);
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    method BUILD {
+        say ::?CLASS, " BUILD";
+    }
+
+
+    submethod DESTROY {
+        if self.ownedByRaku {
+            QWQtMouseEventDtor(self.address);
+            self.ownedByRaku = False;
+        }
+    }
+
+    method x(--> int32) {
+        return QWQtMouseEventX(self.address);
+    }
+
+    method y(--> int32) {
+        return QWQtMouseEventY(self.address);
+    }
+}
+
+#END_INSERTION_HERE
+
+
+###############################################################################
+###############################################################################
+
+
+
+
+
+############################################################################
+############################################################################
+
+
+# Store a pointer to some related object in Qt library and manage
+# the signals and slots
+class RaQtSigsloty is RaQtBase is export {
+
+#     say 'INIT @signals';
+
+    ##################################################################
+    ### Exécuté AVANT l'exécution proprement dite pour méthodes "is QtSignal"
+    multi trait_mod:<is> (Routine $meth, :$QtSignal) is export
+    {
+        my Str $signature = methPosArgs2Str($meth.signature);
+        my Str $class = $meth.signature.params[0].type.raku;
+        my Bool $hasSimpleSig = $signature (elem) $simpleSignatures;
+
+        # Look for an already registered signal
+        my SigSlot $ss;
+        if %signals{$class}:exists {
+            for %signals{$class} -> $s {
+                if $s.name eq $meth.name && $s.sig eq $signature {
+                    $ss = $s;
+                    last;
+                }
+            }
+        }
+
+        # If the signal is already registered (is a plainQt one) do nothing
+        # else register it
+        if !$ss {
+            %signals{$class}.push(SigSlot.new(
+                    name => $meth.name,
+                    sig => $signature,
+                    sigIsSimple => $hasSimpleSig,
+                    sSignature =>
+                            createSignature($meth.signature),
+                    isPlainQt => False,
+                    isSlot => False));
+        }
+
+# say "METH SIGNAL : ", $meth.name,
+#     "   Signature : ", $meth.signature.params,
+#     "   Soit : ", $signature;
+
+        $meth.wrap: -> $f, |a {
+            $f.qtEmit($meth.name, a, $signature, $hasSimpleSig)
+        };
+    }
+    ##################################################################
+
+    ##################################################################
+    ### Exécuté AVANT l'exécution proprement dite pour méthodes "is QtPrivateSignal"
+    multi trait_mod:<is> (Routine $meth, :$QtPrivateSignal) is export
+    {
+        my Str $signature = methPosArgs2Str($meth.signature);
+        my Str $class = $meth.signature.params[0].type.raku;
+        my Bool $hasSimpleSig = $signature (elem) $simpleSignatures;
+
+        # Private signals should ALWAYS be plain Qt
+        #  ==> Too much code here ???
+
+        # Look for an already registered signal
+        my SigSlot $ss;
+        if %signals{$class}:exists {
+            for %signals{$class} -> $s {
+                if $s.name eq $meth.name && $s.sig eq $signature {
+                    $ss = $s;
+                    last;
+                }
+            }
+        }
+
+        # If the signal is already registered (is a plainQt one) do nothing
+        # else register it
+        if !$ss {
+            %signals{$class}.push(SigSlot.new(
+                    name => $meth.name,
+                    sig => $signature,
+                    sigIsSimple => $hasSimpleSig,
+                    sSignature =>
+                            createSignature($meth.signature),
+                    isPlainQt => False,
+                    isSlot => False,
+                    isPrivate => True));
+        }
+
+
+# say "METH PRIVATE SIGNAL : ", $meth.name,
+#     "   Signature : ", $meth.signature.params,
+#     "   Soit : ", $signature;
+
+        $meth.wrap: -> $f, |a {
+            $f.qtEmit($meth.name, a, $signature, $hasSimpleSig)
+        };
+    }
+    ##################################################################
+
+    ##################################################################
+    ### Exécuté AVANT l'exécution proprement dite pour méthodes "is QtSlot"
+    multi trait_mod:<is> (Routine $meth, :$QtSlot) is export
+    {
+#         say "SLOT : ", $meth.name;
+
+        my Str $signature = methPosArgs2Str($meth.signature);
+        my Str $class = $meth.signature.params[0].type.^name;
+        $class ~~ s:g/<[\(\)]>**1//; # Can't use .type.raku if .type is a stub
+        my Bool $hasSimpleSig = $signature (elem) $simpleSignatures;
+
+        # Look for an already registered slot
+        my SigSlot $ss;
+        if %slots{$class}:exists {
+            for %slots{$class} -> $s {
+                if $s.name eq $meth.name && $s.sig eq $signature {
+                    $ss = $s;
+                    last;
+                }
+            }
+        }
+
+        # If the slot is already registered (is a plainQt one) do nothing
+        # else register it
+        if !$ss {
+            %slots{$class}.push(SigSlot.new(
+                    name => $meth.name,
+                    sig => $signature,
+                    sigIsSimple => $hasSimpleSig,
+                    sSignature =>
+                            createSignature($meth.signature),
+                    isPlainQt => False,
+                    isSlot => True));
+        }
+
+#         %slots{$class}.push(SigSlot.new(name => $meth.name,
+#                                           sig => $signature,
+#                                           sigIsSimple => $hasSimpleSig,
+#                                           rSignature =>
+#                                                 removeInvocant($meth.signature),
+#                                           isPlainQt => $class (elem) $qtClasses,
+#                                           isSlot => True));
+
+# say "METH SLOT : ", $meth.name,
+#     "   Signature : ", $meth.signature.params,
+#     "   Soit : ", $signature;
+
+    }
+
+
+#     submethod TWEAK {
+#         say ::?CLASS, " TWEAK";
+#     }
+
+}
+
+
+
+############################################################################
+############################################################################
+
+
+
+# For debug
+sub showSigsSlots is export {
+    say "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+    say "SIGNALS :";
+    for %signals.kv -> $k, $v {
+        say "   ", $k, "\t:";
+        for @$v -> $u {
+            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple;
+        }
+    }
+    say "SLOTS :";
+    for %slots.kv -> $k, $v {
+        say "   ", $k, "\t:";
+        for @$v -> $u {
+            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple;
+        }
+    }
+    say "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+}
+
+
+
+
+
+
+import RaQtSigsloty;
+
+# Object with a related object in Qt library
+class RaQtObject is RaQtSigsloty is export {
+
+    has int32 $.id;
+
+    # Pointers to connectors : for local classes only
+    has %.emitters;
+    has %.receivers;
+
+    submethod TWEAK {
+        $!id = $CM.addObj(self);
+
+        %!emitters = ();
+        %!receivers = ();
+
+        # Ordered list of the current class and its parents
+        my @classNames = (self.^name);
+        for self.^parents -> $p {
+            @classNames.push($p.^name);
+        }
+
+        # Look for defined signals and instantiate ConnectorE C++ objects
+#         say " SIGNALS :";
+        for @classNames -> $c {
+            next if $c (elem) $qtClasses; # Qt classes don't need connectors
+            if %signals{$c}:exists {
+                for @(%signals{$c}) -> $s {
+                    my ($signal, $signature) = ($s.name, $s.sig);
+                    my $sigSigStr = $signal ~ $signature;
+                    last if %!emitters{$sigSigStr}:exists; # Signal is verridden
+#                     say "    > ", $signal, " : ", $signature;
+#                     say "before QWConnectorECTOR";
+                    my Pointer $p = QWConnectorECTOR($!id, $signal, $signature);
+#                     say "after QWConnectorECTOR p = 0x", QWPointer2Int($p).base(16);
+                    %!emitters{$sigSigStr} = $p;
+                }
+            }
+        }
+
+        # Look for defined slots and instantiate ConnectorR C++ objects
+#         say " SLOTS :";
+        for @classNames -> $c {
+           next if $c (elem) $qtClasses; # Qt classes don't need connectors
+           if %slots{$c}:exists {
+                for @(%slots{$c}) -> $s {
+                    my ($slot, $signature) = ($s.name, $s.sig);
+                    my $slotSigStr = $slot ~ $signature;
+                    last if %!receivers{$slotSigStr}:exists; # Slot is verridden
+#                     say "    > ", $slot, " : ", $signature;
+                    my Pointer $p = QWConnectorRCTOR($!id, $slot, $signature);
+#                     say "after QWConnectorRCTOR p = 0x", QWPointer2Int($p).base(16);
+                    %!receivers{$slotSigStr} = $p;
+                }
+            }
+        }
+    }
+
+
+    submethod DESTROY
+    {
+        for %!emitters.values -> $e {
+            QWConnectorEDTOR($e);
+        }
+        for %!receivers.values -> $r {
+            QWConnectorRDTOR($r);
+        }
+    }
+
+
+
+    # TODO TODO TODO : What if called on a Qt object ???
+    method qtEmit(Str $signalName, Capture $values, Str $sigStr, Bool $simpleSig)
+    {
+#         say "Perl qtEmit : signalName=", $signalName, " values=", $values;
+#         say "              SigStr=", $sigStr, " simpleSig=", $simpleSig;
+
+        my Pointer $srcObj = %!emitters{$signalName ~ $sigStr};
+#         say "XXXX srcObj = ", $srcObj;
+
+        # Is the signal signature a simple one ?
+        if $simpleSig {
+            # Simple signature signal
+#             say "Before switch";
+#
+#             for %!emitters.kv -> $k, $v {
+#                 say "\"", $k, "\" : \"", $v, "\"";
+#             }
+            
+            
+            # Beware of the order : Bool must be placed before Int
+            given $values {
+                when :() {
+#                     say "Switch () branch";
+                    # QWEmit_(self.address, $signalName);
+                    QWEmit_($srcObj, "QWSignal()");
+                }
+                when :(Bool) {
+                    my int $val = (|$values)[0] ?? 1 !! 0;
+#                     say "Before calling QWEmit_Bool";
+#                     say "   signalName = ", $signalName;
+#                     say "   values = ", $values;
+#                     say "   val = ", $val;
+                    my int64 $p = QWPointer2Int($srcObj);
+#                     say "   ptr = Ox", $p.base(16);
+                 #   QWEmit_Bool($srcObj, $signalName ~ $sigStr, $val);
+                    QWEmit_Bool($srcObj, "QWSignal(bool)", $val);
+                }
+                when :(Int) { 
+#                     say "Switch (Int) branch";
+                    QWEmit_Int($srcObj, "QWSignal(int)", |$values);
+                }
+                when :(Str) {
+#                     say "Switch (Str) branch";
+                    QWEmit_Str($srcObj, "QWSignal(QString)", |$values);
+                }
+                default {
+                    note "Signature of ", $values, " not found";
+                }
+            }
+            
+        } else {
+            # Complex data mode, local to local message
+
+            # Get the signal key
+            my $keySig = self.id ~ $signalName ~ cap2sigStr($values);
+# #                 say "KEYSIG = >", $keySig, "<";
+
+            my $connCount = $CM.signalConnections($keySig);
+            if !$connCount {
+                note "qtEmit: Signal with key \"$keySig\" isn't connected";
+                return;
+            }
+
+            my int $dataId = $CM.addData($values, $connCount);
+
+#             say "Emit signal with dataId = $dataId";
+            QWEmit_Int($srcObj, "QWLocalToLocalSignal(int)", $dataId);
+        }
+    }
+
+
+    # Attention : nommer cette methode "dump" entraîne une boucle infinie !
+    method display {
+        for %!emitters.kv -> $k, $v {
+            say "\tSIGNAL ", $k, " : \t0x", QWPointer2Int($v).base(16);
+        }
+        for %!receivers.kv -> $k, $v {
+            say "\tSLOT   ", $k, " : \t0x", QWPointer2Int($v).base(16);
+        }
+    }
+
+}
+
+
+##############################################################################
+
+
+sub QWconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
+
+
+class ConnectionsManager {
+
+    has %.objs is rw;
+
+    has %!sigConn;          # key = srcObjId ~ signalName ~ signalSignature
+                            # value = How many times a signal is connected
+
+    has %!sigData;
+
+    my $lastConnId = 0;
+
+    my $lastEventId = 0;
+
+    method dump {
+        say "CM OBJS :";
+        for %.objs.kv -> $x, $y {
+            say "   $x :\t$y", "\t 0x", QWPointer2Int($y.address).base(16);
+            $y.display;
+        }
+        say "CM SIGCONN :";
+        for %!sigConn.kv -> $x, $y {
+            say "   $x :\t$y";
+        }
+#          say "CM SIGDATA :";
+#         for %!sigConn.kv -> $x, $y {
+#             say "   $x :\t$y";
+#         }
+   }
+
+    method addSignalConnection($signalKey)
+    {
+        if %!sigConn{$signalKey}:exists {
+            %!sigConn{$signalKey}++;
+        } else {
+            %!sigConn{$signalKey} = 1;
+       }
+    }
+
+    method rmSignalConnection($signalKey)
+    {
+        if %!sigConn{$signalKey}:exists && %!sigConn{$signalKey} != 0 {
+            %!sigConn{$signalKey}--;
+        } else {
+            note "Can't remove \"", $signalKey, "\" unexistent connection";
+       }
+    }
+
+    method signalConnections($signalKey) returns Int {
+        if %!sigConn{$signalKey}:exists {
+            return %!sigConn{$signalKey};
+        } else {
+            return 0;
+       }
+    }
+
+
+    method addObj(RaQtObject $obj) returns Int {
+        %!objs{++$lastConnId} = $obj;
+        return $lastConnId;
+    }
+
+
+    class Data
+    {
+        has Capture $.data;
+        has Int $.count is rw;
+    }
+
+
+    method addData (Capture $data, Int $count) returns Int
+    {
+        my $id = ++$lastEventId;
+#    say "YG add id=$id c=$count";
+        %!sigData{$id} = Data.new(data => $data, count => $count);
+        return $id;
+    }
+
+    method getData(Int $id) # returns (Capture, Bool) # HOW TO DECLARE IT ???
+    {
+#     say "YG get START";
+        if %!sigData{$id}:exists {
+            my Int $c = %!sigData{$id}.count;
+            my Capture $d = %!sigData{$id}.data;
+            $c--;
+            if $c {
+                %!sigData{$id}.count = $c;
+            } else {
+                %!sigData{$id}:delete;
+            }
+#     say "YG get id=$id c=$c";
+            return ($d, True);
+        } else {
+            return (Nil, False);
+        }
+    }
+}
+
+
+
+
+#`{{
+
+ATTTENTION : Ce qui est ecrit plus bas n'est plus exact :
+     Une classe ConnectorR (C++ seulement) est maintenant créée pour
+     chacun des slots définis au moment de l'instantiation d'une classe RaQtObject.
+
+
+
+Une nouvelle instance de la classe ConnectorR (C++ seulement) est créée
+à chaque connect vers un objet Perl6.
+
+L'objet Perl6 (ou, plutôt, son Id) et le slot ce cet objet sont passés
+au Connector à sa création.
+
+La connexion Qt est faite à un slot standard (recepteur, ou qqchose
+comme ça) du Connector.
+Ce slot standard appelle ensuite le slot de l'objet Perl6 via la
+callback slotCaller().
+
+   --> La classe connector ci-dessus est uniquement définie en C++
+       mais elle est créée/détruite depuis Perl
+    ==> Seules les fonctions natives associées CTOR/DTOR sont définies ici
+
+}}
+
+
+sub QWConnectorRCTOR(int32, Str, Str) returns Pointer
+    is native(&libwrapper) { * }
+
+sub QWConnectorRDTOR(Pointer)
+    is native(&libwrapper) { * }
+
+
+sub QWConnectorECTOR(int32, Str, Str) returns Pointer
+    is native(&libwrapper) { * }
+
+sub QWConnectorEDTOR(Pointer)
+    is native(&libwrapper) { * }
+
+
+
+#####################################################################"
+###   > 24/12/2019 :
+###   On va utiliser la chaine  "SIGSLOTNAME(QSIGNATURE)"
+###   comme indice des maps ...
+#####################################################################"
+
+
+
+
+sub connect(RaQtSigsloty $src, $sigName, RaQtSigsloty $dst, $slotName)
+        is export
+{
+    my Bool $simple;  # True if signature is "simple"
+
+#     say "    signalStrSig = \"$signalStrSig\"";
+#     say "    slotStrSig = \"$slotStrSig\"";
+
+    my SigSlot $source;
+    my SigSlot $destination;
+
+    # Does the specified signal exist ?
+    # Look not only in the given class, but also in all its parents
+    my @classNames = ($src.^name);
+#     say "CLASSLIST (", $src.^name, ")";
+    for $src.^parents -> $p {
+#         say "\t\t", $p.^name;
+        @classNames.push($p.^name);
+    }
+    SIGLOOP: for @classNames -> $className {
+        if %signals{$className}:exists {
+            for @(%signals{$className}) -> $v {
+                if $v.name ~~ $sigName {
+                    $source = $v;
+                    last SIGLOOP;
+                }
+            }
+        }
+    }
+    if !$source {
+        die "connect : signal ", $src.^name, ".", $sigName, " not found";
+    }
+
+    # Does the specified slot exist ?
+    # Look not only in the given class, but also in all its parents
+    @classNames = ($dst.^name);
+    for $dst.^parents -> $p {
+        @classNames.push($p.^name);
+    }
+    SLOTLOOP: for @classNames -> $className {
+        if %slots{$className}:exists {
+            for @(%slots{$className}) -> $v {
+                if $v.name ~~ $slotName {
+                    $destination = $v;
+                    $simple = $v.sigIsSimple;
+                    last SLOTLOOP;
+                }
+            }
+        }
+    }
+
+    if !$destination {
+        # Maybe the destination is a signal
+        SIGLOOP2: for @classNames -> $className {
+            if %signals{$className}:exists {
+                for @(%signals{$className}) -> $v {
+                    if $v.name ~~ $slotName {
+                        $destination = $v;
+                        $simple = $v.sigIsSimple;
+                        last SIGLOOP2;
+                    }
+                }
+            }
+        }
+    }
+
+    if !$destination {
+        die "connect : destination slot or signal ",
+                            $dst.^name, ".", $slotName, " not found";
+    }
+
+    # Is destination a private signal ?
+    if $destination.isPrivate {
+        die "can't connect to private signal ",
+                        $dst.^name, ".", $slotName, $destination.sig;
+    }
+
+    # Are source and destination compatible ?
+    my $nbp = $destination.sSignature.accepts($source.sSignature);
+    # say "NBP = $nbp";
+    if $nbp < 0 {
+        my Str $destNature = $destination.isSlot ?? "slot" !! "signal";
+        die "connect : incompatible source and destination\n",
+            "source is signal ", $src.^name, "::", $sigName, $source.sig,
+            " [", $source.sSignature.str, "]\n",
+            "destination is $destNature ", $dst.^name, "::", $slotName, $destination.sig,
+            " [", ~$destination.sSignature.str, "]\n";
+    }
+
+    my $slotStrSig = $destination.sig;
+    my $slotStrQSig = $destination.qSig;
+    # Modify destination signatures if needed
+    if $simple && $nbp > 0 {
+        $slotStrSig = removeArgs($slotStrSig, $nbp);
+        $slotStrQSig = removeArgs($slotStrSig, $nbp);
+    }
+
+    # create the connexion
+
+    my Pointer $srcObj = Nil;
+    my Pointer $dstObj = Nil;
+    my Str $signal = "???";
+    my Str $slot = "???";
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #!!! ATTENTION : Il faut ici definir EXACTEMENT quels sont les arguments
+    #                attendus par QWconnect et comment fonctionnent les
+    #                maps/hash utilisés....
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    if $simple {
+        # Plusieurs cas a etudier...
+        if $source.isPlainQt {
+            $srcObj = $src.address;
+            $signal = $sigName ~ $source.qSig;
+        } else {
+            $srcObj = $src.emitters{$sigName ~ $source.sig};
+            $signal = "QWSignal" ~ %qSigSig{$source.sig};
+        }
+        if $destination.isPlainQt {
+            $dstObj = $dst.address;
+            $slot = $slotName ~ $slotStrQSig;
+        } else {
+            if $destination.isSlot {
+                $dstObj = $dst.receivers{$slotName ~ $slotStrSig};
+                $slot = "QWSlot" ~ %qSigSig{$slotStrSig};
+            } else {
+                $dstObj = $dst.emitters{$slotName ~ $slotStrSig};
+                $slot = "QWSignal" ~ %qSigSig{$slotStrSig};
+            }
+        }
+
+    } else {
+        # Local to local connexion, with use of the cache :
+        # Neither source nor destination are pure Qt widgets
+        # Data will be kept inside perl space and identified with
+        # a unique data key.
+        # This key will be send instead of the data.
+
+        # The following key identifies the source of the connection
+        my $keySig = $src.id ~ $sigName ~ $source.sig;
+#         say "KEYSIG = ", $keySig;
+
+        # Count connexions. This count is needed to remove the data
+        # when all the connexions have been used.
+        $CM.addSignalConnection($keySig);
+
+        $signal = "QWSignal(int)";
+        $slot = "QWLocalToLocalSlot(int)";
+        $srcObj = $src.emitters{$sigName ~ $source.sig};
+        $dstObj = $dst.receivers{$slotName ~ $destination.sig};
+    }
+
+    # say "CONNECT : $signal --> $slot";
+
+    # Then connect inside Qt
+    QWconnect($srcObj, $signal, $dstObj, $slot);
+}
+
+#------------------------------------------------------------------
+
+
+
+
+
+#######################################
+
+# constant INTSIZE = 32;
+#
+# macro STD_INT {
+#     if INTSIZE == 32 {
+#         quasi { int32 };
+#     } else {
+#         quase { int64 };
+#     }
+# }
+
+sub slotCallback(int32 $objectId, Str $slotName)
+{
+    $CM.objs{$objectId}."$slotName"();
+}
+
+sub slotCallbackInt(int32 $objectId, Str $slotName, int64 $i)
+{
+    $CM.objs{$objectId}."$slotName"($i);
+}
+
+sub slotCallbackInt2(int32 $objectId, Str $slotName, int64 $i1, int64 $i2)
+{
+    $CM.objs{$objectId}."$slotName"($i1, $i2);
+}
+
+sub slotCallbackStr(int32 $objectId, Str $slotName, Str $s)
+{
+# say "   *** slotCallbackStr slotName=$slotName s=$s";
+    $CM.objs{$objectId}."$slotName"($s);
+}
+
+sub slotCallbackIntStr(int32 $objectId, Str $slotName, int64 $i, Str $s)
+{
+    $CM.objs{$objectId}."$slotName"($i, $s);
+}
+
+sub slotCallbackBool(int32 $objectId, Str $slotName, int8 $b)
+{
+    $CM.objs{$objectId}."$slotName"(?$b);
+}
+
+sub slotCallbackPointer(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackPointer objid=$objectId slotName=$slotName ", $p;
+
+    $CM.objs{$objectId}."$slotName"($p);
+}
+
+#BEGIN_INSERTION_HERE
+#CALLBACK_HANDLERS
+sub slotCallbackMouseEvent(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackMouseEvent objid=$objectId slotName=$slotName ", $p;
+
+    my QtMouseEvent $ev = QtMouseEvent.new(p => $p);
+    $CM.objs{$objectId}."$slotName"($ev);
+}
+
+sub slotCallbackQEvent(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackQEvent objid=$objectId slotName=$slotName ", $p;
+
+    my QtEvent $ev = QtEvent.new(p => $p);
+    $CM.objs{$objectId}."$slotName"($ev);
+}
+#END_INSERTION_HERE
+
+sub slotCallbackComplexSig(int32 $objectId, Str $slotName, int32 $dataId)
+{
+    my ($capt, $ok) = $CM.getData($dataId);
+
+#     say "Stack: " ~ Backtrace.new;
+#     say "just before calling the slot";
+#     say $capt.gist;
+#     say $CM.objs{$objectId}.gist;
+
+    if (!$ok) {
+        note "INTERNAL ERROR: Data(Id=$dataId) not found in capture cache";
+        # Should we die ???
+        return;
+    }
+    $CM.objs{$objectId}."$slotName"(|$capt);
+}
+
+
+
+##############################################################################
+# Start of code for QObject
+# QObject is processed as a special case
+
+class QObject is RaQtObject is export {
+    method ctor { ... }
+#     submethod TWEAK {
+#         say ::?CLASS, " TWEAK";
+#     }
+}
+
+# End of code for QObject
+##############################################################################
+
+
+
+
+###############################################################################
+####### Part 2 : main API #####################################################
+
+#BEGIN_INSERTION_HERE
+#MAINAPI_RAKU_CODE
+
+
+##############################################################################
+
+class QtLayout is QtObject is export {
+
+    method ctor { ... }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+}
+
+class QtPaintDevice is QtObject is export {
+
+    method ctor { ... }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+}
+
+##############################################################################
+
+sub QWWidgetCtor()
+        returns Pointer is native(&libwrapper) { * }
+sub QWWidgetSetLayout(Pointer , Pointer )
+        is native(&libwrapper) { * }
+sub QWWidgetSetWindowTitle(Pointer , Str )
+        is native(&libwrapper) { * }
+sub QWWidgetShow(Pointer)
+        is native(&libwrapper) { * }
+sub QWWidgetSetDisabled(Pointer, Int)
+        is native(&libwrapper) { * }
+
+class QtWidget is QtPaintDevice is QtObject is export {
+
+    BEGIN {
+      %callbacks{::?CLASS.raku} = < mouseMoveEvent enterEvent leaveEvent >;
+    }
+
+#     CHECK {
+#         say "QtWidget : CHECK";
+#     }
+#
+#     INIT {
+#         say "QtWidget : INIT";
+#     }
+
+    method ctor {
+    say "QtWidget Raku ctor method begin";
+        given self.ctorArgs {
+            when :() {
+                self.address = QWWidgetCtor();
+                self.ownedByRaku = True;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+
+    say "QtWidget Raku ctor method end";
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    method setLayout($l) {
+        say "QtWidget: setLayout   w.address=", self.address,
+                               "   l.address=", $l.address;
+        QWWidgetSetLayout(self.address, $l.address);
+    }
+
+    method setWindowTitle($text) {
+        QWWidgetSetWindowTitle(self.address, $text);
+    }
+
+    method show is QtSlot {
+        QWWidgetShow(self.address);
+    }
+
+    method setDisabled(Bool $disabled) is QtSlot {
+        QWWidgetSetDisabled(self.address, $disabled ?? 1 !! 0)
+    }
+
+}
+
+
+
+##############################################################################
+
+sub QWTextEditCtor()
+        returns Pointer is native(&libwrapper) { * }
+
+sub QWTextEditToPlainText(Pointer)
+        returns Str is native(&libwrapper) { * }
+
+class QtTextEdit is QtWidget is export {
+
+    method ctor {
+        given self.ctorArgs {
+            when :() {
+                self.address = QWTextEditCtor();
+                self.ownedByRaku = True;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    method toPlainText returns Str {
+        return QWTextEditToPlainText(self.address);
+    }
+}
+
+##############################################################################
+
+class QtAbstractButton is QtWidget is export {
+
+    method clicked is QtSignal { ... }
+
+}
+
+##############################################################################
+
+
+sub QWPushButtonCtor(Str is encoded('utf8'))
+        returns Pointer is native(&libwrapper) { * }
+
+class QtPushButton is QtAbstractButton is export {
+
+    method ctor {
+        given self.ctorArgs {
+            when :() {
+                self.address = QWPushButtonCtor("");
+                self.ownedByRaku = True;
+            }
+            when :(:$text) {
+                self.address = QWPushButtonCtor(self.ctorArgs.hash<text>);
+                self.ownedByRaku = True;
+            }
+            default {        # Cas peut-être nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    BEGIN {
+        say "QtPushButton : BEGIN";
+    }
+
+    CHECK {
+        say "QtPushButton : CHECK";
+    }
+
+    INIT {
+        say "QtPushButton : INIT";
+    }
+
+}
+
+##############################################################################
+
+sub QWBoxLayoutAddWidget(Pointer , Pointer )
+        is native(&libwrapper) { * }
+sub QWBoxLayoutAddLayout(Pointer , Pointer )
+        is native(&libwrapper) { * }
+
+class QtBoxLayout is QtLayout is export {
+
+    method ctor { ... }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    method addWidget(QtWidget $w) {
+        QWBoxLayoutAddWidget(self.address, $w.address);
+    }
+
+    method addLayout(QtLayout $l) {
+        QWBoxLayoutAddLayout(self.address, $l.address);
+    }
+}
+
+##############################################################################
+
+sub QWVBoxLayoutCtor()
+        returns Pointer is native(&libwrapper) { * }
+
+class QtVBoxLayout is QtBoxLayout is export {
+
+    method ctor {
+        given self.ctorArgs {
+            when :() {
+                self.address = QWVBoxLayoutCtor();
+                self.ownedByRaku = True;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+}
+
+##############################################################################
+
+sub QWHBoxLayoutCtor()
+        returns Pointer is native(&libwrapper) { * }
+
+class QtHBoxLayout is QtBoxLayout is export {
+
+    method ctor {
+        given self.ctorArgs {
+            when :() {
+                self.address = QWHBoxLayoutCtor();
+                self.ownedByRaku = True;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+}
+
+##############################################################################
+
+sub QWTimerCtor()
+        returns Pointer is native(&libwrapper) { * }
+
+sub QWTimerStart(Pointer)
+        is native(&libwrapper) { * }
+
+sub QWTimerStop(Pointer)
+        is native(&libwrapper) { * }
+
+sub QWTimerSetInterval(Pointer, Int)
+        is native(&libwrapper) { * }
+
+class QtTimer is QtObject is export {
+
+   method ctor {
+        given self.ctorArgs {
+            when :() {
+                self.address = QWTimerCtor();
+                self.ownedByRaku = True;
+            }
+            default {        # Cas sans doute nuisible : a supprimer ???
+                note "RaQt ", ::?CLASS.^name,
+                     " ctor called with unsupported args";
+                die "Bad args";
+            }
+        }
+    }
+
+    submethod TWEAK (*%h) {
+        # say "TWEAK ", ::?CLASS.^name;
+        self.ctorArgs = \(|%h);
+        self.callCtor(::?CLASS.^name);
+    }
+
+    method timeout is QtSignal { ... }
+
+    method setInterval(Int $msec) {
+        QWTimerSetInterval(self.address, $msec);
+    }
+
+    method start() is QtSlot {
+        QWTimerStart(self.address);
+    }
+
+    method stop() is QtSlot {
+        QWTimerStop(self.address);
+    }
+
+}
+
+#END_INSERTION_HERE
+
+
+##############################################################################
+##############################################################################
+# Start of code for QApplication
+# QApplication is used to initialize RaQt and hence is a special case
+
+
+sub QWApplicationCtor(int32, CArray[Str])
+        returns Pointer is native(&libwrapper) { * }
+
+sub QWApplicationInstance() returns Pointer is export is native(&libwrapper) { * }
+
+sub QWApplicationExec(Pointer) returns int32 is native(&libwrapper) { * }
+
+class QApplication is QCoreApplication is export {
+
+    # WARNING : Subclassing QApplication is currently unsupported
+    BEGIN {
+        $CM = ConnectionsManager.new if !$CM;
+    }
+
+    submethod BUILD(:@args = ()) {
+
+#         say "BUILD ", ::?CLASS.^name;
+
+        # Reconstruction of C main arguments : (int argc, char **argv)
+        my $argv = CArray[Str].new;
+        $argv[0] = $*PROGRAM-NAME;
+        my $argc = 1;
+        for @args -> $x {
+            $argv[$argc++] = $x;
+        }
+
+        self.address = QWApplicationCtor($argc, $argv);
+        self.ownedByRaku = True;
+#         say "QApplication ctor : args = ", $argv;
+
+
+        QWSetupSlotCallback(&slotCallback);
+        QWSetupSlotCallbackInt(&slotCallbackInt);
+        QWSetupSlotCallbackInt2(&slotCallbackInt2);
+        QWSetupSlotCallbackStr(&slotCallbackStr);
+        QWSetupSlotCallbackIntStr(&slotCallbackIntStr);
+        QWSetupSlotCallbackBool(&slotCallbackBool);
+        QWSetupSlotCallbackPointer(&slotCallbackPointer);
+# TODO        QWSetupSlotCallbackMouseEvent(&slotCallbackMouseEvent);
+# TODO        QWSetupSlotCallbackQEvent(&slotCallbackQEvent);
+        QWSetupSlotCallbackComplexSig(&slotCallbackComplexSig);
+
+        #BEGIN_INSERTION_HERE
+        #INIT_CALLBACKS_POINTERS
+
+        #END_INSERTION_HERE
+
+    }
+
+    method exec {
+
+        # Pour debug
+#         say "XYZ " x 19;
+#         for %slots.kv -> $k, $v {
+#             say $k;
+#             say "\t", $v;
+#         }
+
+
+        return QWApplicationExec($.address);
+    }
+
+    # Should be defined in QCoreApplication
+    # method quit is QtSlot { ... }
+}
+
+# End of code for QApplication
+##############################################################################
+
+
+sub QWDump()
+        is native(&libwrapper) { * }
+
+
+sub QtDump is export {
+    say "DUMP " ~ "=" x 50;
+    $CM.dump;
+    QWDump();
+    say "=" x 55;
+}
+
+
+##############################################################################
+##############################################################################
+
+
+
+
+
+
+
+
+

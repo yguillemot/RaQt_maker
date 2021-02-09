@@ -1,0 +1,476 @@
+
+
+#include <QtWidgets>
+
+#include <iostream>
+#include <string.h>
+
+#include "RaQtWrapper.h"
+
+
+extern void (*slotCallback)(int objId, char *slotName);
+extern void (*slotCallbackInt)(int objId, char *slotName, STD_INT i);
+extern void (*slotCallbackInt2)(int objId, char *slotName, STD_INT i1, STD_INT i2);
+extern void (*slotCallbackStr)(int objId, char *slotName, char *s);
+extern void (*slotCallbackIntStr)(int objId, char *slotName, STD_INT i, char *s);
+extern void (*slotCallbackBool)(int objId, char *slotName, uchar b);
+extern void (*slotCallbackPointer)(int objId, char *slotName, void *p);
+
+//BEGIN_INSERTION_HERE
+//VIRTUAL_METHODS_CALLBACKS_PROTOTYPES
+
+extern void (*slotCallbackQMouseEvent)(int objId, char *slotName, QMouseEvent *p);
+extern void (*slotCallbackQEvent)(int objId, char *slotName, QEvent *p);
+
+//END_INSERTION_HERE
+
+extern void (*slotCallbackComplexSig)(int32_t objId, char *slotName, uint32_t dataId);
+
+
+//     TODO TODO TODO
+//     Structure a utiliser comme valeur dans la map signalDict
+struct QtSignal {
+    QtSignal(QString a_signalName, void * a_pcallemit) :
+        signalName(a_signalName),
+        pcallemit(a_pcallemit)
+    { }
+
+    QString signalName;
+    void * pcallemit;
+
+    void dump() {
+        std::cout << signalName.toLocal8Bit().data() << " "
+                  << pcallemit;
+    }
+};
+
+
+
+
+class QWConnectorE : public QObject
+{
+ Q_OBJECT
+
+public:
+    QWConnectorE(int objId, char * signalName, char * signalSig);
+
+    ~QWConnectorE() {
+    }
+
+    void emit_QWSignal() { emit QWSignal(); }
+    void emit_QWSignal(int val)
+    {
+//         std::cout << "emit_QWSignal(int: " << val << ")\n";
+        emit QWSignal(val);
+    }
+    void emit_QWSignal(bool b)
+    {
+//         std::cout << "this = " << this << " emit_QWSignal(bool: " << b << ")\n";
+        emit QWSignal(b);
+    }
+    void emit_QWSignal(const QString str)
+    {
+//         std::cout << "this = " << this << " emit_QWSignal(str: \""
+//                   << str.toLocal8Bit().data() << "\")\n";
+        emit QWSignal(str);
+    }
+    void emit_QWLocalToLocalSignal(int dataId)
+        { emit QWLocalToLocalSignal(dataId); }
+
+signals:
+    void QWSignal();
+    void QWSignal(int);
+    void QWSignal(bool b);
+    void QWSignal(const QString &str);
+    void QWLocalToLocalSignal(int dataId);
+
+private:
+    int m_objId;
+    QString m_signalName;
+    QString m_signalSig;
+};
+
+
+
+class QWConnectorR : public QObject
+{
+ Q_OBJECT
+
+public:
+    QWConnectorR(int objId, char * slotName, char * slotSig);
+
+    ~QWConnectorR() {
+    }
+
+
+public slots:
+    void QWSlot();
+    void QWSlot(int val);
+    void QWSlot(bool b);
+    void QWSlot(const QString str);
+    void QWLocalToLocalSlot(int dataId);
+
+private:
+    int m_objId;
+    QString m_slotName;
+    QString m_slotSig;
+};
+
+
+
+
+
+
+class CallbackValidator
+{
+
+public:
+    CallbackValidator() :
+        //BEGIN_INSERTION_HERE
+        //VALIDATOR_INIT
+        m_objId(0),
+        m_mouseMoveEvent(false),
+        m_enterEvent(false),
+        m_leaveEvent(false),
+        m_rakuMouseMoveHandler("???"),
+        m_rakuEnterHandler("???"),
+        m_rakuLeaveHandler("???")
+        //END_INSERTION_HERE
+    {
+//         std::cout << "############## EVENTVALIDATOR CTOR ##############\n";
+//
+//         std::cout << "m_objId = " << m_objId << "\n";
+//         std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+//         std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+//         std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+//         std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "\n";
+    }
+
+    ~CallbackValidator() { }
+
+    void validateEvent(int32_t objId, char * methodName)
+    {
+//         std::cout << "validateEvent eventType=" << eventType
+//             << "  objId=" << objId << "  methodName=" << methodName << "\n";
+//
+//         std::cout << "m_objId = " << m_objId << "\n";
+//         std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+//         std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+//         std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+//         std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "\n";
+
+        m_objId = objId;
+        QString meth = QString(methodName);
+
+
+//BEGIN_INSERTION_HERE
+//VALIDATOR_SWITCH
+
+//         switch (eventType) {
+//             case QWMOUSEMOVE :
+//                 std::cout << "QWMOUSEMOVE \n";
+//                 m_rakuMouseMoveHandler = QString(methodName);
+//                 m_mouseMoveEvent = true;
+//                 break;
+//             case QWENTER :
+//                 m_rakuEnterHandler = QString(methodName);
+//                 m_enterEvent = true;
+//                break;
+//             case QWLEAVE :
+//                 m_rakuLeaveHandler = QString(methodName);
+//                 m_leaveEvent = true;
+//                break;
+//             default :
+//                 std::cerr << "INTERNAL ERROR : unknown eventType" << std::endl
+//                     << "\tmethod : validateEvent" << std::endl
+//                     << "\teventType : " << eventType << std::endl
+//                     << "\tobjId : " << objId << std::endl
+//                     << "\tmethodName : \"" << methodName << "\"" << std::endl;
+//         }
+
+//END_INSERTION_HERE
+
+//         std::cout << "m_objId = " << m_objId << "\n";
+//         std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+//         std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+//         std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+//         std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+//         std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+//
+//         std::cout << "validateEvent : Fin\n";
+    }
+
+    // Raku object Id
+    int32_t m_objId;
+
+    // Validate the callback
+    //BEGIN_INSERTION_HERE
+    //VALIDATOR_DECLARATION
+    bool m_mouseMoveEvent;
+    bool m_enterEvent;
+    bool m_leaveEvent;
+    //END_INSERTION_HERE
+
+    // Raku name of the method used as callback
+    QString m_rakuMouseMoveHandler;
+    QString m_rakuEnterHandler;
+    QString m_rakuLeaveHandler;
+};
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+// Subclasses
+
+//BEGIN_INSERTION_HERE
+//SUBCLASSES_WITH_VIRTUAL_METHODS
+
+class SCQWidget : public QWidget
+{
+ Q_OBJECT
+
+public:
+    SCQWidget() :
+        m_mouseMoveEventCB(nullptr),
+        m_enterEventCB(nullptr),
+        m_leaveEventCB(nullptr)
+    { }
+
+    ~SCQWidget() { }
+
+    void mouseMoveEvent(QMouseEvent * event)
+    {
+
+        QPoint gpos = QCursor::pos();
+        QPoint wpos = QWidget::mapFromGlobal(gpos);
+
+//         std::cout << "SCQWidget : mouseMoveEvent "
+//                   << " screen(" << gpos.x() << ", " << gpos.y() << ")"
+//                   << " widget(" << wpos.x() << ", " << wpos.y() << ")\n";
+//         if (m_mouseMoveEventCB)
+//             (*m_mouseMoveEventCB)(
+//                 // data TBD : m_objId, m_slotName.toLocal8Bit().data(), dataId
+//             );
+    }
+
+    void enterEvent(QEvent * /*event*/)
+    {
+//         std::cout << "SCQWidget : enterEvent\n";
+    }
+
+    void leaveEvent(QEvent * /*event*/)
+    {
+//         std::cout << "SCQWidget : leaveEvent\n";
+    }
+
+private:
+
+// TODO : Pointeurs vers des callbacks
+//   Mécanisme utilisé par les "slotCallback" récupérable ???
+    void * m_mouseMoveEventCB;
+    void * m_enterEventCB;
+    void * m_leaveEventCB;
+};
+
+class SCQPushButton : public QPushButton
+{
+ Q_OBJECT
+
+public:
+    SCQPushButton() // :
+//         m_mouseMoveEventCB(nullptr),
+//         m_enterEventCB(nullptr),
+//         m_leaveEventCB(nullptr)
+    { }
+
+    ~SCQPushButton() { }
+
+    void mouseMoveEvent(QMouseEvent * /*event*/)
+    {
+
+        QPoint gpos = QCursor::pos();
+        QPoint wpos = QWidget::mapFromGlobal(gpos);
+
+        std::cout << "SCQPushButton : mouseMoveEvent "
+                  << " screen(" << gpos.x() << ", " << gpos.y() << ")"
+                  << " widget(" << wpos.x() << ", " << wpos.y() << ")\n";
+//         if (m_mouseMoveEventCB)
+//             (*m_mouseMoveEventCB)(
+//                 // data TBD : m_objId, m_slotName.toLocal8Bit().data(), dataId
+
+/*
+        // Utilisation du mecanisme de callback des slots pour les handlers
+        // des fonctions virtuelles
+        (*slotCallbackInt2)(m_objId, "mouseMoveEvent", gpos.x(), gpos.y());
+*/
+//             );
+
+    }
+
+    void enterEvent(QEvent * /*event*/)
+    {
+        std::cout << "SCQPushButton : enterEvent\n";
+    }
+
+    void leaveEvent(QEvent * /*event*/)
+    {
+        std::cout << "SCQPushButton : leaveEvent\n";
+    }
+
+};
+
+
+
+class EventValidator
+{
+
+public:
+    EventValidator() :
+        m_objId(0),
+        m_mouseMoveEvent(false),
+        m_enterEvent(false),
+        m_leaveEvent(false),
+        m_rakuMouseMoveHandler("???"),
+        m_rakuEnterHandler("???"),
+        m_rakuLeaveHandler("???")
+    {
+        std::cout << "############## EVENTVALIDATOR CTOR ##############\n";
+
+        std::cout << "m_objId = " << m_objId << "\n";
+        std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+        std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+        std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+        std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+        std::cout << "\n";
+    }
+
+    ~EventValidator() { }
+
+    // TODO : Le bool ne suffit pas
+    //   Il faut un seul m_objId, mais un m_rakuMethodName par type d'event !!!
+
+    void validateEvent(int32_t objId, int32_t eventType, char *methodName)
+    {
+        std::cout << "validateEvent eventType=" << eventType
+            << "  objId=" << objId << "  methodName=" << methodName << "\n";
+
+        std::cout << "m_objId = " << m_objId << "\n";
+        std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+        std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+        std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+        std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+        std::cout << "\n";
+
+        m_objId = objId;
+
+        switch (eventType) {
+            case QWMOUSEMOVE :
+                std::cout << "QWMOUSEMOVE \n";
+                m_rakuMouseMoveHandler = QString(methodName);
+                m_mouseMoveEvent = true;
+                break;
+            case QWENTER :
+                m_rakuEnterHandler = QString(methodName);
+                m_enterEvent = true;
+               break;
+            case QWLEAVE :
+                m_rakuLeaveHandler = QString(methodName);
+                m_leaveEvent = true;
+               break;
+            default :
+                std::cerr << "INTERNAL ERROR : unknown eventType" << std::endl
+                    << "\tmethod : validateEvent" << std::endl
+                    << "\teventType : " << eventType << std::endl
+                    << "\tobjId : " << objId << std::endl
+                    << "\tmethodName : \"" << methodName << "\"" << std::endl;
+        }
+
+        std::cout << "m_objId = " << m_objId << "\n";
+        std::cout << "m_mouseMoveEvent = " << m_mouseMoveEvent << "\n";
+        std::cout << "m_enterEvent = " << m_enterEvent << "\n";
+        std::cout << "m_leaveEvent = " << m_leaveEvent << "\n";
+        std::cout << "m_rakuMouseMoveHandler = " << m_rakuMouseMoveHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuEnterHandler = " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+        std::cout << "m_rakuLeaveHandler = " << m_rakuLeaveHandler.toLocal8Bit().data() << "\n";
+
+        std::cout << "validateEvent : Fin\n";
+    }
+
+    // Raku object Id
+    int32_t m_objId;
+
+    // Validate the callback
+    bool m_mouseMoveEvent;
+    bool m_enterEvent;
+    bool m_leaveEvent;
+
+    // Raku name of the method used as callback
+    QString m_rakuMouseMoveHandler;
+    QString m_rakuEnterHandler;
+    QString m_rakuLeaveHandler;
+};
+
+
+
+class SCQTextEdit : public QTextEdit, public EventValidator
+{
+ Q_OBJECT
+
+public:
+    SCQTextEdit() { }
+
+    ~SCQTextEdit() { }
+
+    void mouseMoveEvent(QMouseEvent * event)
+    {
+        // std::cout << "mouseMoveEvent\n";
+
+        if (m_mouseMoveEvent) {
+            (*slotCallbackQMouseEvent)(m_objId,
+                                       m_rakuMouseMoveHandler.toLocal8Bit().data(),
+                                       event);
+        }
+    }
+
+    void enterEvent(QEvent * event)
+    {
+        if (m_enterEvent) {
+//             std::cout << "enterEvent " << event << "\n";
+//             std::cout << "     objid " << m_objId << "\n";
+//             std::cout << "    method " << m_rakuEnterHandler.toLocal8Bit().data() << "\n";
+            (*slotCallbackQEvent)(m_objId,
+                                  m_rakuEnterHandler.toLocal8Bit().data(),
+                                  event);
+        }
+    }
+
+    void leaveEvent(QEvent * event)
+    {
+        if (m_leaveEvent) {
+            (*slotCallbackQEvent)(m_objId,
+                                  m_rakuLeaveHandler.toLocal8Bit().data(),
+                                  event);
+        }
+    }
+
+};
+
+
+//END_INSERTION_HERE
+
+
+
