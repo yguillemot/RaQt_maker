@@ -38,7 +38,7 @@ The whole process needs 7 steps
  4. Force a few types and size depending of the platform
  5. Select the classes and methods we want to interface with
  6. Generate the code (Raku and C++)
- 7. Move the generated code in a place where it can be compiled and used
+ 7. Test and use the generated code
 
 STEP 1: Extract the C++ headers from a Qt distribution
 ------------------------------------------------------
@@ -100,7 +100,7 @@ STEP 2: Extract the definitions of the Qt classes from the C++ headers
     `cd ../src`  
 
 2.2 - Then execute the following command:  
-    `raku classExtractor.p6 ../data/main.E`  
+    `raku classExtractor.raku ../data/main.E`  
 
 Four files should be created:  
     - liste.txt: Liste of extracted classes (with the name of their parents)  
@@ -117,7 +117,7 @@ STEP 3: Filter out needless data
 --------------------------------
 
 3.1 - Execute the following command:  
-    `raku RaQt_filter.p6 out.txt`
+    `raku RaQt_filter.raku out.txt`
     
 It should create sortie_filtre.txt obtained from out.txt by removing:  
     - All which is "private"  
@@ -143,19 +143,94 @@ Execute the following command:
 STEP 5: Select the classes and methods we want to interface with
 ----------------------------------------------------------------
 
-5.1 - Write in the WhiteList.input the names of the wanted classes and method.
+The wanted classes and methods have to be listed in the WhiteList.input file
+and the absolutly unwanted ones in the BlackList.input file.
 
-5.2 - Write the names of the classes and method we BlackList.input file.
+If a correct WhiteList.input file is already existing, you can jump to the STEP 6.
+The BlackList.input file is optional.
+
+5.1 - Create data to fill in the black/white lists :
+
+Execute the following commands:  
+`touch WhiteList.input`  
+`raku RaQt_maker.raku --strict api_description.txt`  
+
+This step should create 4 files : BlackList.output, ColorlessList.output,
+GrayList.output and WhiteList.output.
+
+* BlackList.output lists the methods which can't be generated (usually because
+they need currently unsupported types)  
+* WhiteList.output lists the methods which wille be generated. It should
+be empty if WhiteList.input was empty.  
+* GrayList.output lists the methods which are in the WhiteList.input but can't
+be implemented. It should be empty.  
+* ColorlessList.output lists all the other classes and methods.  
+
+5.2 - Select the methods which should be generated:
+
+Just copy the lines with the name of these methods from ColorlessList.output
+to WhiteList.input (and, optionally to BlackList.input).
+
+In the input files, blank lines are ignored and the '#' character may be used 
+for beginning a comment.
+
+5.3 - Run again RaQt_maker:  
+`raku RaQt_maker.raku --strict api_description.txt`  
+
+Then jump to 5.2 until the WhiteList.output contains all the wanted methods.
+
+Note : This loop on steps 5.2 and 5.3 is long because api_description.txt
+is always parsed in step 5.3.
+
+An alternative way is to use the following command:  
+`raku RaQt_maker.raku --strict --interactive api_description.txt`  
 
 STEP 6: Generate the code (Raku and C++)
 ----------------------------------------
 
-STEP 7: Move the generated code in a place where it can be compiled and used
------------------------------------------------------------------------------
+6.1 - When you are OK with the WhiteList.input and BlackList.input, issue
+this command:  
+`raku RaQt_maker.raku --strict --generate api_description.txt`
 
+The following files should be generated:  
+- RaQtWrapper.hpp  
+- RaQtWrapper.h  
+- RaQtWrapper.cpp  
+- Qt/RaQt.rakumod  
+- Qt/RaQt/RaQtHelpers.rakumod
+- Qt/RaQt/RaQtWrappers.rakumod
 
+STEP 7: Test and use the generated code
+---------------------------------------
 
+7.1: Compile the C++ code:  
+`qmake`  
+`make`
 
+The file libRaQtWrapper.so should be created.
+
+7.2: Setup the environment:  
+`export LD_LIBRARY_PATH=.`  
+`export RAKULIB=.,$RAKULIB`  
+
+7.3: Run some tests:__
+These tests will pass only if the needed classes and methods have been
+generated in the previous steps.
+
+`raku tests/test1.t`  
+`raku tests/QEvent.t`  
+`raku tests/QPoint.t`  
+`raku tests/QPointF.t`  
+
+7.4: Run some examples:__
+These examples will work only if the needed classes and methods have been
+generated in the previous steps.
+
+`raku example/clock.raku`  
+`raku example/2deg_eqn_solver.raku`  
+`raku example/sketch_board.raku`  
+
+7.5: Copy the .rakumod and .so files produced to their target places.
 
 
 
