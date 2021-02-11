@@ -1,6 +1,4 @@
-RaQt_maker
-==========
-
+# RaQt_maker
 Generate the code (Raku and C++) of the Raku Qt::RaQt module (a Qt GUI native interface for Raku)
 
 DESCRIPTION
@@ -25,12 +23,15 @@ Just clone the repository somewhere on your system.
 
 `mkdir RaQt_maker`  
 `cd RaQt_maker`  
-`git clone git://github.com/yvguill/RaQt_maker.git`  
+`git clone git://github.com/yguillemot/RaQt_maker.git`  
 
 The scripts will be run from this place.
 
 USAGE
 =====
+
+<Build a known as working version of RaQt>
+<Extend RaQt>
 
 The whole process needs 7 steps
 
@@ -199,23 +200,25 @@ The following files should be generated:
 - RaQtWrapper.h  
 - RaQtWrapper.cpp  
 - Qt/RaQt.rakumod  
-- Qt/RaQt/RaQtHelpers.rakumod
-- Qt/RaQt/RaQtWrappers.rakumod
+- Qt/RaQt/RaQtHelpers.rakumod  
+- Qt/RaQt/RaQtWrappers.rakumod  
+- Title.md  
+- Classes.md
 
 STEP 7: Test and use the generated code
 ---------------------------------------
 
-7.1: Compile the C++ code:  
+7.1 - Compile the C++ code:  
 `qmake`  
 `make`
 
 The file libRaQtWrapper.so should be created.
 
-7.2: Setup the environment:  
+7.2 - Setup the environment:  
 `export LD_LIBRARY_PATH=.`  
 `export RAKULIB=.,$RAKULIB`  
 
-7.3: Run some tests:__
+7.3 - Run some tests:  
 These tests will pass only if the needed classes and methods have been
 generated in the previous steps.
 
@@ -224,7 +227,7 @@ generated in the previous steps.
 `raku tests/QPoint.t`  
 `raku tests/QPointF.t`  
 
-7.4: Run some examples:__
+7.4 - Run some examples:  
 These examples will work only if the needed classes and methods have been
 generated in the previous steps.
 
@@ -232,7 +235,7 @@ generated in the previous steps.
 `raku example/2deg_eqn_solver.raku`  
 `raku example/sketch_board.raku`  
 
-7.5: Copy the .rakumod and .so files produced to their target places.
+7.5 - Copy the .rakumod and .so files produced to their target places.
 
 
 
