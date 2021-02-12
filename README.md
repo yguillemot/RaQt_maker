@@ -1,12 +1,17 @@
 # RaQt_maker
-Generate the code (Raku and C++) of the Raku Qt::RaQt module (a Qt GUI native interface for Raku)
+Generate the code (Raku and C++) of the Raku NAME_X module (a Raku native interface to Qt GUI)
 
 DESCRIPTION
 ===========
 
-RaQt_maker is a set of scripts which can extract the Qt classes and methods
-interfaces from Qt headers then generate a Raku interface for Qt and its
-needed native wrapper.
+RaQt_maker is a set of scripts which can
+    - extract the Qt classes and methods from Qt headers
+    - generate the code of a Raku module which works as a Qt API
+    - generate the native wrapper this module needs
+    - generate a minimum documentation of the generated API
+
+Two files, a white and a black list are used to select which Qt classes and
+methods should be integrated into the API.
 
 PREREQUISITE
 ============
@@ -30,9 +35,19 @@ The scripts will be run from this place.
 USAGE
 =====
 
-<Build a known as working version of RaQt>
-<Extend RaQt>
+The object of the scripts gathered here is to build a module interfacing
+Raku with the Qt GUI.
+Currently this module is far to be complete and these scripts need many
+enhancements before reaching their goal.
 
+That'why this chapter has two parts :
+
+ I. How to build a limited, but "known as working" version of RaQt
+ 
+ II. How to add new Qt classes/methods to RaQt
+
+##  Part I: How to build a limited, but "known as working" version of RaQt 
+ 
 The whole process needs 7 steps
 
  1. Extract the C++ headers from a Qt distribution
@@ -146,11 +161,96 @@ Execute the following command:
 STEP 5: Select the classes and methods we want to interface with
 ----------------------------------------------------------------
 
+This step is already done: the WhiteList.input file is a list of
+these classes and methods.
+It is only a small subset of the large number of Qt classes and methods,
+but RaQt_maker generate a working code from this list.
+
+
+STEP 6: Generate the code (Raku and C++)
+----------------------------------------
+
+6.1 - Execute this command:  
+`raku RaQt_maker.raku --strict --generate api_description.txt`
+
+The following files should be generated:  
+- RaQtWrapper.hpp  
+- RaQtWrapper.h  
+- RaQtWrapper.cpp  
+- Qt/RaQt.rakumod  
+- Qt/RaQt/RaQtHelpers.rakumod  
+- Qt/RaQt/RaQtWrappers.rakumod  
+- Title.md  
+- Classes.md
+
+STEP 7: Test and use the generated code
+---------------------------------------
+
+7.1 - Compile the C++ code:  
+`qmake`  
+`make`
+
+The file libRaQtWrapper.so should be created.
+
+7.2 - Setup the environment:  
+`export LD_LIBRARY_PATH=.`  
+`export RAKULIB=.,$RAKULIB`  
+
+7.3 - Run some tests:  
+These tests will pass only if the needed classes and methods have been
+generated in the previous steps.
+
+`raku tests/test1.t`  
+`raku tests/QEvent.t`  
+`raku tests/QPoint.t`  
+`raku tests/QPointF.t`  
+
+7.4 - Run some examples:  
+These examples will work only if the needed classes and methods have been
+generated in the previous steps.
+
+`raku example/clock.raku`  
+`raku example/2deg_eqn_solver.raku`  
+`raku example/sketch_board.raku`  
+
+7.5 - Copy the .rakumod and .so files produced to their target places.
+
+
+
+##  Part II: How to add new Qt classes/methods to RaQt 
+ 
+Again, the whole process needs the same 7 steps
+
+ 1. Extract the C++ headers from a Qt distribution
+ 2. Extract the definitions of the Qt classes from the C++ headers
+ 3. Filter out needless data
+ 4. Force a few types and size depending of the platform
+ 5. Select the classes and methods we want to interface with
+ 6. Generate the code (Raku and C++)
+ 7. Test and use the generated code
+
+Nevertheless, steps 1 to 4 and step 7 are strictly identical to those
+of the part I.
+
+Only steps 5 and 6 are detailed here.
+
+
+STEP 5: Select the classes and methods we want to interface with
+----------------------------------------------------------------
+
 The wanted classes and methods have to be listed in the WhiteList.input file
 and the absolutly unwanted ones in the BlackList.input file.
 
-If a correct WhiteList.input file is already existing, you can jump to the STEP 6.
 The BlackList.input file is optional.
+
+
+Each time RaQt_maker runs, WhiteList.input and BlackList.input are read
+while WhiteList.output, BlackList.output, GrayList.output and
+ColorlessList.output are written.
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
+
+
 
 5.1 - Create data to fill in the black/white lists :
 
@@ -239,6 +339,12 @@ generated in the previous steps.
 
 
 
+
+
+
+
+
+
 # TODO
 
 
@@ -260,17 +366,29 @@ The Qt5 developpment package and the gcc compiler are needed.
 
 # Testing
 
+
+
 AUTHOR
 ======
 
 Yves Guillemot
 
-# Contributors
 
 COPYRIGHT AND LICENSE
 =====================
 
-Copyright 2021 Yves Guillemot
+Copyright (C) 2021 Yves Guillemot
 
-This software is free; you can redistribute and/or modify it under
-the GNU General Public License v3.
+This software is free: you can redistribute and/or modify it under
+the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This software is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
