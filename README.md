@@ -243,59 +243,55 @@ and the absolutly unwanted ones in the BlackList.input file.
 
 The BlackList.input file is optional.
 
-
 Each time RaQt_maker runs, WhiteList.input and BlackList.input are read
 while WhiteList.output, BlackList.output, GrayList.output and
 ColorlessList.output are written.
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx
-
-
-
-5.1 - Create data to fill in the black/white lists :
-
-Execute the following commands:  
-`touch WhiteList.input`  
-`raku RaQt_maker.raku --strict api_description.txt`  
-
-This step should create 4 files : BlackList.output, ColorlessList.output,
-GrayList.output and WhiteList.output.
-
 * BlackList.output lists the methods which can't be generated (usually because
 they need currently unsupported types)  
-* WhiteList.output lists the methods which wille be generated. It should
-be empty if WhiteList.input was empty.  
+* WhiteList.output lists the methods which will be generated.  
 * GrayList.output lists the methods which are in the WhiteList.input but can't
-be implemented. It should be empty.  
+be implemented.  
 * ColorlessList.output lists all the other classes and methods.  
+
+5.1 - Initialize ColorlessList.output
+
+Execute the fillowing command:  
+`raku RaQt_maker.raku --strict api_description.txt`
 
 5.2 - Select the methods which should be generated:
 
-Just copy the lines with the name of these methods from ColorlessList.output
-to WhiteList.input (and, optionally to BlackList.input).
+To select a set of methods to be generated, the following cycle should be run:
 
-In the input files, blank lines are ignored and the '#' character may be used 
-for beginning a comment.
+1 - Copy classes and/or methods names from ColorlessList.output
+    to WhiteList.input (and, optionally to BlackList.input).
+    
+2 - Run RaQt_maker.raku
 
-5.3 - Run again RaQt_maker:  
-`raku RaQt_maker.raku --strict api_description.txt`  
+3 - Return to ste 1 until satisfied
 
-Then jump to 5.2 until the WhiteList.output contains all the wanted methods.
-
-Note : This loop on steps 5.2 and 5.3 is long because api_description.txt
-is always parsed in step 5.3.
+Nevertheless, this process is very long because api_description.txt
+is parsed again each time RaQt_maker.raku is run.
 
 An alternative way is to use the following command:  
 `raku RaQt_maker.raku --strict --interactive api_description.txt`  
 
+This command runs an interactive loop inside RaQt_maker.raku.
+api_description.txt is only run once before the first cycle. 
+At the end of each cycle, the user is ask to run a cycle again,
+generate the API or abort the whole process.
+Before answering this question, the user has the opportunity to 
+read the .output files and modify the .input files.
+
 STEP 6: Generate the code (Raku and C++)
 ----------------------------------------
 
-6.1 - When you are OK with the WhiteList.input and BlackList.input, issue
-this command:  
+Executing the following command is always possible, but not needed
+if this step has already been done at the end of the interactive
+loop in the previous step.  
 `raku RaQt_maker.raku --strict --generate api_description.txt`
 
-The following files should be generated:  
+The following files should be (or already have benn) generated:  
 - RaQtWrapper.hpp  
 - RaQtWrapper.h  
 - RaQtWrapper.cpp  
@@ -340,11 +336,6 @@ generated in the previous steps.
 
 
 
-
-
-
-
-
 # TODO
 
 
@@ -352,20 +343,16 @@ generated in the previous steps.
 
 # Issues
 
+
 # Limitations
 
 Currently, this module is only working with Linux.
 
-# Prerequisite
 
-The Qt5 library
-
-# Installation
-
-The Qt5 developpment package and the gcc compiler are needed.
 
 # Testing
 
+See 7.3 and 7.4 above.
 
 
 AUTHOR
