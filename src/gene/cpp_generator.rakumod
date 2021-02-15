@@ -75,8 +75,11 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
 
 
                 for $m.arguments -> $a {
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
                     $txt1 ~= IND;
-                    $txt1 ~= precall($k, $a.ftot,
+                    $txt1 ~= precall($k, $tot,
                                     cType($a), cPostop($a), $a.fname,
                                     qType($a), qPostop($a), 'x' ~ $a.fname);
                     $txt1 ~= "\n";
@@ -145,8 +148,11 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                 $out ~= IND ~ "$k * ptr = reinterpret_cast<$k *>(obj);\n";
 
                 for $m.arguments -> $a {
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
                     $out ~= IND;
-                    $out ~= precall($k, $a.ftot,
+                    $out ~= precall($k, $tot,
                                     cType($a), cPostop($a), $a.fname,
                                     qType($a), qPostop($a), 'x' ~ $a.fname);
                     $out ~= "\n";
@@ -170,6 +176,9 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                     }
                 }
                 if $retType ne "void" {
+                    say "POSTCALL($k, {$rt.ftot}/",
+                                     " {qType($rt)}, {qPostop($rt)}, {$rt.const}, ", "retVal, ",
+                                      "{cType($rt)}, {cPostop($rt)}, xretVal)"; 
                     my $pc = postcall($k, $rt.ftot,
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");
@@ -259,8 +268,11 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
 
 
                 for $m.arguments -> $a {
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
                     $outSctors ~= IND;
-                    $outSctors ~= precall($k, $a.ftot,
+                    $outSctors ~= precall($k, $tot,
                                     cType($a), cPostop($a), $a.fname,
                                     qType($a), qPostop($a), 'x' ~ $a.fname);
                     $outSctors ~= "\n";
@@ -284,8 +296,11 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                 $outSubapi ~= IND ~ "$k * ptr = reinterpret_cast<$k *>(obj);\n";
 
                 for $m.arguments -> $a {
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
                     $outSubapi ~= IND;
-                    $outSubapi ~= precall($k, $a.ftot,
+                    $outSubapi ~= precall($k, $tot,
                                         cType($a), cPostop($a), $a.fname,
                                         qType($a), qPostop($a), 'x' ~ $a.fname);
                     $outSubapi ~= "\n";
@@ -309,6 +324,9 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                     }
                 }
                 if $retType ne "void" {
+                    say "POSTCALL($k, {$rt.ftot}/",
+                                     " {qType($rt)}, {qPostop($rt)}, {$rt.const}, ", "retVal, ",
+                                      "{cType($rt)}, {cPostop($rt)}, xretVal)"; 
                     my $pc = postcall($k, $rt.ftot,
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");

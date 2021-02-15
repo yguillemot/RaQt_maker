@@ -153,7 +153,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
                     # Subroutine(s) ctor calling the native wrapper
                     $outm ~= IND ~ "multi sub ctor"
-                                    ~ strArgsRakuCtorDecl($ctor) ~ " \{\n";
+                                    ~ strArgsRakuCtorDecl($ctor, %c) ~ " \{\n";
 
                     my ($pc, $o) = strArgsRakuCtorWrapperCall($ctor);
 
@@ -179,7 +179,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
                     # Subroutine(s) ctor calling the native subclass wrapper
                     $outm ~= IND ~ "multi sub subClassCtor"
-                                    ~ strArgsRakuCtorDecl($ctor) ~ " \{\n";
+                                    ~ strArgsRakuCtorDecl($ctor, %c) ~ " \{\n";
 
                     ($pc, $o) = strArgsRakuCtorWrapperCall($ctor);
 
@@ -213,14 +213,22 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
             }
 
-            # Add the new submethod creating a Raku object from an existent Qt one
+            # Add the new submethod creating a Raku object from an existent
+            # Qt one.
+            # The $obr named argument is here to allow working in the case
+            # the Qt object has been created on the stack and a copy on the
+            # heap of this object has been done in the native wrapper,
+            # creating an object owned by Raku from an object owned by Qt.
+            #
             # Note : Pointer type must be "NativeCall::Types::Pointer".
             # Sub isn't called if type "Pointer" is only specified...
+            #
             $outm ~= IND ~ 'multi sub ctor(RaQtBase $this, '
-                                ~ 'NativeCall::Types::Pointer $p) {' ~ "\n";
+                                ~ 'NativeCall::Types::Pointer $p, '
+                                ~ 'Bool :$obr = False) {' ~ "\n";
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";
-            $outm ~= IND x 2 ~ '$this.ownedByRaku = False;' ~ "\n";
+            $outm ~= IND x 2 ~ '$this.ownedByRaku = $obr;' ~ "\n";
             $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
             $outm ~= IND ~ '}' ~ "\n";
 
@@ -330,7 +338,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                         ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                         ~ IND x 2 ~ 'isSlot => True,' ~ "\n"
                         ~ IND x 2 ~ 'sSignature => createSignature('
-                                            ~ StrRakuParamsLst($m) ~ ")\n"
+                                            ~ StrRakuParamsLst($m, %c) ~ ")\n"
                         ~ IND ~ '));' ~ "\n";
                 }
 ### QOBJS ONLY : END
@@ -341,7 +349,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                 # Call of the native wrapper
                 $outm ~= IND ~ ($m.number ?? "multi method" !! "method") ~ " ";
                 $outm ~= $m.name;
-                $outm ~= strRakuArgsDecl($m)
+                $outm ~= strRakuArgsDecl($m, %c)
                                 ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
                 $outm ~= IND ~ "\{\n";
 
@@ -369,9 +377,15 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                             ~ $wrapperName ~ $o ~ ";\n";
 
                 if $returnSomething {
-                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $dst, Str $rakuTypeName --> Str)
-                    my $poc = postcall_raku('$result', $m.returnType.ftot, '$result1', rType($m.returnType));
-                    if $poc {
+                    my $rt = $m.returnType;
+                    say "POSTCALL_RAKU $k: (", '$result', ", {$rt.ftot}, ",
+                                        "{qType($rt)}, {qPostop($rt)}, ",
+                                        '$result1', ", {rType($rt)})";
+                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $qPostop,
+                    ###                 Str $dst, Str $rakuTypeName --> Str)
+                    my $poc = postcall_raku('$result', $rt.ftot,
+                                                                qPostop($rt),
+                                            '$result1', rType($rt));                    if $poc {
                         $outm ~= IND x 2 ~ $poc ~ "\n";
                         $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";
                     } else {
@@ -405,7 +419,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             my $trait = $m.isPrivateSignal ?? "is QtPrivateSignal" !! "is QtSignal";
             my $qualifiedClass = RAQTNAME ~ '::' ~ $k;
 
-            $outm ~= IND ~ "method " ~ $m.name ~ strRakuArgsDecl($m) ~ "\n";
+            $outm ~= IND ~ "method " ~ $m.name ~ strRakuArgsDecl($m, %c) ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
 
             $outSignals ~=
@@ -421,7 +435,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                                     ~ ($m.isPrivateSignal ?? 'True' !! 'False')
                                     ~ ',' ~ "\n"
                 ~ IND x 2 ~ 'sSignature => createSignature('
-                                            ~ StrRakuParamsLst($m) ~ ")\n"
+                                            ~ StrRakuParamsLst($m, %c) ~ ")\n"
                 ~ IND ~ '));' ~ "\n";
         }
 ### QOBJS ONLY : END
@@ -530,7 +544,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
                     # Subroutine(s) ctor calling the native wrapper
                     $outm ~= IND ~ "multi sub ctor"
-                                    ~ strArgsRakuCtorDecl($ctor) ~ " \{\n";
+                                    ~ strArgsRakuCtorDecl($ctor, %c) ~ " \{\n";
 
                     my ($pc, $o) = strArgsRakuCtorWrapperCall($ctor);
                     $outm ~= [~] (IND x 2) <<~>> $pc;
@@ -543,14 +557,23 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             }
 
 
-            # Add the new submethod creating a Raku object from an existent Qt one
+            
+            # Add the new submethod creating a Raku object from an existent
+            # Qt one.
+            # The $obr named argument is here to allow working in the case
+            # the Qt object has been created on the stack and a copy on the
+            # heap of this object has been done in the native wrapper,
+            # creating an object owned by Raku from an object owned by Qt.
+            #
             # Note : Pointer type must be "NativeCall::Types::Pointer".
             # Sub isn't called if type "Pointer" is only specified...
+            #
             $outm ~= IND ~ 'multi sub ctor(RaQtBase $this, '
-                                ~ 'NativeCall::Types::Pointer $p) {' ~ "\n";
+                                ~ 'NativeCall::Types::Pointer $p, '
+                                ~ 'Bool :$obr = False) {' ~ "\n";
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";
-            $outm ~= IND x 2 ~ '$this.ownedByRaku = False;' ~ "\n";
+            $outm ~= IND x 2 ~ '$this.ownedByRaku = $obr;' ~ "\n";
             $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
             $outm ~= IND ~ '}' ~ "\n";
 
@@ -643,7 +666,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                 # Call of the native wrapper
                 $outm ~= IND ~ ($m.number ?? "multi method" !! "method") ~ " ";
                 $outm ~= $m.name;
-                $outm ~= strRakuArgsDecl($m)
+                $outm ~= strRakuArgsDecl($m, %c)
                                 ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
                 $outm ~= IND ~ "\{\n";
 
@@ -668,8 +691,15 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                             ~ $wrapperName ~ $o ~ ";\n";
 
                 if $returnSomething {
-                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $dst, Str $rakuTypeName --> Str)
-                    my $poc = postcall_raku('$result', $m.returnType.ftot, '$result1', rType($m.returnType));
+                    my $rt = $m.returnType;
+                    say "POSTCALL_RAKU $k: (", '$result', ", {$rt.ftot}, ",
+                                        "{qType($rt)}, {qPostop($rt)}, ",
+                                        '$result1', ", {rType($rt)})";
+                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $qPostop,
+                    ###                 Str $dst, Str $rakuTypeName --> Str)
+                    my $poc = postcall_raku('$result', $rt.ftot,
+                                                                qPostop($rt),
+                                            '$result1', rType($rt));
                     if $poc {
                         $outm ~= IND x 2 ~ $poc ~ "\n";
                         $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";

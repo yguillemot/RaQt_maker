@@ -28,6 +28,9 @@ method begin(QPaintDevice $arg1 --> Bool) {
     }
 
     given $arg1.qtType {
+        when "RaQt::QLabel"  {
+            return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
+        }
         when "RaQt::QWidget"  {
             return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
         }

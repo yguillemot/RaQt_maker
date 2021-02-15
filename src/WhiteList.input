@@ -15,6 +15,8 @@
 	QAbstractButton::clicked(bool)
     QAbstractButton::pressed()
 	QAbstractButton::setText(const QString&)
+	QAbstractButton::text()
+	QAbstractButton::click()
 
 
 
@@ -26,8 +28,10 @@
     QTextEdit::toPlainText()
 
     QLayout::addWidget(QWidget*)
-
     QBoxLayout::addLayout(QLayout*, int)
+	QLayout::setAlignment(QWidget*, Qt::Alignment)
+	QLayout::setAlignment(QLayout*, Qt::Alignment)
+
 
     QVBoxLayout::ctor()
     QHBoxLayout::ctor()
@@ -68,6 +72,13 @@
 	QWidget::setFocusPolicy(Qt::FocusPolicy)
 	QWidget::activateWindow()
 	QWidget::isActiveWindow()
+	
+	QWidget::height()
+	QWidget::width()
+	
+	# For test
+	 QWidget::render(QPaintDevice*, const QPoint&, const QRegion&, RenderFlags)
+	# QWidget::grab(const QRect&)
 
     QPoint::ctor()
     QPoint::ctor(int, int)
@@ -87,6 +98,8 @@
 	QPointF::setY(qreal)
 	QPointF::x()
 	QPointF::y()
+	
+	QRegion::ctor()
 
 	QMouseEvent::x()
 	QMouseEvent::y()
@@ -118,12 +131,17 @@
 	QImage::fill(const QColor&)
 	QImage::height()
 	QImage::width()
-
+	QImage::pixelColor(int, int)
+	
 	QColor::ctor(Qt::GlobalColor)
 	QColor::ctor(int, int, int, int)
 
 	# QColor::ctor(char*)   # Doesn't work !   Why ???
 
+	QColor::red();
+	QColor::green();
+	QColor::blue();
+	QColor::alpha();
 
 	QPainter::ctor()
 	QPainter::ctor(QPaintDevice*)

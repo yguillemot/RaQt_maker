@@ -205,6 +205,11 @@ sub MAIN ( #| C++ filtered header to read
         cpp_generator($api, %excpt, %cb, $keepMarks);
 
         doc_generator(:$api, exceptions => %excpt);
+        
+        # TEST ONLY
+        use gene::test_str;
+        say '###';
+        test_str(api => $api, exceptions => %excpt);
     }
     
     
@@ -236,6 +241,6 @@ sub MAIN ( #| C++ filtered header to read
 #     }
 #     my Str $virtuals = [~] @out.sort <<~>> "\n";
 #     spurt "virtuals.txt", $virtuals;
-    
+
 
 } # End of sub MAIN

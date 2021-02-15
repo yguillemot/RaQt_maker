@@ -6,7 +6,7 @@ use gene::common;
 # Create C++ instructions converting a variable from a C Raku native type
 # to a C++ Qt compatible type
 
-# Parameters :
+# Parameters (all are Str, except subType which is SubType)
 #  1 - $where = Name of class which contains the method where the precall
 #               conversion line is inserted
 #  2 - $tot = Type of type of the argument ("CLASS", "NATIVE", "ENUM", etc...)
@@ -73,11 +73,11 @@ multi precall(  $where, "ENUM",
 
 multi precall(  $where, "COMPOSITE",
                 $stype, "", $src,
-                $dtype, "", $dst
+                $dtype is copy, "", $dst
     --> Str) is export
 {
-    # Conversion from integer to QFlags<enum> using the QFlags ctor
-    "$dtype $dst = $dtype\($src\);"
+    die "Can't find any precall conversion for COMPOSITE\n"
+            ~ "from $where, $stype, $src to $dtype, $dst";
 }
 
 multi precall(  $where, $tot,
@@ -134,6 +134,23 @@ multi postcall( $where, "CLASS",
     --> Str) is export
 {
     "void * $dst = const_cast<void *>(reinterpret_cast<const void *>(& $src));"
+}
+
+multi postcall( $where, "CLASS",
+                $class, '', $const, $src,
+                "void", "*", $dst 
+    --> Str) is export
+{
+    # This should be an object build on the stack
+    # Assuming the existence of a copy constructor, the original
+    # object is copied on the heap.
+    "$class * x$dst = new $class\($src\);\n" ~
+    "void * $dst = reinterpret_cast<void *>(x$dst);"
+    # WARNING: "$ownedByRaku=True" must be set to True using parameter "obr"
+    # of &ctor when the Raku associated object is created.
+
+    # QColor.new in the related Raku method.
+    # (see &postcall_raku in ToRakuConversions.rakumod)
 }
 
 multi postcall( $where, "NATIVE",

@@ -29,6 +29,9 @@ multi sub ctor(RaQtBase $this, QPaintDevice $arg1) {
     }
 
     given $arg1.qtType {
+        when RaQt::QLabel {
+            $this.address = QWQPainterCtor_QWidget($arg1.addres);
+        }
         when RaQt::QWidget {
             $this.address = QWQPainterCtor_QWidget($arg1.addres);
         }
