@@ -20,9 +20,9 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                     Bool:$km = False) is export
 {
 
-    my Str $mainTemplateFileName = "gene/templates/RaQt.rakumod.template";
-    my Str $helpersTemplateFileName = "gene/templates/RaQtHelpers.rakumod.template";
-    my Str $nativesTemplateFileName = "gene/templates/RaQtWrappers.rakumod.template";
+    my Str $mainTemplateFileName = "gene/templates/QtWidgets.rakumod.template";
+    my Str $helpersTemplateFileName = "gene/templates/QtHelpers.rakumod.template";
+    my Str $nativesTemplateFileName = "gene/templates/QtWrappers.rakumod.template";
     my %c = $api.qclasses;
 
     ###############################################################################
@@ -223,7 +223,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             # Note : Pointer type must be "NativeCall::Types::Pointer".
             # Sub isn't called if type "Pointer" is only specified...
             #
-            $outm ~= IND ~ 'multi sub ctor(RaQtBase $this, '
+            $outm ~= IND ~ 'multi sub ctor(QtBase $this, '
                                 ~ 'NativeCall::Types::Pointer $p, '
                                 ~ 'Bool :$obr = False) {' ~ "\n";
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
@@ -234,7 +234,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
             # Default Subroutine ctor
             $outm ~= IND ~ 'multi sub ctor(|capture) {' ~ "\n";
-            $outm ~= IND x 2 ~ 'note "RaQt ", ::?CLASS.^name,' ~ "\n";
+            $outm ~= IND x 2 ~ 'note "QtWidgets ", ::?CLASS.^name,' ~ "\n";
             $outm ~= IND x 2 ~ '     " ctor called with unsupported args";' ~ "\n";
             $outm ~= IND x 2 ~ 'die "Bad args";' ~ "\n";
             $outm ~= IND ~ "}\n";
@@ -250,7 +250,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 ### QOBJS ONLY : START
             # Default Subroutine subclass ctor
             $outm ~= IND ~ 'multi sub subClassCtor(|capture) {' ~ "\n";
-            $outm ~= IND x 2 ~ 'note "RaQt subclass ", ::?CLASS.^name,' ~ "\n";
+            $outm ~= IND x 2 ~ 'note "QtWidgets subclass ", ::?CLASS.^name,' ~ "\n";
             $outm ~= IND x 2 ~ '     " ctor called with unsupported args";' ~ "\n";
             $outm ~= IND x 2 ~ 'die "Bad args";' ~ "\n";
             $outm ~= IND ~ "}\n";
@@ -501,7 +501,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             $haveParents = True;
         }
         if !$haveParents {
-            $outm ~= " is RaQtBase";
+            $outm ~= " is QtBase";
         }
 
         $outm ~= " is export \{\n";                     # Start of class block
@@ -568,7 +568,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             # Note : Pointer type must be "NativeCall::Types::Pointer".
             # Sub isn't called if type "Pointer" is only specified...
             #
-            $outm ~= IND ~ 'multi sub ctor(RaQtBase $this, '
+            $outm ~= IND ~ 'multi sub ctor(QtBase $this, '
                                 ~ 'NativeCall::Types::Pointer $p, '
                                 ~ 'Bool :$obr = False) {' ~ "\n";
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
@@ -579,7 +579,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
             # Default subroutine ctor
             $outm ~= IND ~ 'multi sub ctor(|capture) {' ~ "\n";
-            $outm ~= IND x 2 ~ 'note "RaQt ", ::?CLASS.^name,' ~ "\n";
+            $outm ~= IND x 2 ~ 'note "QtWidgets ", ::?CLASS.^name,' ~ "\n";
             $outm ~= IND x 2 ~ '     " ctor called with unsupported args";' ~ "\n";
             $outm ~= IND x 2 ~ 'die "Bad args";' ~ "\n";
             $outm ~= IND ~ "}\n";
@@ -596,7 +596,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             # Add the new submethod creating a Raku object from an existent Qt one
             # Note : Pointer type must be "NativeCall::Types::Pointer".
             # Sub isn't called if type "Pointer" is only specified...
-            $outm ~= IND ~ 'multi sub ctor(RaQtBase $this, '
+            $outm ~= IND ~ 'multi sub ctor(QtBase $this, '
                                 ~ 'NativeCall::Types::Pointer $p) {' ~ "\n";
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";

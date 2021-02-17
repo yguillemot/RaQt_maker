@@ -16,7 +16,7 @@ use gene::addHeader;
 sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
 {
 
-    my Str $templateFileName = "gene/templates/RaQtWrapper.cpp.template";
+    my Str $templateFileName = "gene/templates/QtWidgetsWrapper.cpp.template";
     my %c = $api.qclasses;
 
     say "Generate the .cpp file : start";

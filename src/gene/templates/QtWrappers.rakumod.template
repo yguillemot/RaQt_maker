@@ -1,8 +1,8 @@
-unit module RaQtWrappers;
+unit module QtWrappers;
 
 
 use NativeCall;
-use Qt::RaQt::RaQtHelpers;
+use Qt::QtWidgets::QtHelpers;
 
 #BEGIN_INSERTION_HERE
 #LIST_OF_QT_CLASSES_NATIVE_WRAPPERS

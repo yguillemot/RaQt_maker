@@ -28,13 +28,13 @@ method begin(QPaintDevice $arg1 --> Bool) {
     }
 
     given $arg1.qtType {
-        when "RaQt::QLabel"  {
+        when "QtWidgets::QLabel"  {
             return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
         }
-        when "RaQt::QWidget"  {
+        when "QtWidgets::QWidget"  {
             return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
         }
-        when "RaQt::QImage" {
+        when "QtWidgets::QImage" {
             return ?QWQPainterbegin_QImage(self.address, $arg1.address);
         }
         default {

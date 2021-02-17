@@ -5,8 +5,8 @@ our constant $geneVersion = "0.0.1";
 
 # Version of the produced code
 ### our constant RAQTNAME = "RaQt::QtWidgets";
-our constant RAQTNAME = "RaQt";        ### ATTENTION : UTILISE DANS LE CODE
-our constant RAQTVERSION = "0.0.0";
+our constant RAQTNAME = "QtWidgets";        ### BEWARE : Used in the code
+our constant RAQTVERSION = "0.0.1";
 
 # Source repository
 our constant $repository = "https://github.com/yguillemot/RaQt_maker.git";
@@ -26,14 +26,14 @@ our constant $oColorlessList = "ColorlessList.output";
 
 
 # Names of the target files
-our constant $hFile = "RaQtWrapper.h";
-our constant $hppFile = "RaQtWrapper.hpp";
-our constant $cppFile = "RaQtWrapper.cpp";
+our constant $hFile = "QtWidgetsWrapper.h";
+our constant $hppFile = "QtWidgetsWrapper.hpp";
+our constant $cppFile = "QtWidgetsWrapper.cpp";
 our constant $LibDirectory = "Qt";
-our constant $LibSubDirectory = "Qt/RaQt";
-our constant $mainRakuFile = "RaQt.rakumod";
-our constant $helpersRakuFile = "RaQtHelpers.rakumod";
-our constant $wrappersRakuFile = "RaQtWrappers.rakumod";
+our constant $LibSubDirectory = "Qt/QtWidgets";
+our constant $mainRakuFile = "QtWidgets.rakumod";
+our constant $helpersRakuFile = "QtHelpers.rakumod";
+our constant $wrappersRakuFile = "QtWrappers.rakumod";
 our constant TITLEFILE = "Title.md";
 our constant DOCFILE = "Classes.md";
 

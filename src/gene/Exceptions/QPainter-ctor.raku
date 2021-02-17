@@ -22,20 +22,20 @@ some indentation.
 
 BEGIN
 
-multi sub ctor(RaQtBase $this, QPaintDevice $arg1) {
+multi sub ctor(QtBase $this, QPaintDevice $arg1) {
     if !$arg1 {
         ctor($this);
         return;
     }
 
     given $arg1.qtType {
-        when RaQt::QLabel {
+        when QtWidgets::QLabel {
             $this.address = QWQPainterCtor_QWidget($arg1.addres);
         }
-        when RaQt::QWidget {
+        when QtWidgets::QWidget {
             $this.address = QWQPainterCtor_QWidget($arg1.addres);
         }
-        when RaQt::QImage {
+        when QtWidgets::QImage {
             $this.address = QWQPainterCtor_QImage($arg1.addres);
         }
         default {

@@ -14,7 +14,7 @@ use gene::addHeader;
 # $km : The keepMarkers flag (see the replace module)
 sub h_generator(API $api, %exceptions, %callbacks, $km = False) is export
 {
-    my Str $templateFileName = "gene/templates/RaQtWrapper.h.template";
+    my Str $templateFileName = "gene/templates/QtWidgetsWrapper.h.template";
     my %c = $api.qclasses;
 
     say "Generate the .h file : start";

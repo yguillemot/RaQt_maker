@@ -1,11 +1,11 @@
-unit module RaQt;
+unit module QtWidgets;
 
-# TODO : Est-ce que l'Id donné aux objets RaQtObject est utile ?
+# TODO : Est-ce que l'Id donné aux objets QtObject est utile ?
 #        Pourquoi ne pas utiliser le pointeur vers l'objet C++ du wrapper ?
 
 use NativeCall;
-use Qt::RaQt::RaQtHelpers;
-use Qt::RaQt::RaQtWrappers;
+use Qt::QtWidgets::QtHelpers;
+use Qt::QtWidgets::QtWrappers;
 
 our %signals;    # className -> @[SigSlot( "signal(signature)", isSimpleSig )]
 our %slots;
@@ -35,7 +35,7 @@ BEGIN {
 
 
 
-# BEWARE : For some reason, class RaQtSigsloty is compiled BEFORE other classes
+# BEWARE : For some reason, class Sigsloty is compiled BEFORE other classes
 #          May be the cause is the import instruction?
 
 
@@ -50,7 +50,7 @@ my ConnectionsManager $CM;   # Where global values are stored
 
 
 # This class is parent of everything
-class RaQtBase {
+class QtBase {
 
     has Pointer $.address is rw;
     has Bool $.ownedByRaku is rw;
@@ -99,7 +99,7 @@ sub QWQtEventSpontaneous(Pointer)
         returns int8 is native(&libwrapper) { * }
 
 
-class QtEvent is RaQtBase is export {
+class QtEvent is QtBase is export {
 
     method ctor {
         # say "ctor : ", self.ctorArgs;
@@ -233,7 +233,7 @@ class QtMouseEvent is QtEvent is export {
 
 # Store a pointer to some related object in Qt library and manage
 # the signals and slots
-class RaQtSigsloty is RaQtBase is export {
+class Sigsloty is QtBase is export {
 
 #     say 'INIT @signals';
 
@@ -414,10 +414,10 @@ sub showSigsSlots is export {
 
 
 
-import RaQtSigsloty;
+import Sigsloty;
 
 # Object with a related object in Qt library
-class RaQtObject is RaQtSigsloty is export {
+class QtObject is Sigsloty is export {
 
     has int32 $.id;
 
@@ -632,7 +632,7 @@ class ConnectionsManager {
     }
 
 
-    method addObj(RaQtObject $obj) returns Int {
+    method addObj(QtObject $obj) returns Int {
         %!objs{++$lastConnId} = $obj;
         return $lastConnId;
     }
@@ -680,7 +680,7 @@ class ConnectionsManager {
 
 ATTTENTION : Ce qui est ecrit plus bas n'est plus exact :
      Une classe ConnectorR (C++ seulement) est maintenant créée pour
-     chacun des slots définis au moment de l'instantiation d'une classe RaQtObject.
+     chacun des slots définis au moment de l'instantiation d'une classe QtObject.
 
 
 
@@ -726,7 +726,7 @@ sub QWConnectorEDTOR(Pointer)
 
 
 
-sub connect(RaQtSigsloty $src, $sigName, RaQtSigsloty $dst, $slotName)
+sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
         is export
 {
     my Bool $simple;  # True if signature is "simple"
@@ -983,7 +983,7 @@ sub slotCallbackComplexSig(int32 $objectId, Str $slotName, int32 $dataId)
 # Start of code for QObject
 # QObject is processed as a special case
 
-class QObject is RaQtObject is export {
+class QObject is QtObject is export {
     method ctor { ... }
 #     submethod TWEAK {
 #         say ::?CLASS, " TWEAK";

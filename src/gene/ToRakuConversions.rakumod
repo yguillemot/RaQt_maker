@@ -70,7 +70,7 @@ sub strRakuArgsDecl(Function $f, %qClasses --> Str) is export
 # Return arguments string of the ctor method declaration
 sub strArgsRakuCtorDecl(Function $f, %qClasses --> Str) is export
 {
-    my $o = '(RaQtBase $this';
+    my $o = '(QtBase $this';
     my $sep = ", ";
     for $f.arguments -> $a {
         $o ~= $sep ~ rType($a) ~ ' $' ~ $a.fname;
@@ -113,7 +113,7 @@ sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
 # default value, either a list of three elements: the type, name and default
 # value of this argument.
 # This list is intended to be used as an argument of the createSignature sub
-# called at RaQt compile time.
+# called at compile time.
 sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
 {
     my Str $o = "(";

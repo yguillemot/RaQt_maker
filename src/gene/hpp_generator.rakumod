@@ -19,7 +19,7 @@ my %callbacks = ();         # Should be defined in RaQt_maker.pm6
 sub hpp_generator(API $api, %exceptions, $km = False --> Hash) is export
 {
 
-    my Str $templateFileName = "gene/templates/RaQtWrapper.hpp.template";
+    my Str $templateFileName = "gene/templates/QtWidgetsWrapper.hpp.template";
     my %c = $api.qclasses;
 
     say "Generate the .hpp file : start";
