@@ -28,21 +28,20 @@ multi sub ctor(QtBase $this, QPaintDevice $arg1) {
         return;
     }
 
-    given $arg1.qtType {
-        when QtWidgets::QLabel {
+    given $arg1 {
+        when QLabel {
             $this.address = QWQPainterCtor_QWidget($arg1.addres);
         }
-        when QtWidgets::QWidget {
+        when QWidget {
             $this.address = QWQPainterCtor_QWidget($arg1.addres);
         }
-        when QtWidgets::QImage {
+        when QImage {
             $this.address = QWQPainterCtor_QImage($arg1.addres);
         }
         default {
-            die "QPainter({$arg1.qtType} is unsupported";
+            die "QPainter({$arg1.WHAT} is unsupported";
         }
     }
 
     $this.ownedByRaku = True;
-    $this.qtType = ::?CLASS.^name;
 }

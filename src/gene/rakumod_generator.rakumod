@@ -161,7 +161,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                     $outm ~= IND x 2 ~ '$this.address = '
                                 ~ "$wclassname$suffixCtor$ctorNum$o;" ~ "\n";
                     $outm ~= IND x 2 ~ '$this.ownedByRaku = True;' ~ "\n";
-                    $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
                     $outm ~= IND ~ "}\n";
 
                     # For documentation
@@ -187,7 +186,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                     $outm ~= IND x 2 ~ '$this.address = '
                                 ~ "$wsclassname$suffixCtor$ctorNum$o;" ~ "\n";
                     $outm ~= IND x 2 ~ '$this.ownedByRaku = True;' ~ "\n";
-                    $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
                     $outm ~= IND ~ "}\n";
 
         # TODO???: Move this code after the loop rather than to use "next"
@@ -229,7 +227,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";
             $outm ~= IND x 2 ~ '$this.ownedByRaku = $obr;' ~ "\n";
-            $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
             $outm ~= IND ~ '}' ~ "\n";
 
             # Default Subroutine ctor
@@ -551,7 +548,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                     $outm ~= IND x 2 ~ '$this.address = '
                                     ~ "$wclassname$suffixCtor$ctorNum$o;" ~ "\n";
                     $outm ~= IND x 2 ~ '$this.ownedByRaku = True;' ~ "\n";
-                    $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
                     $outm ~= IND ~ "}\n";
                 }
             }
@@ -574,7 +570,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";
             $outm ~= IND x 2 ~ '$this.ownedByRaku = $obr;' ~ "\n";
-            $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
             $outm ~= IND ~ '}' ~ "\n";
 
             # Default subroutine ctor
@@ -601,7 +596,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
             $outm ~= IND x 2 ~ '# Get access to a preexisting Qt object' ~ "\n";
             $outm ~= IND x 2 ~ '$this.address = $p;' ~ "\n";
             $outm ~= IND x 2 ~ '$this.ownedByRaku = False;' ~ "\n";
-            $outm ~= IND x 2 ~ '$this.qtType = ::?CLASS.^name;' ~ "\n";
             $outm ~= IND ~ '}' ~ "\n";
 
             # Default Subroutine ctor

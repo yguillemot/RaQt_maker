@@ -27,19 +27,19 @@ method begin(QPaintDevice $arg1 --> Bool) {
         return ?QWQPainterbegin_null(self.address);
     }
 
-    given $arg1.qtType {
-        when "QtWidgets::QLabel"  {
+    given $arg1 {
+        when QLabel  {
             return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
         }
-        when "QtWidgets::QWidget"  {
+        when QWidget  {
             return ?QWQPainterbegin_QWidget(self.address, $arg1.address);
         }
-        when "QtWidgets::QImage" {
+        when QImage {
             return ?QWQPainterbegin_QImage(self.address, $arg1.address);
         }
         default {
-            note "QPainter::begin : arg type {$arg1.qtType} is unsupported";
-            die "QPainter({$arg1.qtType}) is unsupported";
+            note "QPainter::begin : arg type {$arg1.WHAT} is unsupported";
+            die "QPainter({$arg1.WHAT}) is unsupported";
         }
     }
 }

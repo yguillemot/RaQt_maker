@@ -54,7 +54,6 @@ class QtBase {
 
     has Pointer $.address is rw;
     has Bool $.ownedByRaku is rw;
-    has Str $.qtType is rw;
 
     method validateCallBacks()
     {
