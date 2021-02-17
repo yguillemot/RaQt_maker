@@ -206,10 +206,10 @@ sub MAIN ( #| C++ filtered header to read
 
         doc_generator(:$api, exceptions => %excpt);
         
-        # TEST ONLY
-        use gene::test_str;
-        say '###';
-        test_str(api => $api, exceptions => %excpt);
+#         # TEST ONLY
+#         use gene::test_str;
+#         say '###';
+#         test_str(api => $api, exceptions => %excpt);
     }
     
     
