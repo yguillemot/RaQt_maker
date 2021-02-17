@@ -5,3 +5,22 @@
 .precomp
 lib/.precomp
 
+# input data
+data/main.E
+
+# output data
+src/.qmake.stash
+Makefile
+src/*.output
+src/Qt/*
+src/*.cpp
+src/*.hpp
+src/*.h
+src/*.o
+src/*.so*
+src/*.txt
+src/*.lst
+src/*.md
+
+
+
