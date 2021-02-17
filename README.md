@@ -174,12 +174,12 @@ STEP 6: Generate the code (Raku and C++)
 `raku RaQt_maker.raku --strict --generate api_description.txt`
 
 The following files should be generated:  
-- RaQtWrapper.hpp  
-- RaQtWrapper.h  
-- RaQtWrapper.cpp  
-- Qt/RaQt.rakumod  
-- Qt/RaQt/RaQtHelpers.rakumod  
-- Qt/RaQt/RaQtWrappers.rakumod  
+- QtWidgetsWrapper.hpp  
+- QtWidgetsWrapper.h  
+- QtWidgetsWrapper.cpp  
+- Qt/QtWidgets.rakumod  
+- Qt/QtWidgets/QtHelpers.rakumod  
+- Qt/QtWidgets/QtWrappers.rakumod  
 - Title.md  
 - Classes.md
 
@@ -200,18 +200,20 @@ The file libRaQtWrapper.so should be created.
 These tests will pass only if the needed classes and methods have been
 generated in the previous steps.
 
-`raku tests/test1.t`  
-`raku tests/QEvent.t`  
-`raku tests/QPoint.t`  
-`raku tests/QPointF.t`  
+`raku tests/10-QEvent.t`  
+`raku tests/20-QPoint.t`  
+`raku tests/30-QPointF.t`  
+`raku tests/40-connect.t`  
+`raku tests/50-QPushButton.t`  
+`raku tests/60-QBoxLayout.t`  
 
 7.4 - Run some examples:  
 These examples will work only if the needed classes and methods have been
 generated in the previous steps.
 
-`raku example/clock.raku`  
-`raku example/2deg_eqn_solver.raku`  
-`raku example/sketch_board.raku`  
+`raku examples/clock.raku`  
+`raku examples/2deg_eqn_solver.raku`  
+`raku examples/sketch_board.raku`  
 
 7.5 - Copy the .rakumod and .so files produced to their target places.
 
@@ -292,12 +294,12 @@ loop in the previous step.
 `raku RaQt_maker.raku --strict --generate api_description.txt`
 
 The following files should be (or already have benn) generated:  
-- RaQtWrapper.hpp  
-- RaQtWrapper.h  
-- RaQtWrapper.cpp  
-- Qt/RaQt.rakumod  
-- Qt/RaQt/RaQtHelpers.rakumod  
-- Qt/RaQt/RaQtWrappers.rakumod  
+- QtWidgetsWrapper.hpp  
+- QtWidgetsWrapper.h  
+- QtWidgetsWrapper.cpp  
+- Qt/QtWidgets.rakumod  
+- Qt/QtWidgets/QtHelpers.rakumod  
+- Qt/QtWidgets/QtWrappers.rakumod  
 - Title.md  
 - Classes.md
 
@@ -308,7 +310,7 @@ STEP 7: Test and use the generated code
 `qmake`  
 `make`
 
-The file libRaQtWrapper.so should be created.
+The file libQtWidgetsWrapper.so should be created.
 
 7.2 - Setup the environment:  
 `export LD_LIBRARY_PATH=.`  
@@ -318,18 +320,23 @@ The file libRaQtWrapper.so should be created.
 These tests will pass only if the needed classes and methods have been
 generated in the previous steps.
 
-`raku tests/test1.t`  
-`raku tests/QEvent.t`  
-`raku tests/QPoint.t`  
-`raku tests/QPointF.t`  
+`raku tests/10-QEvent.t`  
+`raku tests/20-QPoint.t`  
+`raku tests/30-QPointF.t`  
+`raku tests/40-connect.t`  
+`raku tests/50-QPushButton.t`  
+`raku tests/60-QBoxLayout.t`  
+
+If you have added some new classes/methods, you should have add some new tests.
+These new tests should be run now.
 
 7.4 - Run some examples:  
 These examples will work only if the needed classes and methods have been
 generated in the previous steps.
 
-`raku example/clock.raku`  
-`raku example/2deg_eqn_solver.raku`  
-`raku example/sketch_board.raku`  
+`raku examples/clock.raku`  
+`raku examples/2deg_eqn_solver.raku`  
+`raku examples/sketch_board.raku`  
 
 7.5 - Copy the .rakumod and .so files produced to their target places.
 
