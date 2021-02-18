@@ -46,7 +46,9 @@ BEGIN {
 #END_INSERTION_HERE
 
 class ConnectionsManager { ... };
+class QApplication { ... };
 my ConnectionsManager $CM;   # Where global values are stored
+my QApplication $QA;         
 
 
 # This class is parent of everything
@@ -1341,27 +1343,58 @@ sub QWApplicationExec(Pointer) returns int32 is native(&libwrapper) { * }
 class QApplication is QCoreApplication is export {
 
     # WARNING : Subclassing QApplication is currently unsupported
-    BEGIN {
-        $CM = ConnectionsManager.new if !$CM;
+
+    multi sub ctor(QtBase $this) {
+        # Method new has no arg : use command line ones
+        $this.address = callCtor($*PROGRAM-NAME, @*ARGS);
+        $this.ownedByRaku = True;
     }
 
-    submethod BUILD(:@args = ()) {
+    multi sub ctor(QtBase $this, Str $progName, @args) {
+        # Use args given by the user
+        $this.address = callCtor($progName, @args);
+        $this.ownedByRaku = True;
+    }
 
-#         say "BUILD ", ::?CLASS.^name;
-
+    multi sub ctor(|capture) {
+        note "QApplication.new called with unsupported args";
+        die "Bad args";
+    }
+    
+    sub callCtor(Str $name, @args --> NativeCall::Types::Pointer) {
+    
         # Reconstruction of C main arguments : (int argc, char **argv)
+        # from $ame (argv[0]) and @args (the list of others argv[])
         my $argv = CArray[Str].new;
-        $argv[0] = $*PROGRAM-NAME;
+        $argv[0] = $name;
         my $argc = 1;
         for @args -> $x {
             $argv[$argc++] = $x;
         }
+        
+        # Call QApplication ctor
+        return QWApplicationCtor($argc, $argv);
+    }
 
-        self.address = QWApplicationCtor($argc, $argv);
-        self.ownedByRaku = True;
-#         say "QApplication ctor : args = ", $argv;
+    submethod new(|capture) {
+        if $QA {
+            die "QApplication can't have more than one instance";
+        } else {
+            setupEverything;
+            my QApplication $rObj = self.bless;
+            $QA = $rObj;
+            ctor($rObj, |capture);
+            return $rObj;
+        }
+    }
 
 
+    sub setupEverything {
+    
+        # Start the connections manager if needed
+        $CM = ConnectionsManager.new if !$CM;
+
+        # Register the addresses of the callbacks
         QWSetupSlotCallback(&slotCallback);
         QWSetupSlotCallbackInt(&slotCallbackInt);
         QWSetupSlotCallbackInt2(&slotCallbackInt2);
@@ -1373,28 +1406,15 @@ class QApplication is QCoreApplication is export {
 # TODO        QWSetupSlotCallbackQEvent(&slotCallbackQEvent);
         QWSetupSlotCallbackComplexSig(&slotCallbackComplexSig);
 
-        #BEGIN_INSERTION_HERE
-        #INIT_CALLBACKS_POINTERS
-
-        #END_INSERTION_HERE
-
+        QWSetupSlotCallbackQEvent(&slotCallbackQEvent);
+        QWSetupSlotCallbackQMouseEvent(&slotCallbackQMouseEvent);
+        QWSetupSlotCallbackQPaintEvent(&slotCallbackQPaintEvent);
     }
 
     method exec {
-
-        # Pour debug
-#         say "XYZ " x 19;
-#         for %slots.kv -> $k, $v {
-#             say $k;
-#             say "\t", $v;
-#         }
-
-
         return QWApplicationExec($.address);
     }
 
-    # Should be defined in QCoreApplication
-    # method quit is QtSlot { ... }
 }
 
 # End of code for QApplication

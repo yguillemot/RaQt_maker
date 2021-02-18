@@ -8,7 +8,7 @@ use Qt::QtWidgets;
 # Objects creation
 
 # Create the application object first
-my $qApp = QApplication.new(args => @*ARGS);
+my $qApp = QApplication.new;
 
 # Create buttons
 my $quitButton = QPushButton.new('&Quit');

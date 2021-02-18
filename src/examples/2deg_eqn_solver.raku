@@ -7,7 +7,7 @@ use Qt::QtWidgets;
 # Objects creation
 
 # Create the application object first
-my $qApp = QApplication.new(args => @*ARGS);
+my $qApp = QApplication.new;
 
 
 # Create labels end editable fields
