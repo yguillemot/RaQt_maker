@@ -422,7 +422,7 @@ class QtObject is Sigsloty is export {
 
     has int32 $.id;
 
-    # Pointers to connectors : for local classes only
+    # Pointers to C++ objects "connectors" : for local classes only
     has %.emitters;
     has %.receivers;
 
@@ -579,16 +579,30 @@ sub QWconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
 
 class ConnectionsManager {
 
+    # key = connection_Id
+    # value = reference to the object
     has %.objs is rw;
-
-    has %!sigConn;          # key = srcObjId ~ signalName ~ signalSignature
-                            # value = How many times a signal is connected
-
-    has %!sigData;
-
     my $lastConnId = 0;
+    has Semaphore $!objLock;
+
+    # key = srcObjId ~ signalName ~ signalSignature
+    # value = How many times a signal is connected
+    has %!sigConn;          
+    has Semaphore $!sigLock;
+
+    # key = event id
+    # value = data object (data, count)
+    has %!sigData;
+    has Semaphore $!dataLock;
+
 
     my $lastEventId = 0;
+    
+    submethod TWEAK {
+        $!objLock = Semaphore.new(1);
+        $!sigLock = Semaphore.new(1);
+        $!dataLock = Semaphore.new(1);
+    }
 
     method dump {
         say "CM OBJS :";
@@ -608,33 +622,55 @@ class ConnectionsManager {
 
     method addSignalConnection($signalKey)
     {
-        if %!sigConn{$signalKey}:exists {
-            %!sigConn{$signalKey}++;
-        } else {
-            %!sigConn{$signalKey} = 1;
-       }
+        $!sigLock.acquire;
+            if %!sigConn{$signalKey}:exists {
+                %!sigConn{$signalKey}++;
+            } else {
+                %!sigConn{$signalKey} = 1;
+            }
+        $!sigLock.release;
     }
 
     method rmSignalConnection($signalKey)
     {
-        if %!sigConn{$signalKey}:exists && %!sigConn{$signalKey} != 0 {
-            %!sigConn{$signalKey}--;
-        } else {
-            note "Can't remove \"", $signalKey, "\" unexistent connection";
-       }
+        $!sigLock.acquire;
+            if %!sigConn{$signalKey}:exists && %!sigConn{$signalKey} != 0 {
+                %!sigConn{$signalKey}--;
+            } else {
+                note "Can't remove non-existent connection \"",
+                                                        $signalKey, "\" ";
+            }
+        $!sigLock.release;
     }
 
     method signalConnections($signalKey) returns Int {
-        if %!sigConn{$signalKey}:exists {
-            return %!sigConn{$signalKey};
-        } else {
-            return 0;
-       }
+        my $val;
+        $!sigLock.acquire;
+            if %!sigConn{$signalKey}:exists {
+                $val = %!sigConn{$signalKey};
+            } else {
+                $val = 0;
+            }
+        $!sigLock.release;
+        return $val;
     }
 
 
+    # TODO : $obj are added, but never removed !!!!!!!
     method addObj(QtObject $obj) returns Int {
-        %!objs{++$lastConnId} = $obj;
+        $!objLock.acquire;
+            %!objs{++$lastConnId} = $obj;
+        $!objLock.release;
+        return $lastConnId;
+    }
+    
+    # TODO : This method should be called in the DESTROY submethods ! TODO
+    method removeObj(Int $id) {
+        $!objLock.acquire;
+            if %!objs{$id}:exists {
+                %!objs{$id}:delete;
+            }
+        $!objLock.release;
         return $lastConnId;
     }
 
@@ -648,32 +684,34 @@ class ConnectionsManager {
 
     method addData (Capture $data, Int $count) returns Int
     {
-        my $id = ++$lastEventId;
-#    say "YG add id=$id c=$count";
-        %!sigData{$id} = Data.new(data => $data, count => $count);
+        $!dataLock.acquire;
+            my $id = ++$lastEventId;
+            %!sigData{$id} = Data.new(data => $data, count => $count);
+        $!dataLock.release;
         return $id;
     }
 
     method getData(Int $id) # returns (Capture, Bool) # HOW TO DECLARE IT ???
     {
-#     say "YG get START";
-        if %!sigData{$id}:exists {
-            my Int $c = %!sigData{$id}.count;
-            my Capture $d = %!sigData{$id}.data;
-            $c--;
-            if $c {
-                %!sigData{$id}.count = $c;
+        my @r;
+        $!dataLock.acquire;
+            if %!sigData{$id}:exists {
+                my Int $c = %!sigData{$id}.count;
+                my Capture $d = %!sigData{$id}.data;
+                $c--;
+                if $c {
+                    %!sigData{$id}.count = $c;
+                } else {
+                    %!sigData{$id}:delete;
+                }
+                @r = ($d, True);
             } else {
-                %!sigData{$id}:delete;
+                @r = (Nil, False);
             }
-#     say "YG get id=$id c=$c";
-            return ($d, True);
-        } else {
-            return (Nil, False);
-        }
+        $!dataLock.release;
+        return @r;
     }
 }
-
 
 
 
