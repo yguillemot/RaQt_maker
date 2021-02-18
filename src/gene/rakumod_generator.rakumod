@@ -375,11 +375,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
                 if $returnSomething {
                     my $rt = $m.returnType;
-                    say "POSTCALL_RAKU $k: (", '$result', ", {$rt.ftot}, ",
-                                        "{qType($rt)}, {qPostop($rt)}, ",
-                                        '$result1', ", {rType($rt)})";
-                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $qPostop,
-                    ###                 Str $dst, Str $rakuTypeName --> Str)
                     my $poc = postcall_raku('$result', $rt.ftot,
                                                                 qPostop($rt),
                                             '$result1', rType($rt));                    if $poc {
@@ -686,11 +681,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
 
                 if $returnSomething {
                     my $rt = $m.returnType;
-                    say "POSTCALL_RAKU $k: (", '$result', ", {$rt.ftot}, ",
-                                        "{qType($rt)}, {qPostop($rt)}, ",
-                                        '$result1', ", {rType($rt)})";
-                    ### POSTCALL_RAKU(Str $src, Str $tot, Str $qPostop,
-                    ###                 Str $dst, Str $rakuTypeName --> Str)
                     my $poc = postcall_raku('$result', $rt.ftot,
                                                                 qPostop($rt),
                                             '$result1', rType($rt));

@@ -175,10 +175,7 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                         $out ~= IND ~ $pc ~ "\n" if $pc ne "";
                     }
                 }
-                if $retType ne "void" {
-                    say "POSTCALL($k, {$rt.ftot}/",
-                                     " {qType($rt)}, {qPostop($rt)}, {$rt.const}, ", "retVal, ",
-                                      "{cType($rt)}, {cPostop($rt)}, xretVal)"; 
+                if $retType ne "void" { 
                     my $pc = postcall($k, $rt.ftot,
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");
@@ -323,10 +320,7 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                         $outSubapi ~= IND ~ $pc ~ "\n" if $pc ne "";
                     }
                 }
-                if $retType ne "void" {
-                    say "POSTCALL($k, {$rt.ftot}/",
-                                     " {qType($rt)}, {qPostop($rt)}, {$rt.const}, ", "retVal, ",
-                                      "{cType($rt)}, {cPostop($rt)}, xretVal)"; 
+                if $retType ne "void" { 
                     my $pc = postcall($k, $rt.ftot,
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");
