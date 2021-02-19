@@ -1382,36 +1382,26 @@ class QApplication is QCoreApplication is export {
 
     # WARNING : Subclassing QApplication is currently unsupported
 
-    multi sub ctor(QtBase $this) {
-        # Method new has no arg : use command line ones
-        $this.address = callCtor($*PROGRAM-NAME, @*ARGS);
-        $this.ownedByRaku = True;
-    }
-
-    multi sub ctor(QtBase $this, Str $progName, @args) {
-        # Use args given by the user
-        $this.address = callCtor($progName, @args);
+    multi sub ctor(QtBase $this, 
+                    Str $progName = $*PROGRAM-NAME, @args = @*ARGS) {
+                    
+        # Reconstruction of C main arguments : (int argc, char **argv)
+        # from $progName (argv[0]) and @args (the list of others argv[])
+        my $argv = CArray[Str].new;
+        $argv[0] = $progName;
+        my $argc = 1;
+        for @args -> $x {
+            $argv[$argc++] = $x;
+        }
+                    
+        # Call QApplication ctor
+        $this.address = QWApplicationCtor($argc, $argv);
         $this.ownedByRaku = True;
     }
 
     multi sub ctor(|capture) {
         note "QApplication.new called with unsupported args";
         die "Bad args";
-    }
-    
-    sub callCtor(Str $name, @args --> NativeCall::Types::Pointer) {
-    
-        # Reconstruction of C main arguments : (int argc, char **argv)
-        # from $ame (argv[0]) and @args (the list of others argv[])
-        my $argv = CArray[Str].new;
-        $argv[0] = $name;
-        my $argc = 1;
-        for @args -> $x {
-            $argv[$argc++] = $x;
-        }
-        
-        # Call QApplication ctor
-        return QWApplicationCtor($argc, $argv);
     }
 
     submethod new(|capture) {
