@@ -1,4 +1,8 @@
 #!/usr/bin/bash
+
+export LD_LIBRARY_PATH=.
+export RAKULIB=.
+
 raku tests/10-QEvent.t
 raku tests/20-QPoint.t
 raku tests/30-QPointF.t
