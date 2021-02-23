@@ -51,7 +51,7 @@ my ConnectionsManager $CM;   # Where global values are stored
 my QApplication $QA;         
 
 
-# This class is parent of everything
+# This class is parent of everything related to Qt
 class QtBase {
 
     has Pointer $.address is rw;
@@ -541,8 +541,12 @@ class QtObject is Sigsloty is export {
             # Complex data mode, local to local message
 
             # Get the signal key
-            my $keySig = self.id ~ $signalName ~ cap2sigStr($values);
-# #                 say "KEYSIG = >", $keySig, "<";
+            
+            #???????????????
+            # my $keySig = self.id ~ $signalName ~ cap2sigStr($values);
+            my $keySig = self.id ~ $signalName ~ $sigStr;
+            
+            # say "KEYSIG = >", $keySig, "<";
 
             my $connCount = $CM.signalConnections($keySig);
             if !$connCount {
@@ -575,6 +579,8 @@ class QtObject is Sigsloty is export {
 
 
 sub QWconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
+
+sub QWdisconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
 
 
 class ConnectionsManager {
@@ -644,6 +650,7 @@ class ConnectionsManager {
     }
 
     method signalConnections($signalKey) returns Int {
+        # say '$CM.signalConnections key=', $signalKey;
         my $val;
         $!sigLock.acquire;
             if %!sigConn{$signalKey}:exists {
@@ -693,6 +700,8 @@ class ConnectionsManager {
 
     method getData(Int $id) # returns (Capture, Bool) # HOW TO DECLARE IT ???
     {
+        # say "getData : id = $id";
+    
         my @r;
         $!dataLock.acquire;
             if %!sigData{$id}:exists {
@@ -906,7 +915,7 @@ sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
 
         # The following key identifies the source of the connection
         my $keySig = $src.id ~ $sigName ~ $source.sig;
-#         say "KEYSIG = ", $keySig;
+        # say "KEYSIG = ", $keySig;
 
         # Count connexions. This count is needed to remove the data
         # when all the connexions have been used.
@@ -922,6 +931,165 @@ sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
 
     # Then connect inside Qt
     QWconnect($srcObj, $signal, $dstObj, $slot);
+}
+
+#------------------------------------------------------------------
+
+
+
+sub disconnect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
+        is export
+{
+    my Bool $simple;  # True if signature is "simple"
+
+#     say "    signalStrSig = \"$signalStrSig\"";
+#     say "    slotStrSig = \"$slotStrSig\"";
+
+    my SigSlot $source;
+    my SigSlot $destination;
+
+    # Does the specified signal exist ?
+    # Look not only in the given class, but also in all its parents
+    my @classNames = ($src.^name);
+#     say "CLASSLIST (", $src.^name, ")";
+    for $src.^parents -> $p {
+#         say "\t\t", $p.^name;
+        @classNames.push($p.^name);
+    }
+    SIGLOOP: for @classNames -> $className {
+        if %signals{$className}:exists {
+            for @(%signals{$className}) -> $v {
+                if $v.name ~~ $sigName {
+                    $source = $v;
+                    last SIGLOOP;
+                }
+            }
+        }
+    }
+    if !$source {
+        die "disconnect : signal ", $src.^name, ".", $sigName, " not found";
+    }
+
+    # Does the specified slot exist ?
+    # Look not only in the given class, but also in all its parents
+    @classNames = ($dst.^name);
+    for $dst.^parents -> $p {
+        @classNames.push($p.^name);
+    }
+    SLOTLOOP: for @classNames -> $className {
+        if %slots{$className}:exists {
+            for @(%slots{$className}) -> $v {
+                if $v.name ~~ $slotName {
+                    $destination = $v;
+                    $simple = $v.sigIsSimple;
+                    last SLOTLOOP;
+                }
+            }
+        }
+    }
+
+    if !$destination {
+        # Maybe the destination is a signal
+        SIGLOOP2: for @classNames -> $className {
+            if %signals{$className}:exists {
+                for @(%signals{$className}) -> $v {
+                    if $v.name ~~ $slotName {
+                        $destination = $v;
+                        $simple = $v.sigIsSimple;
+                        last SIGLOOP2;
+                    }
+                }
+            }
+        }
+    }
+
+    if !$destination {
+        die "disconnect : destination slot or signal ",
+                            $dst.^name, ".", $slotName, " not found";
+    }
+
+    # Is destination a private signal ?
+    if $destination.isPrivate {
+        die "can't be connected to a private signal ",
+                        $dst.^name, ".", $slotName, $destination.sig;
+    }
+
+    # Are source and destination compatible ?
+    my $nbp = $destination.sSignature.accepts($source.sSignature);
+    # say "NBP = $nbp";
+    if $nbp < 0 {
+        my Str $destNature = $destination.isSlot ?? "slot" !! "signal";
+        die "disconnect : incompatible source and destination\n",
+            "source is signal ", $src.^name, "::", $sigName, $source.sig,
+            " [", $source.sSignature.str, "]\n",
+            "destination is $destNature ", $dst.^name, "::", $slotName, $destination.sig,
+            " [", ~$destination.sSignature.str, "]\n";
+    }
+
+    my $slotStrSig = $destination.sig;
+    my $slotStrQSig = $destination.qSig;
+    # Modify destination signatures if needed
+    if $simple && $nbp > 0 {
+        $slotStrSig = removeArgs($slotStrSig, $nbp);
+        $slotStrQSig = removeArgs($slotStrSig, $nbp);
+    }
+
+    # remove the connexion
+
+    my Pointer $srcObj = Nil;
+    my Pointer $dstObj = Nil;
+    my Str $signal = "???";
+    my Str $slot = "???";
+
+
+    if $simple {
+        # Plusieurs cas a etudier...
+        if $source.isPlainQt {
+            $srcObj = $src.address;
+            $signal = $sigName ~ $source.qSig;
+        } else {
+            $srcObj = $src.emitters{$sigName ~ $source.sig};
+            $signal = "QWSignal" ~ %qSigSig{$source.sig};
+        }
+        if $destination.isPlainQt {
+            $dstObj = $dst.address;
+            $slot = $slotName ~ $slotStrQSig;
+        } else {
+            if $destination.isSlot {
+                $dstObj = $dst.receivers{$slotName ~ $slotStrSig};
+                $slot = "QWSlot" ~ %qSigSig{$slotStrSig};
+            } else {
+                $dstObj = $dst.emitters{$slotName ~ $slotStrSig};
+                $slot = "QWSignal" ~ %qSigSig{$slotStrSig};
+            }
+        }
+
+    } else {
+        # Local to local connexion, with use of the cache :
+        # Neither source nor destination are pure Qt widgets
+        # Data will be kept inside perl space and identified with
+        # a unique data key.
+        # This key will be send instead of the data.
+
+        # The following key identifies the source of the connection
+        my $keySig = $src.id ~ $sigName ~ $source.sig;
+#         say "KEYSIG = ", $keySig;
+
+# TODO TODO TODO
+#         # Count connexions. This count is needed to remove the data
+#         # when all the connexions have been used.
+#         $CM.addSignalConnection($keySig);
+
+        $signal = "QWSignal(int)";
+        $slot = "QWLocalToLocalSlot(int)";
+        $srcObj = $src.emitters{$sigName ~ $source.sig};
+        $dstObj = $dst.receivers{$slotName ~ $destination.sig};
+    }
+
+    # say "CONNECT : $signal --> $slot";
+
+    # Then connect inside Qt
+    QWdisconnect($srcObj, $signal, $dstObj, $slot);
 }
 
 #------------------------------------------------------------------
@@ -1003,10 +1171,12 @@ sub slotCallbackComplexSig(int32 $objectId, Str $slotName, int32 $dataId)
 {
     my ($capt, $ok) = $CM.getData($dataId);
 
-#     say "Stack: " ~ Backtrace.new;
-#     say "just before calling the slot";
-#     say $capt.gist;
-#     say $CM.objs{$objectId}.gist;
+    # say "Stack: " ~ Backtrace.new;
+    # say "just before calling the slot ", $slotName;
+    # say "ok = ", $ok;
+    # say $capt.gist;
+    # say "objectId : ", $objectId;
+    # say $CM.objs{$objectId}.gist;
 
     if (!$ok) {
         note "INTERNAL ERROR: Data(Id=$dataId) not found in capture cache";
@@ -1400,6 +1570,7 @@ class QApplication is QCoreApplication is export {
     }
 
     multi sub ctor(|capture) {
+        $QA = Nil;
         note "QApplication.new called with unsupported args";
         die "Bad args";
     }
