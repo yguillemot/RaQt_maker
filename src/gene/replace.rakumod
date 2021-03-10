@@ -21,16 +21,19 @@ sub replace(Str $workPlace is rw, Str $cMarker,
     my regex stop { $Stop };
     my regex key { $Key };
 
-    # Step 1 : Find the place holder and get the indentation
+    # Step 1 : Look for the place holder and get the indentation
     $workPlace ~~ m/^^ (<[\ \t]>*) <start> <[\ \t\n]>* <key> .*? <stop>/;
+    
+    # $0 is the indentation. If it doesn't exist, use an empty string.
+    my $indent = $0 ?? $0 !! "";
 
     # Step2 : Add the markers to $value if we want them kept
     if $keepMarkers {
         $value = $Start ~ "\n" ~ $Key ~ "\n" ~ $value ~ $Stop ~ "\n";
     }
 
-    # Step3 : Add the indentation (i.e. $0) to each line of $value
-    my $indentedValue = [~] $0 <<~>> $value.lines <<~>> "\n";
+    # Step3 : Add the indentation to each line of $value
+    my $indentedValue = [~] $indent <<~>> $value.lines <<~>> "\n";
 
     # Step4 : Do the replacement
     $workPlace

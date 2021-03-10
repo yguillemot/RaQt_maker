@@ -17,7 +17,7 @@ class SigSlot {
     has Str $.sig;      # Raku reduced signature string
     has Str $.qSig;     # Qt C++ reduced signature string
     has Bool $.sigIsSimple;
-    has SSignature $.sSignature is rw;
+    has Signature $.signature is rw;
     has Bool $.isSlot;
     has Bool $.isPlainQt;
     has Bool $.isPrivate = False;        # Only for signals
@@ -257,24 +257,39 @@ class Sigsloty is QtBase is export {
             }
         }
 
-        # If the signal is already registered (is a plainQt one) do nothing
-        # else register it
-        if !$ss {
+        # If the signal is already registered (is a plainQt one) add
+        # its signature else register the signal
+        if $ss {
+            $ss.signature = removeInvocant $meth.signature;
+        } else {
             %signals{$class}.push(SigSlot.new(
                     name => $meth.name,
                     sig => $signature,
                     sigIsSimple => $hasSimpleSig,
-                    sSignature =>
-                            createSignature($meth.signature),
+                    signature => removeInvocant($meth.signature),
                     isPlainQt => False,
                     isSlot => False));
         }
 
 # say "METH SIGNAL : ", $meth.name,
 #     "   Signature : ", $meth.signature.params,
-#     "   Soit : ", $signature;
+#     "   i.e. : ", $signature;
 
         $meth.wrap: -> $f, |a {
+        
+# Need a test here to fail with a clear message where the signal is called
+# rather than with some cryptic message far away inside the VM.
+#
+# Currently not working because removeInvocant returns an unusable signature.
+# See rakudo issue #4241.
+#
+#             say "WRAP f : ", $f.WHAT, " : ", $f.raku;
+#             if |a !~~ removeInvocant($meth.signature) {
+#                 say '|a = ', |a;
+#                 say 'Sig = ', removeInvocant($meth.signature);
+#                 die "Qt signal called with wrong parameters";
+#             }
+
             $f.qtEmit($meth.name, a, $signature, $hasSimpleSig)
         };
     }
@@ -302,19 +317,21 @@ class Sigsloty is QtBase is export {
             }
         }
 
-        # If the signal is already registered (is a plainQt one) do nothing
-        # else register it
-        if !$ss {
+        # If the signal is already registered (is a plainQt one) add
+        # its signature else register the signal
+        if $ss {
+            $ss.signature = removeInvocant $meth.signature;
+        } else {
             %signals{$class}.push(SigSlot.new(
                     name => $meth.name,
                     sig => $signature,
                     sigIsSimple => $hasSimpleSig,
-                    sSignature =>
-                            createSignature($meth.signature),
+                    signature => removeInvocant($meth.signature),
                     isPlainQt => False,
                     isSlot => False,
                     isPrivate => True));
         }
+
 
 
 # say "METH PRIVATE SIGNAL : ", $meth.name,
@@ -349,15 +366,16 @@ class Sigsloty is QtBase is export {
             }
         }
 
-        # If the slot is already registered (is a plainQt one) do nothing
-        # else register it
-        if !$ss {
+        # If the slot is already registered (is a plainQt one) add
+        # its signature else register the slot
+        if $ss {
+            $ss.signature = removeInvocant $meth.signature;
+        } else {
             %slots{$class}.push(SigSlot.new(
                     name => $meth.name,
                     sig => $signature,
                     sigIsSimple => $hasSimpleSig,
-                    sSignature =>
-                            createSignature($meth.signature),
+                    signature => removeInvocant($meth.signature),
                     isPlainQt => False,
                     isSlot => True));
         }
@@ -578,9 +596,11 @@ class QtObject is Sigsloty is export {
 ##############################################################################
 
 
-sub QWconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
+sub QWconnect(Pointer, Str, Pointer, Str)
+        returns int8 is native(&libwrapper) { * }
 
-sub QWdisconnect(Pointer, Str, Pointer, Str) is native(&libwrapper) { * }
+sub QWdisconnect(Pointer, Str, Pointer, Str)                                                                          
+        returns int8 is native(&libwrapper) { * }  
 
 
 class ConnectionsManager {
@@ -779,9 +799,6 @@ sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
 {
     my Bool $simple;  # True if signature is "simple"
 
-#     say "    signalStrSig = \"$signalStrSig\"";
-#     say "    slotStrSig = \"$slotStrSig\"";
-
     my SigSlot $source;
     my SigSlot $destination;
 
@@ -851,16 +868,19 @@ sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
                         $dst.^name, ".", $slotName, $destination.sig;
     }
 
+#     say "    source = {$source.name} {$source.sig} simple={$source.sigIsSimple}";
+#     say "    destination = {$destination.name} {$destination.sig} simple={$destination.sigIsSimple}";
+
     # Are source and destination compatible ?
-    my $nbp = $destination.sSignature.accepts($source.sSignature);
+    my $nbp = slotAcceptsSig $destination.signature, $source.signature;
     # say "NBP = $nbp";
     if $nbp < 0 {
         my Str $destNature = $destination.isSlot ?? "slot" !! "signal";
         die "connect : incompatible source and destination\n",
             "source is signal ", $src.^name, "::", $sigName, $source.sig,
-            " [", $source.sSignature.str, "]\n",
+           " [", $source.signature.raku, "]\n",
             "destination is $destNature ", $dst.^name, "::", $slotName, $destination.sig,
-            " [", ~$destination.sSignature.str, "]\n";
+            " [", ~$destination.signature.raku, "]\n";
     }
 
     my $slotStrSig = $destination.sig;
@@ -930,7 +950,9 @@ sub connect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
     # say "CONNECT : $signal --> $slot";
 
     # Then connect inside Qt
-    QWconnect($srcObj, $signal, $dstObj, $slot);
+    if !QWconnect($srcObj, $signal, $dstObj, $slot) {
+        die "Can't connect $sigName to $slotName";
+    }
 }
 
 #------------------------------------------------------------------
@@ -1015,15 +1037,15 @@ sub disconnect(Sigsloty $src, $sigName, Sigsloty $dst, $slotName)
     }
 
     # Are source and destination compatible ?
-    my $nbp = $destination.sSignature.accepts($source.sSignature);
+    my $nbp = slotAcceptsSig $destination.signature, $source.signature;
     # say "NBP = $nbp";
     if $nbp < 0 {
         my Str $destNature = $destination.isSlot ?? "slot" !! "signal";
         die "disconnect : incompatible source and destination\n",
             "source is signal ", $src.^name, "::", $sigName, $source.sig,
-            " [", $source.sSignature.str, "]\n",
+            " [", $source.signature.raku, "]\n",
             "destination is $destNature ", $dst.^name, "::", $slotName, $destination.sig,
-            " [", ~$destination.sSignature.str, "]\n";
+            " [", ~$destination.signature.raku, "]\n";
     }
 
     my $slotStrSig = $destination.sig;

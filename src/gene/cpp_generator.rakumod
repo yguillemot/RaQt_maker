@@ -167,16 +167,16 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                 $out ~= "ptr->" ~ $m.name ~ qCallUse($m, "x") ~ ";\n";
 
                 for $m.arguments -> $a {
-                    # postcall is useless if argument is const
-                    if $a.const !~~ "const" {
-                        my $pc = postcall($k, $a.ftot,
-                                qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,
-                                cType($a), cPostop($a), $a.fname);
-                        $out ~= IND ~ $pc ~ "\n" if $pc ne "";
-                    }
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
+                    my $pc = postcall($m.name, $k, $tot, "arg",
+                            qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,
+                            cType($a), cPostop($a), $a.fname);
+                    $out ~= IND ~ $pc ~ "\n" if $pc ne "";
                 }
                 if $retType ne "void" { 
-                    my $pc = postcall($k, $rt.ftot,
+                    my $pc = postcall($m.name, $k, $rt.ftot, "ret",
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");
                     if $pc ~~ "" {
@@ -312,16 +312,16 @@ sub cpp_generator(API $api, %exceptions, %callbacks, $km = False) is export
                 $outSubapi ~= "ptr->" ~ $m.name ~ qCallUse($m, "x") ~ ";\n";
 
                 for $m.arguments -> $a {
-                    # postcall is useless if argument is const
-                    if $a.const !~~ "const" {
-                        my $pc = postcall($k, $a.ftot,
-                                    qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,
-                                    cType($a), cPostop($a), $a.fname);
-                        $outSubapi ~= IND ~ $pc ~ "\n" if $pc ne "";
-                    }
+                    my $tot = $a.ftot ~~ "COMPOSITE"
+                                ?? $a.subtype.ftot
+                                !! $a.ftot;
+                    my $pc = postcall($m.name, $k, $tot, "arg",
+                                qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,
+                                cType($a), cPostop($a), $a.fname);
+                    $outSubapi ~= IND ~ $pc ~ "\n" if $pc ne "";
                 }
                 if $retType ne "void" { 
-                    my $pc = postcall($k, $rt.ftot,
+                    my $pc = postcall($m.name, $k, $rt.ftot, "ret",
                                       qType($rt), qPostop($rt), $rt.const, "retVal",
                                       cType($rt), cPostop($rt), "xretVal");
                     if $pc ~~ "" {

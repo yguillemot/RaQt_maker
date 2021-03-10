@@ -25,6 +25,7 @@ void (*slotCallbackInt2)(int objId, char *slotName, STD_INT i1, STD_INT i2) = 0;
 void (*slotCallbackStr)(int objId, char *slotName, char *s) = 0;
 void (*slotCallbackIntStr)(int objId, char *slotName, STD_INT i, char *s) = 0;
 void (*slotCallbackBool)(int objId, char *slotName, uchar b) = 0;
+
 void (*slotCallbackPointer)(int objId, char *slotName, void *p) = 0;
 
 //BEGIN_INSERTION_HERE
@@ -150,29 +151,14 @@ void * QWApplicationCtor(int argc, char **argv)
     slotDict->insert("QWSlot(bool)", SLOT(QWSlot(bool)));
     slotDict->insert("QWLocalToLocalSlot(int)", SLOT(QWLocalToLocalSlot(int)));
 
-
-
-
-
-
-
     // For debug
-//     printf("argc = %d\n", cc);
-//     for (int i = 0; i < cc; i++) printf("argv[%d] = \"%s\"\n", i, vv[i]);
+    // printf("argc = %d\n", cc);
+    // for (int i = 0; i < cc; i++) printf("argv[%d] = \"%s\"\n", i, vv[i]);
     
     // For debug
-//     connectLog = fopen("connect.log", "w+");
-    
-
-    QCoreApplication * inst = QCoreApplication::instance();
-//     std::cerr << "QWApplicationCtor inst before = " << inst << "\n";
+    // connectLog = fopen("connect.log", "w+");
 
     QApplication *app = new QApplication(cc, vv);
-
-    inst = QCoreApplication::instance();
-//     std::cerr << "QWApplicationCtor inst after =  " << inst << "\n";
-//     std::cerr << "                  qApp = " << qApp << "\n";
-
     return reinterpret_cast<void *>(app);
 }
 
@@ -373,7 +359,7 @@ void QWEmit_Bool(void * source, char * signalName, int32_t data)
 
 
 
-void QWconnect(void * source, char *signal, void * destination, char *slot)
+int8_t QWconnect(void * source, char *signal, void * destination, char *slot)
 {
     QObject *src = reinterpret_cast<QObject *>(source);
     QObject *dst = reinterpret_cast<QObject *>(destination);
@@ -399,8 +385,9 @@ void QWconnect(void * source, char *signal, void * destination, char *slot)
 //               << "        0x" << std::hex << destination << " "
 //               << slot << " => " << qslot.toLocal8Bit().data() << "\n";
 
-    if (!(QObject::connect(src, qsignal.toLocal8Bit().data(),
-                           dst, qslot.toLocal8Bit().data()))) {
+    bool ok = QObject::connect(src, qsignal.toLocal8Bit().data(),
+                               dst, qslot.toLocal8Bit().data());
+    if (!ok) {
         std::cerr << "Can't connect "
                             << src << ":\"" << signal << "\""
                   << " to " << dst << ":\"" << slot   << "\"\n";
@@ -412,13 +399,14 @@ void QWconnect(void * source, char *signal, void * destination, char *slot)
 //                         (ulong) dst, qslot.toLocal8Bit().data());
 //     fflush(connectLog);
     
+    return ok;
 }
 
 
 
 
 
-void QWdisconnect(void * source, char *signal, void * destination, char *slot)
+int8_t QWdisconnect(void * source, char *signal, void * destination, char *slot)
 {
     QObject *src = reinterpret_cast<QObject *>(source);
     QObject *dst = reinterpret_cast<QObject *>(destination);
@@ -444,8 +432,9 @@ void QWdisconnect(void * source, char *signal, void * destination, char *slot)
 //               << "        0x" << std::hex << destination << " "
 //               << slot << " => " << qslot.toLocal8Bit().data() << "\n";
 
-    if (!(QObject::disconnect(src, qsignal.toLocal8Bit().data(),
-                           dst, qslot.toLocal8Bit().data()))) {
+    bool ok = QObject::disconnect(src, qsignal.toLocal8Bit().data(),
+                                  dst, qslot.toLocal8Bit().data());
+    if (!ok) {
         std::cerr << "Can't disconnect "
                             << src << ":\"" << signal << "\""
                   << " to " << dst << ":\"" << slot   << "\"\n";
@@ -456,7 +445,8 @@ void QWdisconnect(void * source, char *signal, void * destination, char *slot)
 //                         (ulong) src, qsignal.toLocal8Bit().data(),
 //                         (ulong) dst, qslot.toLocal8Bit().data());
 //     fflush(connectLog);
-    
+
+    return ok;
 }
 
 

@@ -334,8 +334,6 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                         ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                         ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                         ~ IND x 2 ~ 'isSlot => True,' ~ "\n"
-                        ~ IND x 2 ~ 'sSignature => createSignature('
-                                            ~ StrRakuParamsLst($m, %c) ~ ")\n"
                         ~ IND ~ '));' ~ "\n";
                 }
 ### QOBJS ONLY : END
@@ -425,9 +423,7 @@ sub raku_generator(API :$api, :%callbacks, :%exceptions,
                 ~ IND x 2 ~ 'isSlot => False,' ~ "\n"
                 ~ IND x 2 ~ 'isPrivate => '
                                     ~ ($m.isPrivateSignal ?? 'True' !! 'False')
-                                    ~ ',' ~ "\n"
-                ~ IND x 2 ~ 'sSignature => createSignature('
-                                            ~ StrRakuParamsLst($m, %c) ~ ")\n"
+                                    ~ "\n"
                 ~ IND ~ '));' ~ "\n";
         }
 ### QOBJS ONLY : END

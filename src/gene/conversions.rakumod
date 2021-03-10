@@ -98,21 +98,24 @@ multi precall(  $where, $tot,
 # to a C Raku native type
 
 # Parameters :
-#  1 - $where = Name of class which contains the method where the precall
+#  1 - $name = Name of method (only used in possible error message)
+#  2 - $where = Name of class which contains the method where the precall
 #               conversion line is inserted
-#  2 - $tot = Type of type of the argument ("CLASS", "NATIVE", "ENUM", etc...)
-#  3 - $stype = Type name of the source argument
-#  4 - $spostop = Post operator of the type of the source argument
-#  5 - $sconst = "const" keyword or ""
-#  6 - $src = Name of the source variable in the conversion code
-#  7 - $dtype = Type name of the destination argument
-#  8 - $dpostop = Post operator of the type of the destination argument
-#  9 - $dst = Name of the destination variable in the conversion code
+#  3 - $tot = Type of type of the argument ("CLASS", "NATIVE", "ENUM", etc...)
+#  4 - $ret = "ret" if the data to be converted is the value returned by
+#      the function. "arg" if it is one of its argument.
+#  5 - $stype = Type name of the source argument
+#  6 - $spostop = Post operator of the type of the source argument
+#  7 - $sconst = "const" keyword or ""
+#  8 - $src = Name of the source variable in the conversion code
+#  9 - $dtype = Type name of the destination argument
+# 10 - $dpostop = Post operator of the type of the destination argument
+# 11 - $dst = Name of the destination variable in the conversion code
 #
 # All parameters are Str
 
 
-multi postcall( $where, "CLASS",
+multi postcall( $name, $where, "CLASS", "ret",
                 $class, '*', $sconst, $src, 
                 "void", "*", $dst 
     --> Str) is export
@@ -120,7 +123,7 @@ multi postcall( $where, "CLASS",
     ""
 }
 
-multi postcall( $where, "CLASS",
+multi postcall( $name, $where, "CLASS", "ret",
                 $class, '&', "", $src,
                 "void", "*", $dst 
     --> Str) is export
@@ -128,7 +131,7 @@ multi postcall( $where, "CLASS",
     "void * $dst = reinterpret_cast<void *>(& $src);"
 }
 
-multi postcall( $where, "CLASS",
+multi postcall( $name, $where, "CLASS", "ret",
                 $class, '&', "const", $src,
                 "void", "*", $dst 
     --> Str) is export
@@ -136,7 +139,7 @@ multi postcall( $where, "CLASS",
     "void * $dst = const_cast<void *>(reinterpret_cast<const void *>(& $src));"
 }
 
-multi postcall( $where, "CLASS",
+multi postcall( $name, $where, "CLASS", "ret",
                 $class, '', $const, $src,
                 "void", "*", $dst 
     --> Str) is export
@@ -153,7 +156,7 @@ multi postcall( $where, "CLASS",
     # (see &postcall_raku in ToRakuConversions.rakumod)
 }
 
-multi postcall( $where, "NATIVE",
+multi postcall( $name, $where, "NATIVE", "ret",
                 $stype, "", $sconst, $src,
                 $dtype, "", $dst
     --> Str) is export
@@ -161,7 +164,7 @@ multi postcall( $where, "NATIVE",
     ""
 }
 
-multi postcall( $where, "SPECIAL",
+multi postcall( $name, $where, "SPECIAL", "ret",
                 "QString", "&", $sconst, $src, 
                 "char", "*", $dst
     --> Str) is export
@@ -170,7 +173,7 @@ multi postcall( $where, "SPECIAL",
     # "char * $src = $dst\.toLocal8Bit().data();"
 }
 
-multi postcall( $where, "SPECIAL", 
+multi postcall( $name, $where, "SPECIAL", "ret",
                 "QString", "", $sconst, $src, 
                 "char", "*",            $dst
     --> Str) is export
@@ -178,7 +181,7 @@ multi postcall( $where, "SPECIAL",
     "char * $dst = $src\.toLocal8Bit().data();"
 }
 
-multi postcall( $where, "ENUM",
+multi postcall( $name, $where, "ENUM", "ret",
                 $stype, "", $sconst, $src,
                 $dtype, "",          $dst 
     --> Str) is export
@@ -187,15 +190,42 @@ multi postcall( $where, "ENUM",
     # "int $dst = $src;"
 }
 
+multi postcall( $name, $where, $tot, "arg",
+                $stype, $spostop, $sconst, $src,
+                $dtype, "",          $dst 
+    --> Str) is export
+{
+    # Conversion for argument is not needed if argument is passed by value
+    ""
+}
 
-multi postcall( $where, $tot,
+multi postcall( $name, $where, $tot, "arg",
+                $stype, $spostop, "const", $src,
+                $dtype, $dpostop,          $dst 
+    --> Str) is export
+{
+    # Conversion for argument is not needed if argument is const
+    ""
+}
+
+multi postcall( $name, $where, "CLASS", "arg",
+                $stype, $spostop, "", $src,
+                $dtype, "*",          $dst 
+    --> Str) is export
+{
+    # A class is never supposed to be returned via an argument (TBC)
+    ""
+}
+
+
+multi postcall( $name, $where, $tot, $ret,
                 $stype, $spostop, $sconst, $src,
                 $dtype, $dpostop,          $dst
     --> Str) is export
 {
-    my $msg = "Can't find any postcall conversion for $tot\n"
-                ~ "from $where:: $sconst $stype $spostop $src"
-                ~ " to $dtype $dpostop $dst" ~ "\n>" ~ $sconst ~ "< ";
+    my $msg = "Can't find any postcall conversion for $tot [$ret]" ~ "\n"
+                ~ "from $where\::$name $sconst $stype $spostop $src"
+                ~ " to $dtype $dpostop $dst" ~ " " ~ $sconst ~ "\n";
     note $msg;
 #      die $msg;
     return '/* WARNING:' ~ "\n" ~ $msg ~ ' */';
