@@ -1,12 +1,15 @@
 
-use gene::config;
+use config;
 use gene::natives;
 
 # Following Qt classes need a special processing and must not be
 # automatically implemented in a standard way.
-# If needed, theircode may be directly defined in the template files.
+# If needed, their code may be directly defined in the template files.
 our constant $specialClasses = <
     QObject QString
+>.Set;
+our constant $uninstanciableClasses = <
+    Qt
 >.Set;
 
 
@@ -301,10 +304,12 @@ sub nType($arg --> Str) is export
     }
 }
 
-sub rType($arg --> Str) is export
+# When $useRole is True, the role prefix is added to the name of classes
+sub rType($arg, Bool :$useRole = False --> Str) is export
 {
+    my Str $prefix = $useRole ?? PREFIXROLE !! "";
     given $arg.ftot {
-        when "CLASS" { $arg.base }
+        when "CLASS" { $prefix ~ $arg.base }
         when "ENUM" { $arg.fclass ~ '::' ~ $arg.fbase }
         when "NATIVE" {
             #   TODO : This case should be dealed in natives.rakumod and not here
@@ -333,9 +338,62 @@ sub rType($arg --> Str) is export
     }
 }
 
+# If the given Argument type is a Qt class, returns its name
+# else, return Nil
+sub isQtClass($arg --> Str) is export
+{
+    given $arg.ftot {
+        when "CLASS" { $arg.base }
+        when "ENUM" { (Str) }
+        when "NATIVE" { (Str) }
+        when "SPECIAL" { (Str) }
+        when "COMPOSITE" {
+            given $arg.fbase {
+                when "QFlags" {
+                    given $arg.subtype.ftot {
+                        when "ENUM" { (Str) }
+                        default { die "Subtype ", $arg.subtype.ftot,
+                                                        " unsupported]" }
+                    }
+                }
+                default { (Str) }
+            }
+        }
+        when "UNKNOWN" {
+            die "Looking for the Raku type of the unknown type ", $arg.base;
+        }
+        default { (Str) }
+    }
+}
 
-
-
+# If the given Argument type is a Qt enum
+# then return the name of the Qt class where this enum is defined
+# else return Nil
+sub isQtEnum($arg --> Str) is export
+{
+    given $arg.ftot {
+        when "CLASS" { (Str) }
+        when "ENUM" { $arg.fclass }
+        when "NATIVE" { (Str) }
+        when "SPECIAL" { (Str) }
+        when "COMPOSITE" {
+            given $arg.fbase {
+                when "QFlags" {
+                    given $arg.subtype.ftot {
+                        when "ENUM" { $arg.fclass }
+                        default { die "Subtype ", $arg.subtype.ftot,
+                                                        " unsupported]" }
+                    }
+                }
+                default { (Str) }
+            }
+        }
+        when "UNKNOWN" {
+            die "Looking for the Raku type of the unknown type ", $arg.base;
+        }
+        default { (Str) }
+    }
+}
 
 #| Store the prototype of a function (or a signal)
 class Function does Validation {

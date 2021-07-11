@@ -1,0 +1,12 @@
+ 
+##############################################################################
+# Start of code for RQObject
+# RQObject, as QObject, is processed as a special case
+
+# Work around the "circular module loading" issue
+
+role RQObject:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API> {
+}
+
+# End of code for RQObject
+##############################################################################

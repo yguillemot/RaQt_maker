@@ -1,8 +1,8 @@
-unit module QtWrappers;
+unit module QtWrappers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 
 
 use NativeCall;
-use Qt::QtWidgets::QtHelpers;
+use Qt::QtWidgets::QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 
 #BEGIN_INSERTION_HERE
 #LIST_OF_QT_CLASSES_NATIVE_WRAPPERS
@@ -60,17 +60,6 @@ sub QWSetupSlotCallbackBool(&f (int32, Str, Bool))
 sub QWSetupSlotCallbackPointer(&f (int32, Str, Pointer))
         is native(&libwrapper) is export { * }
 
-sub QWEmit_(Pointer, Str)
-        is native(&libwrapper) is export { * }
-
-sub QWEmit_Int(Pointer, Str, int32)
-        is native(&libwrapper) is export { * }
-
-sub QWEmit_Str(Pointer, Str, Str)
-        is native(&libwrapper) is export { * }
-
-sub QWEmit_Bool(Pointer, Str, int32)
-        is native(&libwrapper) is export { * }
 
 
 

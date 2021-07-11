@@ -1,0 +1,93 @@
+
+sub USAGE ()
+{
+    #BEGIN_INSERTION_HERE
+    #VERSION_NUMBER
+    my $ver = "MODULE version XXX";
+    #END_INSERTION_HERE
+
+    print qq:to/END/; 
+            
+        {$*PROGRAM-NAME} delivered with $ver
+            
+        Print the list of "use" instructions related to Qt::Widgets
+        needed by the Raku script whose file name is specified.
+            
+        Usage: {$*PROGRAM-NAME} <file name>
+            
+        END
+        
+    exit 1;
+}
+
+multi sub MAIN(Str $fileName)
+{
+
+    my constant START = "use Qt::QtWidgets::";
+    my constant END = ";\n";
+    
+#     my constant EXCLUDED
+#         = set < QtWidgets QtSlot QtSignal QtSigsloty QtObject >;
+        
+    my constant CLASSES = set (
+        #BEGIN_INSERTION_HERE
+        #LIST_OF_CLASSES
+        "QAbstractButton",
+        "QAbstractScrollArea",
+        "QAction",
+        "QBoxLayout",
+        "QBrush",
+        "QColor",
+        "QCoreApplication",
+        "QEvent",
+        "QFont",
+        "QFrame",
+        "QGuiApplication",
+        "QHBoxLayout",
+        "QImage",
+        "QInputEvent",
+        "QLabel",
+        "QLayout",
+        "QLayoutItem",
+        "QLineEdit",
+        "QMenu",
+        "QMouseEvent",
+        "QPaintDevice",
+        "QPaintEvent",
+        "QPainter",
+        "QPen",
+        "QPoint",
+        "QPointF",
+        "QPushButton",
+        "QRect",
+        "QRegion",
+        "QTextEdit",
+        "QTimer",
+        "QVBoxLayout",
+        "QWidget",
+        "Qt",
+
+        #END_INSERTION_HERE
+    );
+    
+    # Does the file exist and be readable ?
+    if $fileName.IO !~~ :f & :r {
+        say "Can't read $fileName";
+        exit 1;
+    }
+    
+    # Read the file
+    my Str $code = slurp $fileName;
+    
+    # Remove all "use" instructions
+    $code ~~ s:g/ 'use ' .+? ';'//;
+    
+    # Look for all words beginning with "Q"
+    $code ~~ m:g/<< 'Q' \w+ >>/;
+    
+    # Create and print the "use" instructions based on the found words
+    say "";
+    say "use Qt::QtWidgets;";
+    say [~] START <<~>> ((set $/.list>>.Str) (&) CLASSES).keys.sort <<~>> END;
+}
+

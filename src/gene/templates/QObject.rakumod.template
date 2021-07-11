@@ -1,0 +1,27 @@
+
+
+
+##############################################################################
+# Start of code for QObject
+# QObject is processed as a special case
+
+use Qt::QtWidgets:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::RQObject:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
+
+class QObject:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>
+    is QtObject does RQObject is export {
+    
+    method ctor { ... }
+    
+#     submethod TWEAK {
+#         say ::?CLASS, " TWEAK";
+#     }
+
+}
+
+# End of code for QObject
+##############################################################################
+
+
+

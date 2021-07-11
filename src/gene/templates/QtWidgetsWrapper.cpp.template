@@ -177,124 +177,7 @@ void * QWApplicationInstance()
 ////////
 
 
-//BEGIN_INSERTION_HERE
-//MAIN_CLASSES_CPP_CODE
 
-void * QWTextEditCtor()
-{
-    QTextEdit *te = new QTextEdit();
-    return reinterpret_cast<void *>(te);
-}
-
-char * QWTextEditToPlainText(void * obj)
-{
-    QTextEdit *te = reinterpret_cast<QTextEdit *>(obj);
-//     std::cerr << "QWTextEditToPlainText obj = " << te << "\n";
-//     std::cerr << "   Data : " << te->toPlainText().toLocal8Bit().data() << "\n";
-    return toStdStr(te->toPlainText());
-}
-
-void * QWPushButtonCtor(char * label)
-{
-    QPushButton *pb = new QPushButton(label);
-    return reinterpret_cast<long>(pb);
-}
-
-
-
-void QWBoxLayoutAddWidget(long obj, long widget)
-{
-    QBoxLayout *vb = reinterpret_cast<QVBoxLayout *>(obj);
-    vb->addWidget(reinterpret_cast<QWidget *>(widget));
-}
-
-void QWBoxLayoutAddLayout(long obj, long layout)
-{
-    QBoxLayout *vb = reinterpret_cast<QVBoxLayout *>(obj);
-    vb->addLayout(reinterpret_cast<QLayout *>(layout));
-}
-
-
-
-long QWVBoxLayoutCtor()
-{
-    QVBoxLayout *vb = new QVBoxLayout();
-    return reinterpret_cast<long>(vb);
-}
-
-
-long QWHBoxLayoutCtor()
-{
-    QHBoxLayout *hb = new QHBoxLayout();
-    return reinterpret_cast<long>(hb);
-}
-
-
-long QWWidgetCtor()
-{
-    QWidget *w = new QWidget();
-    return reinterpret_cast<long>(w);
-}
-
-void QWWidgetSetLayout(long obj, long layout)
-{
-    QWidget *w = reinterpret_cast<QWidget *>(obj);
-    QLayout *l = reinterpret_cast<QLayout *>(layout);
-// std::cout << "BEFORE w=" << w << " l=" << l << "\n";
-    w->setLayout(l);
-// std::cout << "AFTER\n";
-}
-
-void QWWidgetShow(long obj)
-{
-    QWidget *w = reinterpret_cast<QWidget *>(obj);
-    w->show();
-}
-
-void QWWidgetSetWindowTitle(long obj, char *text)
-{
-    QWidget *w = reinterpret_cast<QWidget *>(obj);
-    QString title = QString(text);
-    w->setWindowTitle(title);
-}
-
-void QWWidgetSetDisabled(long obj, int disabled)
-{
-    QWidget *w = reinterpret_cast<QWidget *>(obj);
-    bool dis = disabled;
-    w->setDisabled(dis);
-}
-
-
-
-
-
-long QWTimerCtor()
-{
-    QTimer *t = new QTimer();
-    return reinterpret_cast<long>(t);
-}
-
-void QWTimerStart(long obj)
-{
-    QTimer *t = reinterpret_cast<QTimer *>(obj);
-    t->start();
-}
-
-void QWTimerStop(long obj)
-{
-    QTimer *t = reinterpret_cast<QTimer *>(obj);
-    t->stop();
-}
-
-void QWTimerSetInterval(long obj, int msec)
-{
-    QTimer *t = reinterpret_cast<QTimer *>(obj);
-    t->setInterval(msec);
-}
-
-
-//END_INSERTION_HERE
 
 
 // emit wrappers
@@ -594,15 +477,12 @@ void * QWGetPointerFromDouble(double * pd)
     return (void *) pd;
 }
 
-
-// REMPLACER int PAR long ???
 int64_t QWPointer2Int(void * val)
 {
     int64_t ival = (int64_t) val;
     return ival;
 }
 
-// REMPLACER int PAR long ???
 void * QWInt2Pointer(int64_t val)
 {
     void * p = (void *) val;
@@ -714,81 +594,17 @@ void QWDump()
 
 
 //////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
 // Subclasses
-
-//BEGIN_INSERTION_HERE
-//SUBCLASSES_CTORS
-
-void * QWSCQWidgetCtor()
-{
-    SCQWidget *ip = new SCQWidget();
-    return reinterpret_cast<void *>(ip);
-}
-
-void * QWSCQPushButtonCtor()
-{
-    SCQPushButton *ip = new SCQPushButton();
-    return reinterpret_cast<void *>(ip);
-}
-
-void * QWSCQTextEditCtor()
-{
-    SCQTextEdit *ip = new SCQTextEdit();
-    return reinterpret_cast<void *>(ip);
-}
-
-//END_INSERTION_HERE
-// YGYGYG PB : Reférence à "SCQTextEdit" ci-dessus !!!!!!!
-
 
 void QWvalidateEvent(void *obj, int32_t objId, char *methodName)
 {
 //     std::cout << "QWvalidateEvent start\n";
 
-    // Une MAUVAISE solution
-    // SCQTextEdit *ste = reinterpret_cast<SCQTextEdit *>(obj);
-    // ste->validateEvent(objId, eventType, methodName);
-
-   CallbackValidator * ptr = reinterpret_cast<CallbackValidator *>(obj);
-   /// ET CA, CA NE MARCHE PAS !!!
-   /// (reinterpret_cast vs dynamic_cast QU'O? NE PEUT UTILISER ICI !!!)
-
+    CallbackValidator * ptr = reinterpret_cast<CallbackValidator *>(obj);
     ptr->validateEvent(objId, methodName);
+    
 //     std::cout << "QWvalidateEvent stop\n";
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-// SubAPI
 
-//BEGIN_INSERTION_HERE
-//SUBAPI_CLASSES_CPP_CODE
 
-void QWQtMouseEventDtor(void *p)
-{
-    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
-    delete(ev);
-}
-
-int32_t QWQtMouseEventX(void *p)
-{
-    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
-    return ev->x();
-}
-
-int32_t QWQtMouseEventY(void *p)
-{
-    QMouseEvent *ev = reinterpret_cast<QMouseEvent *>(p);
-    return ev->y();
-}
-
-//////////
-
-void QWQtEventDtor(void *p)
-{
-    QEvent *ev = reinterpret_cast<QEvent *>(p);
-    delete(ev);
-}
-
-//END_INSERTION_HERE

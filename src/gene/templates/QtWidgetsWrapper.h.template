@@ -21,51 +21,6 @@ EXTERNC int QWApplicationExec(void * obj);
 EXTERNC void * QWApplicationInstance();
 
 
-
-//BEGIN_INSERTION_HERE
-//WRAPPER_H_CODE
-
-EXTERNC void * QWTextEditCtor();
-
-EXTERNC char * QWTextEditToPlainText(void * obj);
-
-EXTERNC void * QWPushButtonCtor(char * label);
-
-EXTERNC void QWBoxLayoutAddWidget(long obj, long widget);
-
-EXTERNC void QWBoxLayoutAddLayout(long obj, long layout);
-
-EXTERNC long QWVBoxLayoutCtor();
-
-EXTERNC long QWHBoxLayoutCtor();
-
-
-
-EXTERNC long QWTimerCtor();
-
-EXTERNC void QWTimerStart(long obj);
-
-EXTERNC void QWTimerStop(long obj);
-
-EXTERNC void QWTimerSetInterval(long obj, int msec);
-
-
-EXTERNC long QWWidgetCtor();
-
-EXTERNC void QWWidgetSetLayout(long obj, long layout);
-
-EXTERNC void QWWidgetSetWindowTitle(long obj, char * text);
-
-EXTERNC void QWWidgetShow(long obj);
-
-EXTERNC void QWWidgetSetDisabled(long obj, int disabled);
-
-
-//END_INSERTION_HERE
-
-
-
-
 EXTERNC void QWEmit_(void * source, char * signalName);
 EXTERNC void QWEmit_Int(void * source, char * signalName, int32_t data);
 EXTERNC void QWEmit_Str(void * source, char * signalName, char * data);
@@ -149,14 +104,7 @@ EXTERNC void QWSetupSlotCallbackComplexSig(
 EXTERNC void QWDump();
 
 /////////////////////////////////////////////
-/////////////////////////////////////////////
 
-// // EXTERNC void * QWSCQWidgetCtor();
-// //
-// // EXTERNC void * QWSCQPushButtonCtor();
-// //
-// // EXTERNC void * QWSCQTextEditCtor();
-// //
 EXTERNC void QWvalidateEvent(void *obj, int32_t objId, char *methodName);
 
 

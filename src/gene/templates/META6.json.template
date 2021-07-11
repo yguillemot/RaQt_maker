@@ -1,0 +1,24 @@
+{
+    "raku" : "6.d",
+    "name" : "MODULE_NAME",
+    "api" : "MODULE_API",
+    "auth" : "MODULE_AUTHOR",
+    "version" : "MODULE_VERSION",
+    "description" : "A wrapper to the Qt Widgets GUI",
+    "authors" : [ "Yves Guillemot <yc.guillemot@wanadoo.fr>" ],
+    "license" : "GPL-3.0-or-later",
+    "provides" : {
+        "Qt::QtWidgets" : "lib/Qt/QtWidgets.rakumod",
+        "Qt::QtWidgets::QtWrappers" : "lib/Qt/QtWidgets/QtWrappers.rakumod",
+        "Qt::QtWidgets::QtHelpers" : "lib/Qt/QtWidgets/QtHelpers.rakumod"
+    },
+    "depends" : [  ],
+    "build-depends" : [  ],
+    "test-depends" : [ "Test" ],
+    "resources" : [ "libRakuQtWidgets.so" ],
+    "tags": [
+        "QT", "GUI", "GRAPHICS"
+    ],
+    "source-url" : "https://github.com/yguillemot/Qt-QtWidgets.git"
+}
+

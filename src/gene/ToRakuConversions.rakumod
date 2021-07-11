@@ -1,5 +1,5 @@
 
-use gene::config;
+use config;
 use gene::common;
 use gene::natives;
 
@@ -43,6 +43,8 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
                 last LOOPSUB;
             }
         }
+        
+        $o ~= "\n";
     }
     return $o;
 }
@@ -50,17 +52,24 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
 
 
 # Return arguments string of the raku method declaration
-sub strRakuArgsDecl(Function $f, %qClasses --> Str) is export
+sub strRakuArgsDecl(Function $f, %qClasses,
+                    Bool :$useRole = False --> Str) is export
 {
     my $o = "(";
     my $sep = "";
     for $f.arguments -> $a {
-        $o ~= $sep ~ rType($a) ~ " " ~ '$' ~ $a.fname;
-        if $a.value { $o ~= " = " ~ toRaku($a.value, %qClasses) }
+        my $qtc = isQtClass $a;
+        my Bool $ur = $useRole && (?$qtc && %qClasses{$qtc}.isQObj); 
+        $o ~= $sep ~ rType($a, useRole => $ur) ~ " " ~ '$' ~ $a.fname;
+        if $a.value { 
+            $o ~= " = " ~ toRaku($a.value, %qClasses, useRole => $ur)
+        }
         $sep = ", ";
     }
     if qRet($f) !~~ "void" {
-        $o ~= " --> " ~ rType($f.returnType);
+        my $qtc = isQtClass $f.returnType;
+        my Bool $ur = $useRole && (?$qtc && %qClasses{$qtc}.isQObj); 
+        $o ~= " --> " ~ rType($f.returnType, useRole => $ur);
     }
     $o ~= ")";
     return $o;
@@ -68,16 +77,27 @@ sub strRakuArgsDecl(Function $f, %qClasses --> Str) is export
 
 
 # Return arguments string of the ctor method declaration
-sub strArgsRakuCtorDecl(Function $f, %qClasses --> Str) is export
+sub strArgsRakuCtorDecl(Function $f, %qClasses,
+                        Bool :$useRole = False --> Str) is export
 {
     my $o = '(QtBase $this';
     my $sep = ", ";
     for $f.arguments -> $a {
-        $o ~= $sep ~ rType($a) ~ ' $' ~ $a.fname;
+
+        my Bool $useRole2 = False;
+        if $useRole {
+            my $argClass = isQtClass($a);
+            if $argClass {
+                $useRole2 = %qClasses{$argClass}.isQObj;
+            }
+        }
+
+        $o ~= $sep ~ rType($a, useRole => $useRole2) ~ ' $' ~ $a.fname;
         if $a.value {
             $o ~= " = " ~ ($a.value ~~ "nullptr"
-                            ?? "(" ~ rType($a) ~ ")"
-                            !! toRaku($a.value, %qClasses));
+                            ?? "(" ~ rType($a, useRole => $useRole2) ~ ")"
+                            !! toRaku($a.value, %qClasses, 
+                                        useRole => $useRole2));
         }
     }
     $o ~= ")";
@@ -85,8 +105,8 @@ sub strArgsRakuCtorDecl(Function $f, %qClasses --> Str) is export
 }
 
 
-
 # Return arguments string of the raku method declaration
+# (Used by the doc generator)
 sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
 {
     my $o = "(";
@@ -104,7 +124,47 @@ sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
 }
 
 
+# Return the list of Qt classes used in the signature of the function
+sub classesInSignature(Function $f --> List) is export
+{
+    my @o;
+    for $f.arguments -> $a {
+        my $t = isQtClass($a);
+        if $t {
+            @o.push: $t;
+        } else {
+            my $t = isQtEnum($a);
+            if $t {
+                @o.push: $t;
+            }
+        }
+    }
+    if qRet($f) !~~ "void" {
+        my $t = isQtClass($f.returnType);
+        if $t {
+            @o.push: $t;
+        } else {
+            my $t = isQtEnum($f.returnType);
+            if $t {
+                @o.push: $t;
+            }
+        }
+    }
+    return @o;
+}
 
+# Return the name of the name of the Qt classe returned by the function
+# or Nil if the function doesn't return a Qt class
+sub classeReturned(Function $f --> Str) is export
+{
+    if qRet($f) !~~ "void" {
+        my $t = isQtClass($f.returnType);
+        if $t {
+            return $t;
+        }
+    }
+    return (Str);
+}
 
 
 #| Return the Raku arguments of the method (without its invocant) in a list
@@ -138,7 +198,8 @@ sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
 
 
 # Conversion from C++ to Raku for some constants and expressions
-sub toRaku($val is copy, %qClasses) is export
+sub toRaku(Str $val is copy, %qClasses,
+            Bool :$useRole = False --> Str) is export
 {
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
@@ -148,8 +209,13 @@ sub toRaku($val is copy, %qClasses) is export
         when /'()'/         {
             if $val ~~ /^ (\w+) '(' .*? ')' $/ {
                 if %qClasses{$0.Str}:exists {
-                    # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
-                    $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
+                    if $useRole {
+                        # C++ "QXxx(val)" --> Raku "RQXxx.new(val)"
+                        $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.NEW1$1/;
+                    } else {
+                        # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
+                        $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
+                    }
                 }
             }
         }
@@ -201,19 +267,26 @@ sub strNativeWrapperArgsDecl(Function $f,
 
 # Return code to precompute arguments in a callback handler
 # then the list of arguments passed to the callback
-sub strArgsRakuCallbackCall(Function $f --> List) is export
+# then the list of classes used as argument if $multiFiles is True
+sub strArgsRakuCallbackCall(Function $f, 
+                    Bool :$multiFiles = False --> List) is export
 {
     my $o = "(";
     my $po = "";
     my $sep = "";
     my $c = 0;
+    my @classes = ();    # Accumulate here classes which have to be declared
     for $f.arguments -> $a {
         $c++;
 
         # If the arg type is a class, a ctor from a pointer have to be provided
         if $a.ftot ~~ "CLASS" {
-            $po ~= 'my ' ~ $a.fbase ~ ' $a' ~ $c ~ ' = '
-                        ~ $a.fbase ~ '.new($' ~ $a.name ~ ');' ~ "\n";
+        
+            my $tname = $a.fbase;
+            @classes.push: $tname if $multiFiles;
+        
+            $po ~= 'my ' ~ $tname ~ ' $a' ~ $c ~ ' = '
+                        ~ $tname ~ '.new($' ~ $a.name ~ ');' ~ "\n";
             $o ~= $sep ~ '$a' ~ $c;
         } else {
             $o ~= $sep ~ '$' ~ $a.name;
@@ -221,8 +294,9 @@ sub strArgsRakuCallbackCall(Function $f --> List) is export
         $sep = ", ";
     }
     $o ~= ")";
-    return ($po, $o);
+    return ($po, $o, @classes);
 }
+
 
 
 

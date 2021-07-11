@@ -14,7 +14,8 @@
 #           %exceptions{"QPainter::begin(QPaintDevice*)"}{"cpp"}
 #
 
-my regex Keyword { 'rakumod' || 'wrappers' || 'cpp' || 'h' || 'hpp' };
+# Allowed keywords:
+my regex Keyword { 'rakumod' || 'wrappers' || 'cpp' || 'h' || 'hpp' || 'use' };
 
 sub read_exceptions(Str $exceptionsDirName --> Hash) is export
 {
@@ -24,11 +25,14 @@ sub read_exceptions(Str $exceptionsDirName --> Hash) is export
     for @dir -> $e {
 
         my $fname = $e.Str;
+        
+        # Allowed file extensions:
         next if    $fname !~~ m/\.rakumod$$/
                 && $fname !~~ m/\.raku$$/
                 && $fname !~~ m/\.hpp$$/
                 && $fname !~~ m/\.h$$/
-                && $fname !~~ m/\.cpp$$/;
+                && $fname !~~ m/\.cpp$$/
+                && $fname !~~ m/\.txt$$/;
         
         # Only keep plain files
         next unless $e.f;

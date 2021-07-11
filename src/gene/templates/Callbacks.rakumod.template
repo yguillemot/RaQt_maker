@@ -1,0 +1,119 @@
+
+
+use NativeCall;
+use Qt::QtWidgets::QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::QtWrappers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::ConnectionManager:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
+#BEGIN_INSERTION_HERE
+#ROLES_DECLARATION
+use Qt::QtWidgets::QPaintEvent;
+use Qt::QtWidgets::QEvent;
+use Qt::QtWidgets::QMouseEvent;
+#END_INSERTION_HERE
+
+
+sub slotCallback(int32 $objectId, Str $slotName)
+{
+    $CM.objs{$objectId}."$slotName"();
+}
+
+sub slotCallbackInt(int32 $objectId, Str $slotName, int64 $i)
+{
+    $CM.objs{$objectId}."$slotName"($i);
+}
+
+sub slotCallbackInt2(int32 $objectId, Str $slotName, int64 $i1, int64 $i2)
+{
+    $CM.objs{$objectId}."$slotName"($i1, $i2);
+}
+
+sub slotCallbackStr(int32 $objectId, Str $slotName, Str $s)
+{
+# say "   *** slotCallbackStr slotName=$slotName s=$s";
+    $CM.objs{$objectId}."$slotName"($s);
+}
+
+sub slotCallbackIntStr(int32 $objectId, Str $slotName, int64 $i, Str $s)
+{
+    $CM.objs{$objectId}."$slotName"($i, $s);
+}
+
+sub slotCallbackBool(int32 $objectId, Str $slotName, int8 $b)
+{
+    $CM.objs{$objectId}."$slotName"(?$b);
+}
+
+sub slotCallbackPointer(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackPointer objid=$objectId slotName=$slotName ", $p;
+
+    $CM.objs{$objectId}."$slotName"($p);
+}
+
+#BEGIN_INSERTION_HERE
+#CALLBACK_HANDLERS
+sub slotCallbackMouseEvent(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackMouseEvent objid=$objectId slotName=$slotName ", $p;
+
+    my QtMouseEvent $ev = QtMouseEvent.new(p => $p);
+    $CM.objs{$objectId}."$slotName"($ev);
+}
+
+sub slotCallbackQEvent(int32 $objectId, Str $slotName, Pointer $p)
+{
+    # say "   *** slotCallbackQEvent objid=$objectId slotName=$slotName ", $p;
+
+    my QtEvent $ev = QtEvent.new(p => $p);
+    $CM.objs{$objectId}."$slotName"($ev);
+}
+#END_INSERTION_HERE
+
+sub slotCallbackComplexSig(int32 $objectId, Str $slotName, int32 $dataId)
+{
+    my ($capt, $ok) = $CM.getData($dataId);
+
+    # say "Stack: " ~ Backtrace.new;
+    # say "just before calling the slot ", $slotName;
+    # say "ok = ", $ok;
+    # say $capt.gist;
+    # say "objectId : ", $objectId;
+    # say $CM.objs{$objectId}.gist;
+
+    if (!$ok) {
+        note "INTERNAL ERROR: Data(Id=$dataId) not found in capture cache";
+        # Should we die ???
+        return;
+    }
+    $CM.objs{$objectId}."$slotName"(|$capt);
+}
+
+
+##############################################################################
+
+# Called from QApplication.new
+sub QtSetupEverything is export     # TODO : Should not be exported from here
+{
+    # Start the connections manager if needed
+    $CM = ConnectionsManager.new if !$CM;
+
+    # Register the addresses of the callbacks
+    QWSetupSlotCallback(&slotCallback);
+    QWSetupSlotCallbackInt(&slotCallbackInt);
+    QWSetupSlotCallbackInt2(&slotCallbackInt2);
+    QWSetupSlotCallbackStr(&slotCallbackStr);
+    QWSetupSlotCallbackIntStr(&slotCallbackIntStr);
+    QWSetupSlotCallbackBool(&slotCallbackBool);
+    QWSetupSlotCallbackPointer(&slotCallbackPointer);
+    QWSetupSlotCallbackComplexSig(&slotCallbackComplexSig);
+
+    #BEGIN_INSERTION_HERE
+    #INIT_CALLBACKS_POINTERS 
+    QWSetupSlotCallbackQEvent(&slotCallbackQEvent);
+    QWSetupSlotCallbackQMouseEvent(&slotCallbackQMouseEvent);
+    QWSetupSlotCallbackQPaintEvent(&slotCallbackQPaintEvent);
+    #END_INSERTION_HERE
+}
+
+ 

@@ -1,0 +1,32 @@
+
+use NativeCall;
+use Qt::QtWidgets::QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
+
+# This class is parent of everything related to Qt.
+# It owns a pointer to a Qt object.
+class QtBase:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>
+    is export {
+
+    has Pointer $.address is rw;
+    has Bool $.ownedByRaku is rw;
+
+    method validateCallBacks()
+    {
+        for self.^parents>>.raku -> $cl {
+            next if %callbacks{$cl}:!exists;
+            for |%callbacks{$cl} -> $cb {
+                for self.^methods>>.name -> $m {
+                    if $m eq $cb {
+                        # Valid callback $cb (or $m) of class $cl
+                        self.validateCB($m);
+                   }
+                }
+            }
+        }
+    }
+
+}
+
+
+ 

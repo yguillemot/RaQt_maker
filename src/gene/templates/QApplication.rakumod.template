@@ -1,0 +1,74 @@
+
+use NativeCall;
+use Qt::QtWidgets:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::QtWrappers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::QtBase:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::QCoreApplication:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+use Qt::QtWidgets::Callbacks:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
+
+##############################################################################
+# Start of code for QApplication
+# QApplication is used to initialize Qt::QtWidgets and hence is a special case
+
+sub QWApplicationCtor(int32, CArray[Str])
+        returns Pointer is native(&libwrapper) { * }
+
+sub QWApplicationInstance() returns Pointer is export is native(&libwrapper) { * }
+
+sub QWApplicationExec(Pointer) returns int32 is native(&libwrapper) { * }
+
+class QApplication:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>
+    is QCoreApplication is export {
+
+    # WARNING : Subclassing QApplication is currently unsupported
+    
+    my QApplication $QA = Nil;
+
+    multi sub ctor(QtBase $this, 
+                    Str $progName = $*PROGRAM-NAME, @args = @*ARGS) {
+                    
+        # Reconstruction of C main arguments : (int argc, char **argv)
+        # from $progName (argv[0]) and @args (the list of others argv[])
+        my $argv = CArray[Str].new;
+        $argv[0] = $progName;
+        my $argc = 1;
+        for @args -> $x {
+            $argv[$argc++] = $x;
+        }
+                    
+        # Call QApplication ctor
+        $this.address = QWApplicationCtor($argc, $argv);
+        $this.ownedByRaku = True;
+    }
+
+    multi sub ctor(|capture) {
+        $QA = Nil;
+        note "QApplication.new called with unsupported args";
+        die "Bad args";
+    }
+
+    submethod new(|capture) {
+        if $QA {
+            die "QApplication can't have more than one instance";
+        } else {
+            QtSetupEverything;
+            my QApplication $rObj = self.bless;
+            $QA = $rObj;
+            ctor($rObj, |capture);
+            return $rObj;
+        }
+    }
+
+    method exec {
+        return QWApplicationExec($.address);
+    }
+
+}
+
+# End of code for QApplication
+##############################################################################
+
+
+

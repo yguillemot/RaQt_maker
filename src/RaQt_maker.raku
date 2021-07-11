@@ -1,19 +1,19 @@
 
 use lib <.>;
 
-use gene::config;
+use config;
 use gene::common;
 use gene::parser;
 use gene::natives;
 use gene::blackAndWhite;
 use gene::output;
 use gene::exceptions;
+use gene::rmDirContent;
 
-use gene::cpp_generator;
-use gene::hpp_generator;
-use gene::h_generator;
-use gene::rakumod_generator;
 use gene::doc_generator;
+use gene::tool_generator;
+use gene::whole_generator;
+use gene::installTemplate;
 
 # Choice of classes, methods and enums is driven by black and white lists.
 # The black list always has precedence over the white list.
@@ -185,31 +185,22 @@ sub MAIN ( #| C++ filtered header to read
         say "Generating...";
         say "";
 
-        # Prepare places where raku modules will go
-        mkdir $LibDirectory;
-        mkdir $LibSubDirectory;
-
-        # hpp_generator must called first because it creates
-        # the list of callbacks %cb the other generators use
-
-        my %cb = hpp_generator($api, %excpt, $keepMarks);
-
-        h_generator($api, %excpt, %cb, $keepMarks);
-
-        raku_generator(:$api, exceptions => %excpt, callbacks => %cb,
-                       mainModName => "$LibDirectory/$mainRakuFile",
-                       nativesModName => "$LibSubDirectory/$wrappersRakuFile",
-                       helpersModName => "$LibSubDirectory/$helpersRakuFile",
-                       km => $keepMarks);
-
-        cpp_generator($api, %excpt, %cb, $keepMarks);
-
-        doc_generator(:$api, exceptions => %excpt);
+        # Create or cleanup the target directory
+        mkdir TARGETDIR;
+        rmDirContent TARGETDIR;
         
-#         # TEST ONLY
-#         use gene::test_str;
-#         say '###';
-#         test_str(api => $api, exceptions => %excpt);
+        # Create the needed subdirectories
+        mkdir CPPDIR;
+        mkdir LIBDIR;
+        mkdir TESTSDIR;
+        mkdir EXAMPLESDIR;
+        mkdir BINDIR;
+        mkdir DOCDIR;
+
+        # Generate the files
+        whole_generator($api, %excpt, $keepMarks);
+        doc_generator(:$api, exceptions => %excpt);
+        tool_generator(:$api, exceptions => %excpt, km => $keepMarks);
     }
     
     
@@ -242,5 +233,24 @@ sub MAIN ( #| C++ filtered header to read
 #     my Str $virtuals = [~] @out.sort <<~>> "\n";
 #     spurt "virtuals.txt", $virtuals;
 
+
+    # Copy the build.rakumod, LICENSE and README.md files in the target directory
+    copy "../Files/Module/Build.rakumod", TARGETDIR ~ "Build.rakumod";
+    copy "../Files/Module/LICENSE", TARGETDIR ~ "LICENSE";
+    copy "../Files/Module/README.md", TARGETDIR ~ "README.md";
+    
+    # Copy the test scripts in the target directory
+    my @tests = dir "../Files/Module/t";
+    for @tests -> $t {
+        copy $t, TESTSDIR ~ $t.basename;
+    }
+    
+    # Copy the examples in the target directory
+    my @examples = dir "../Files/Module/examples";
+    for @examples -> $ex {
+        copy $ex, EXAMPLESDIR ~ $ex.basename;
+    }
+    
+    say "";
 
 } # End of sub MAIN
