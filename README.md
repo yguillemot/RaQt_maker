@@ -1,8 +1,8 @@
 RaQt_maker
 ==========
 
-Generate the code (Raku and C++) of the Raku Qt::QtWidgets module (a Raku
-native interface to Qt GUI)
+Generate the code (Raku and C++) of the Raku Qt::QtWidgets module: a Raku
+native interface to the Qt GUI.
 
 DESCRIPTION
 -----------
@@ -24,6 +24,18 @@ PREREQUISITES
 - A gcc compiler  
 - Optionally hoedown for creating some HTML documentation  
 
+Currently, only a very small subset of Qt5 classes and methods will be
+generated.
+So there is very few chances to find issues related to the difference
+between Qt version used to generate the module and Qt version used when the
+module runs.
+
+Currently, the generator avalaible in this repository should parse
+any Qt version prior to Qt 5.12.0.
+The produced module should work with any other Qt5 version being compatible
+with the selected classes/methods.
+
+
 INSTALLATION
 ------------
 
@@ -32,7 +44,7 @@ Just clone the repository somewhere on your system.
 ```
 mkdir RaQt_maker
 cd RaQt_maker
-git clone git://github.com/yguillemot/RaQt_maker.git
+git clone https://github.com/yguillemot/RaQt_maker.git
 ```
 
 The scripts will be run from this place.
@@ -86,19 +98,22 @@ You should see something like:
 `g++ -E -pipe -std=gnu++0x -O2 -g -pipe -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector --param=ssp-buffer-size=4 -fno-strict-aliasing -DPIC -fPIC -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I. -I/usr/lib64/qt5/include -I/usr/lib64/qt5/include/QtWidgets -I/usr/lib64/qt5/include/QtGui -I/usr/lib64/qt5/include/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib64/qt5/mkspecs/linux-g++ -o main.E main.cpp`
 
 1.4 - Before running this new command, find the qobjectdefs.h file in the Qt5
-include files and edit it.
+include files and edit it (make a backup of this file before editing it).
 
 The location of this file depends of your Linux distribution or of the way
-Qt5 was installed on your system (on my system this file is:
-`/usr/lib64/qt5/include/QtCore/qobjectdefs.h`)
+Qt5 was installed on your system.
+On my system the path to this file is
+`/usr/lib64/qt5/include/QtCore/qobjectdefs.h` if I use the module coming with
+the distribution or is `/opt/Qt-5.11.3/include/QtCore/qobjectdefs.h` if I use
+a Qt distribution compiled from source.
 
 1.5 - Comment out  
-- the 2 lines beginning with :  
+- the 1 or 2 lines (depending of the Qt version) beginning with :  
     `#define Q_SLOTS`  
-- the 2 lines beginning with :  
+- the 1 or 2 lines (depending of the Qt version) beginning with :  
     `#define Q_SIGNALS`  
-- the group of lines (beware at the line continuation character '\' )
-beginning with :  
+- the group of lines (beware of the line continuation character '\\' )
+    beginning with :  
     `#define Q_OBJECT`  
 
 The 3 following lines may stay unchanged :  
@@ -106,13 +121,15 @@ The 3 following lines may stay unchanged :
     `#define Q_SIGNALS Q_SIGNALS`  
     `#define Q_OBJECT Q_OBJECT`  
 
+When looking for these lines, remember that some white spaces may separate
+'#' and "define".
 
 1.6 - Now execute the command of §1.3.
       A file named main.E should be created.
       It contains the C preprocessor output including all the Qt headers and
       with the Q_SLOTS et Q_SIGNAL macros unchanged.
 
-1.7 - Remember to restore the qobjectdefs.h file to its initial state.
+1.7 - Restore the qobjectdefs.h file to its initial state.
 
 
 #### STEP 2: Extract the definitions of the Qt classes from the C++ headers
@@ -129,8 +146,8 @@ Four files should be created:
 - out.txt: The C++ description of the classes  
 - rejected.txt: List of rejected classes (actually, classes whose
                     name is qualified)
-        
-In addition to these classes, the Qt namespace is also extracted and changed
+
+In addition to the Qt classes, the Qt namespace is also extracted and changed
 in a class for ease of getting the enums defined in it.
 
 
@@ -138,7 +155,7 @@ in a class for ease of getting the enums defined in it.
 
 3.1 - Execute the following command:  
     `raku RaQt_filter.raku out.txt`
-    
+
 It should create sortie_filtre.txt obtained from out.txt by removing:  
 - All which is "private"  
 - All which is related to implementation  
@@ -282,8 +299,14 @@ be implemented.
 
 5.1 - Initialize ColorlessList.output
 
+The file WhiteList.input is mandatory. 
+This file may be empty but it must exist.
+
 Execute the following command:  
 `raku RaQt_maker.raku --strict api_description.txt`
+
+All the possible methods which may be added to WhiteList.input are now
+listed in ColorlessList.output.
 
 5.2 - Select the methods which should be generated
 
@@ -291,7 +314,7 @@ To select a set of methods to be generated, the following cycle should be run:
 
 - 1 - Copy classes and/or methods names from ColorlessList.output
     to WhiteList.input (and, optionally to BlackList.input).
-    
+
 - 2 - Run RaQt_maker.raku
 
 - 3 - Return to step 1 until satisfied
@@ -316,7 +339,16 @@ if this step has already been done at the end of the interactive
 loop in the previous step.  
 `raku RaQt_maker.raku --strict --generate api_description.txt`
 
-The top level **module** directory should have been generated or regenerated.
+There is a good chance that some errors occur if the classes/methods
+specified in the white list need some kind of code the generator is not
+already aware of.
+
+In such a case, the scripts, templates and bits of code residing in
+**GenAuto/gene**, **GenAuto/gene/template** and **GenAuto/gene/Exceptions**
+need to be modified.
+
+If no error occured, the top level **module** directory should have been
+generated or regenerated.
 
 #### STEP 7: Test and use the generated code
 
@@ -331,16 +363,17 @@ Tests and examples are copied to **module** directory from the
 Other data, like version number, module and directories names are found
 in the **GenAuto/config.rakumod** file.
 
-If new types have been introduced in the white list, there is a good chance
-that some modifications are needed in the scripts, templates and bits of code
-residing in **GenAuto/gene**, **GenAuto/gene/template** and
-**GenAuto/gene/Exceptions**.
+If new types have been introduced in the white list, errors may occur during
+this step even if STEP 6 was successful.
+
+If this happens, the generator needs to be modified before to be run again
+from the STEP 6.
 
 
 Issues
 ------
 
-Currently, the parser looks for Qt classes flagged with
+Currently, the parser only looks for Qt classes flagged with
 **__attribute__((visibility("default")))** in the Qt header code.
 
 Nevertheless, lot of Qt classes don't have this attribute, are not seen by
