@@ -27,13 +27,15 @@ PREREQUISITES
 Currently, only a very small subset of Qt5 classes and methods will be
 generated.
 So there is very few chances to find issues related to the difference
-between Qt version used to generate the module and Qt version used when the
-module runs.
+between the Qt version used to generate the module and the Qt version
+used when the module runs.
 
-Currently, the generator avalaible in this repository should parse
+The generator avalaible in this repository should parse
 any Qt version prior to Qt 5.12.0.
 The produced module should work with any other Qt5 version being compatible
 with the selected classes/methods.
+
+If needed, the Qt source code can be found there: <https://www.qt.io>.
 
 
 INSTALLATION
@@ -76,6 +78,13 @@ The whole process needs 7 steps:
 
 #### STEP 1: Extract the C++ headers from a Qt distribution
 
+The code is generated from the specification of the C++ methods found in
+the Qt C++ headers.
+
+*This headers are distributed on a lot of files and make a large use of
+C macros. So, rather than rewriting the C preprocessor, the hack described
+in the following lines is used.*
+
 1.1 - cd in the data directory then execute the following commands :
 
 ```
@@ -96,6 +105,11 @@ You should see something like:
    You should now have something like this:
 
 `g++ -E -pipe -std=gnu++0x -O2 -g -pipe -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fstack-protector --param=ssp-buffer-size=4 -fno-strict-aliasing -DPIC -fPIC -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I. -I/usr/lib64/qt5/include -I/usr/lib64/qt5/include/QtWidgets -I/usr/lib64/qt5/include/QtGui -I/usr/lib64/qt5/include/QtCore -I. -isystem /usr/include/libdrm -I/usr/lib64/qt5/mkspecs/linux-g++ -o main.E main.cpp`
+
+*This command is sufficient to gather all the C++ header in only one file.
+But it would remove all the references to Q_OBJECT, signals and slots which
+are needed by the code generator. That's why the following actions have
+to be done.*
 
 1.4 - Before running this new command, find the qobjectdefs.h file in the Qt5
 include files and edit it (make a backup of this file before editing it).
