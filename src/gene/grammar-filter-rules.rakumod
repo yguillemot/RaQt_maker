@@ -30,7 +30,8 @@ grammar letsgo is export {
     rule namespace_block { <namespace_member>* }
 
     rule namespace_member {
-             <method> | <attribute> | <enum> | <typedef>
+             <method> || <attribute> || <enum> ||
+             <typedef> || <namespace_operator>
     }
 
 
@@ -41,6 +42,7 @@ grammar letsgo is export {
         'class' '__attribute__((visibility("default")))'
                         <className> <parents>? '{' <class_block> '}' ';'
     }
+    
 
     rule className {
         (<qualifiedName>)
@@ -66,9 +68,21 @@ grammar letsgo is export {
     }
 
     rule class_member {
-            <access_specifier> | <ctor> | <dtor> | <method> | <attribute>
-        | <enum> | <friendClass> | <operator> | <typedef>
-        | <struct> | <union> | <subclass> | <template> | <using>
+        || <access_specifier> 
+        || <ctor> 
+        || <dtor> 
+        || <method> 
+        || <attribute>
+        || <enum> 
+        || <friendClass> 
+        || <class_operator> 
+        || <typedef>
+        || <struct> 
+        || <union> 
+        || <subclass> 
+        || <template> 
+        || <using>
+        || <static_assert>
     }
 
 
@@ -77,9 +91,15 @@ grammar letsgo is export {
 
     rule access_specifier { <access_mode> ':' }
 
-    token access_mode { 'public' | 'protected' | 'private'
-                                    | 'public Q_SLOTS' | 'protected Q_SLOTS'
-                                    | 'private Q_SLOTS' | 'Q_SIGNALS' }
+    token access_mode { 
+        || 'public Q_SLOTS' 
+        || 'public' 
+        || 'protected Q_SLOTS'
+        || 'protected' 
+        || 'private Q_SLOTS' 
+        || 'private'
+        || 'Q_SIGNALS'
+    }
 
 
     ########################################################################
@@ -145,7 +165,9 @@ grammar letsgo is export {
     ########################################################################
     # Operators :
 
-    rule operator { <eqop> | <otherop> | <thirdop> }
+    rule class_operator { <eqop> | <otherop> | <thirdop> }
+    
+    rule namespace_operator { <otherop> | <thirdop> }
 
     rule eqop {
         "$*currentClass" '&' 'operator' '='
@@ -153,7 +175,9 @@ grammar letsgo is export {
         # { say " EQ OP $*currentClass"; }
     }
 
-    rule thirdop { 'operator' 'const'? <name> <typePostop> '(' ')' 'const'? ';' }
+    rule thirdop {
+        'inline'? 'operator' 'const'? <name> <typePostop> '(' ')' 'const'? ';'
+    }
 
     rule otherop { <odeclaration> | <oimplementation> }
 
@@ -174,22 +198,32 @@ grammar letsgo is export {
     # Enums :
 
     rule enum {
-        'enum' 'class'? <name>? <bracedblock> ';'
+        'enum' <deprecated>? 'class'? <name>? <enum_type>? <bracedblock> ';'
     }
+    
+    rule enum_type { ':' <enum_used_type> }
+    
+    token enum_used_type { 'int' || 'quint8' || 'qint32' }
 
 
     ########################################################################
     # Various elements not needed but which have to be parsed
 
-    rule attribute { <normal_attribute> | <static_attribute> |
-                                <multi_attribute> | <other_attribute> }
+    rule attribute {
+        || <normal_attribute>
+        || <static_attribute>
+        || <multi_attribute> 
+        || <other_attribute>
+    }
 
     rule normal_attribute {
         <typename> 'const'? <name> <squareblock>* <bits>? ';'
     }
 
     rule static_attribute {
-        'static' <typename> <name> <bits>? <static_attribute_initializer>? ';'
+        <deprecated>? <cspecifier>? <typename>
+                <name>  <squareblock>* <bits>?
+                            <static_attribute_initializer>? ';'
     }
 
     rule multi_attribute {
@@ -204,14 +238,25 @@ grammar letsgo is export {
 
     rule bits { ':' <[0..9]>+ }
 
-    rule static_attribute_initializer { '=' <extended_value> }
+    rule static_attribute_initializer { '=' <init_value> }
+    
+    rule init_value { <extended_value> || <empty_block> }
 
-    rule typedef { <usualtypedef> | <functionptrtypedef> }
+    rule typedef { 
+        || <usualtypedef> 
+        || <functionptrtypedef> 
+        || <specialtypedef>
+    }
+    
     rule usualtypedef { 'typedef' <deprecated>? <typename>
                                         <name> <squareblock>? ';' }
     rule functionptrtypedef {
         'typedef' <deprecated>? <typename>
             '(' [<name> '::']? '*' <name> ')' <parenthblock> ';'
+    }
+    
+    rule specialtypedef {
+        'typedef' <typename> <name> <__attribute__> ';'
     }
 
     rule friendClass {
@@ -221,7 +266,7 @@ grammar letsgo is export {
         # { say " FRIEND : $0 : $1 :"; }
     }
 
-    rule cspecifier { 'static' | 'const' }
+    rule cspecifier { 'static' || 'const' }
 
     rule struct { <cspecifier>* 'struct'
                     <__attribute__>? <name> <bracedblock>? <var>? ';'
@@ -246,10 +291,12 @@ grammar letsgo is export {
     rule var { <typePostop>? <name> }
 
     rule template { <tdeclaration> | <timplementation> }
-    rule timplementation { 'template' '<' <-[{]>+ <bracedblock> }
+    rule timplementation { 'template' '<' <-[{]>+ <bracedblock> ';'? }
     rule tdeclaration { 'template' <angleblock> <-[{}]>+ ';' }
 
     rule using { 'using' <qualifiedname> ';' }
+    
+    rule static_assert { 'static_assert' <parenthblock> ';' }
 
 
     ########################################################################
@@ -276,6 +323,7 @@ grammar letsgo is export {
     rule complextypename {
         || [<name> <angleblock> '::' <name>]
         || [<qualifiedname> <angleblock>?]
+        || [<qualifiedname> <squareblock>?]
     }
     rule simpletypename {
         || [ 'long' 'unsigned' 'int' ]
@@ -313,8 +361,14 @@ grammar letsgo is export {
     rule prespecifier { <prespecifiercore> }
 
     token prespecifiercore {
-            'virtual' | 'static' | 'inline'
-        | 'constexpr' | 'friend' | <__attribute__>
+        || 'virtual' 
+        || 'static' 
+        || 'inline' 
+        || '[[nodiscard]]' 
+        || 'constexpr' 
+        || 'friend' 
+        || <deprecated> 
+        || <__attribute__>
     }
 
     rule postspecifier { 'override' | 'const' | <noexcept> }
@@ -341,6 +395,7 @@ grammar letsgo is export {
 
     token extended_value { <[a..zA..Z_0..9\.\(\)|\<\>\&\:\=\+\-\?\*\\\'\ \~]>+ }
 
+    rule empty_block { '{' '}' }
 
     token __attribute__ {
         '__attribute__' <.ws> '(' <parenthblock> ')'
@@ -348,15 +403,16 @@ grammar letsgo is export {
     }
 
     rule deprecated {
-        '__attribute__' '((' '__deprecated__' '))'
+        '__attribute__' '((' '__deprecated__' <deprecation_text>? '))'
     }
 
 
+    rule deprecation_text { '(' <text_block> ')' }
 
     ##############################
 
-
-
+    # Any text between double quotes 
+    token text_block { '"' <-["]>* '"' }
 
     ###############################
 

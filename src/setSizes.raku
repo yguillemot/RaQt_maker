@@ -9,6 +9,9 @@ my $txt = slurp;
 # If system is 64 bits
 $txt ~~ s/'sizeof(void *)'/8/;
 
+# and int is kept to 32 bits (gcc/linux)
+$txt ~~ s/'(std::numeric_limits<int>::min)()'/-2147483648/;
+
 # Is this always true ?
 $txt ~~ s/'sizeof(double)'/8/;
 
