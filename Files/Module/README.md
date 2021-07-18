@@ -63,9 +63,12 @@ methods have the same arguments as their related C++ methods.
 
 Therefore the Qt C++ documentation should apply to its Raku interface.
 
+The list of implemented classes and methods is given in the
+**doc/Qt/QtWidgets/Classes.html** file which comes with this module.
+
 The Raku API hides the C++ passing mode of the parameters. 
 
-Each class resides in its own compunit. So, before using a class, an use
+Each class resides in its own compunit. So, before using a class, an **use**
 instruction have to be provided for the related module.
 
 For example, the following line:
@@ -217,16 +220,18 @@ A parallel mechanism is implemented in the Qt::QtWidgets module.
 Subclassing a Qt object needs three steps:
 
 - Define a Raku class inheriting the Qt class
-        
+    
 - Call the **subClass** method of the parent class from the BUILD or TWEAK
 submethod of the new class.
     
-- Override the virtual methods. The overriding method must only have
+- Override the virtual methods. The overriding method must have
 the same name and signature that the overrided method and doesn't need
 any specific syntax.
-    
-    
-The first step is obvious. The second is used to instantiate the C++ 
+
+
+The first and third steps are obvious.
+
+The second one is used to instantiate the C++
 counterpart of the Raku class and to pass it the parameters its constructor
 needs. In this second step, the parent class whose the subClass method is
 called must be explicitely specified:  
@@ -361,9 +366,10 @@ installed by **zef** along with the **Qt::QtWidgets** module.
  * Qt5 development package
  * C++ compiler
  
-This module has been tested with **Qt 5.15.2** and **gcc 10.3.0** and with
-**Qt 5.9.4** and **gcc 5.5.0**.  
+This module has been tested with **Qt 5.9.4** and **gcc 5.5.0**
+and with **Qt 5.15.2** and **gcc 10.3.0**.  
 Many other versions should be usable as well.
+
 
 ## 8. INSTALLATION
 
@@ -375,8 +381,11 @@ Many other versions should be usable as well.
 The source code is available here:
 <https://github.com/yguillemot/Raku-Qt-QtWidgets.git>
 
-This source and its associated documentation have been automatically generated
-from the Qt C++ headers files coming from the Qt development package.
+Given the large number of Qt Classes and methods, manually writing such a
+code is very tedious and error prone.  
+That's why this source and its associated documentation have been
+automatically generated from the Qt C++ headers files coming with the Qt
+development package.
 
 The building tools are available here:
 <https://github.com/yguillemot/RaQt_maker.git>
