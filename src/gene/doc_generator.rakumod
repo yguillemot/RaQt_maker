@@ -53,14 +53,14 @@ sub doc_generator(API :$api, :%exceptions) is export
         $out ~= "\t\tuse {MODNAME}::$k;\n\n"; 
 
         # Print out the parents of the current class
-        for $v.parents -> $p {
+        for $v.parents.sort -> $p {
             $out ~= "\tinherits $p\n";
         }
         $out ~= "\n";
 
         # Print out the children of the current class
         my $first = True;
-        for $v.children -> $c {
+        for $v.children.sort -> $c {
             next if !%c{$c}.whiteListed || %c{$c}.blackListed;
             next if $c (elem) $specialClasses;
             if $first {
@@ -99,7 +99,7 @@ sub doc_generator(API :$api, :%exceptions) is export
 
 
         # Loop on methods
-        MLOOP: for @mlist -> $mth {
+        MLOOP: for @mlist.sort: { .meth.name } -> $mth {
 
             my $m = $mth.meth;
             my $methodName = $m.name;
