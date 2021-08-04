@@ -25,8 +25,12 @@
     QCoreApplication::quit()            # For quit() in QApplication
 
 	QTextEdit::ctor(QWidget*)
-    QTextEdit::toPlainText()
-
+#    QTextEdit::toPlainText()
+    
+#	QTextEdit::setPlainText(const QString&)
+#	QTextEdit::setReadOnly(bool)
+#	QTextEdit::textChanged()
+	
     QLayout::addWidget(QWidget*)
     QBoxLayout::addLayout(QLayout*, int)
 	QLayout::setAlignment(QWidget*, Qt::Alignment)
@@ -217,4 +221,30 @@
     QFont::setItalic(bool)
     QFont::setBold(bool)
 
+# Version 0.0.3
 
+	QResizeEvent::ctor(const QSize&, const QSize&)
+	QResizeEvent::oldSize()
+	QResizeEvent::size()
+
+	QSize::boundedTo(const QSize&)
+	QSize::ctor()
+	QSize::ctor(int, int)
+	QSize::expandedTo(const QSize&)
+	QSize::height()
+	QSize::isEmpty()
+	QSize::isNull()
+	QSize::isValid()
+	QSize::setHeight(int)
+	QSize::setWidth(int)
+    QSize::width()
+    
+	QWidget::resizeEvent(QResizeEvent*)
+	
+	QFont::stretch()
+	QFont::setStretch(int)
+	
+	QFileDialog::getOpenFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)
+	QFileDialog::getSaveFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)	
+	
+	

@@ -38,7 +38,8 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
                         && $v.fType.base ~~ "QFlags"
                         && $v.subType.base ~~ $en {
                 $o ~= IND ~ "our sub $k" ~ '($e? = ';
-                $o ~= $ev.items[0][0];  # The first item of the enum
+                # $o ~= $ev.items[0][0];    # The first item of the enum
+                $o ~= "0";                # Always 0 (see QFileDialog::Option)
                 $o ~= ' --> Int ) is export { $e };' ~ "\n";
                 last LOOPSUB;
             }
@@ -60,9 +61,10 @@ sub strRakuArgsDecl(Function $f, %qClasses,
     for $f.arguments -> $a {
         my $qtc = isQtClass $a;
         my Bool $ur = $useRole && (?$qtc && %qClasses{$qtc}.isQObj); 
-        $o ~= $sep ~ rType($a, useRole => $ur) ~ " " ~ '$' ~ $a.fname;
+        my $rtp = rType($a, useRole => $ur);
+        $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
         if $a.value { 
-            $o ~= " = " ~ toRaku($a.value, %qClasses, useRole => $ur)
+            $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses, useRole => $ur)
         }
         $sep = ", ";
     }
@@ -96,8 +98,8 @@ sub strArgsRakuCtorDecl(Function $f, %qClasses,
         if $a.value {
             $o ~= " = " ~ ($a.value ~~ "nullptr"
                             ?? "(" ~ rType($a, useRole => $useRole2) ~ ")"
-                            !! toRaku($a.value, %qClasses, 
-                                        useRole => $useRole2));
+                            !! toRaku($a.value, rType($a), %qClasses, 
+                                                    useRole => $useRole2));
         }
     }
     $o ~= ")";
@@ -113,7 +115,7 @@ sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
     my $sep = "";
     for $f.arguments -> $a {
         $o ~= $sep ~ rType($a) ~ " " ~ '$' ~ $a.fname;
-        if $a.value { $o ~= " = " ~ toRaku($a.value, %qClasses) }
+        if $a.value { $o ~= " = " ~ toRaku($a.value, rType($a), %qClasses) }
         $sep = ", ";
     }
     if qRet($f) !~~ "void" {
@@ -180,12 +182,13 @@ sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
     my Str $sep = "";
     for $f.arguments -> $a {
         $o ~= $sep;
+        my Str $rtp = rType($a);
         $sep = ", ";
         if $a.value {
-            $o ~= '("' ~ rType($a) ~ '" ,"'
-                        ~ $a.fname ~ '", ' ~ toRaku($a.value, %qClasses) ~ ')';
+            $o ~= '("' ~ $rtp ~ '" ,"' ~ $a.fname ~ '",
+                            ' ~ toRaku($a.value, $rtp, %qClasses) ~ ')';
         } else {
-            $o ~= '"' ~ rType($a) ~ '"';
+            $o ~= '"' ~ $rtp ~ '"';
         }
     }
     return $o ~ $sep ~ ')';
@@ -198,7 +201,11 @@ sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
 
 
 # Conversion from C++ to Raku for some constants and expressions
-sub toRaku(Str $val is copy, %qClasses,
+# $val : the string to convert
+# $cls : The target class of this string
+# %qClasses : The hash of known classes
+# $useRole : True if role should be use in declaration rather than class
+sub toRaku(Str $val is copy, Str $cls, %qClasses,
             Bool :$useRole = False --> Str) is export
 {
     given $val {
@@ -206,7 +213,7 @@ sub toRaku(Str $val is copy, %qClasses,
         when /'true'/       { $val ~~ s:g/'true'/True/; proceed }
         when /'|'/          { $val ~~ s:g/'|'/+|/; proceed }
         when /'&'/          { $val ~~ s:g/'&'/+&/; proceed }
-        when /'()'/         {
+        when /'(' .*? ')'/         {
             if $val ~~ /^ (\w+) '(' .*? ')' $/ {
                 if %qClasses{$0.Str}:exists {
                     if $useRole {
@@ -215,11 +222,22 @@ sub toRaku(Str $val is copy, %qClasses,
                     } else {
                         # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
+                        
+                        # Process special classes :
+                        #       QString.new()      --> ""
+                        #       QString.new("xxx") --> "xxx"
+                        if $val ~~ m/^ 'QString.new(' ( .*? ) ')' $/ {
+                            $val = $0 ~~ "" ?? '""' !! $0;
+                        }
                     }
                 }
             }
         }
     }
+                            
+    # Replace nullptr with some Raku equivalent
+    $val ~~ s/nullptr/($cls)/;
+
     return $val;
 }
 
@@ -234,7 +252,8 @@ sub strNativeWrapperArgsDecl(Function $f,
                              Bool :$showObjectPointer = True,
                              Bool :$showParenth = True,
                              Bool :$startWithSep = True,
-                             Bool :$showNames = False --> Str) is export
+                             Bool :$showNames,
+                             Bool :$static --> Str) is export
 {
     my $o = "";
     my $sep = "";
@@ -318,11 +337,18 @@ sub strArgsRakuBlessCall(Function $f --> Str) is export
 
 # Return code to precompute arguments then the arguments string
 # of the native wrapper call
-sub strArgsRakuCallDecl(Function $f --> List) is export
+sub strArgsRakuCallDecl(Function $f, Bool :$static --> List) is export
 {
-    my $o = "(self.address";
+    my $o;
     my @po = ();
-    my $sep = ", ";
+    my $sep;
+    if $static {
+        $o = "(";
+        $sep = "";
+    } else {
+        $o = "(self.address";
+        $sep = ", ";
+    }
     my $c = 0;
     for $f.arguments -> $a {
         $c++;

@@ -77,7 +77,8 @@ sub generate_h(Str $k, Qclass $v, %exceptions,
             }
             $name ~= ($m.number ?? "_" ~ $m.number !! "");
             $out ~= "EXTERNC ";
-            $out ~= $retType ~ " " ~ $wclassname ~ $name ~ cSignature($m) ~ ";\n";
+            $out ~= $retType ~ " " ~ $wclassname ~ $name ~
+                    cSignature($m,showObjectPointer => !$m.isStatic ) ~ ";\n";
 
             if $m.name ~~ "ctor" && $v.isQObj && $subclassable {
                 # Subclass ctor wrapper

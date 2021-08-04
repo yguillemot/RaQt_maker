@@ -122,25 +122,18 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
             print " class.hpp";
         }
        
+       
         ### 3 - Generate cpp file
         
-        my Str $cpp = "\n";
-        if $subclassable {
-            $cpp ~= "#include \"$k.hpp\"" ~ "\n";
-        } else {
-            $cpp ~= "#include \"$k.h\"" ~ "\n";
-        }
-        $cpp ~= "\n";
-        
-        my Str ($cpp1, $outSignals1, $outSlots1)
+        my Str ($incl, $cpp, $outSignals1, $outSlots1)
                 = generate_cpp($k, $v, %exceptions,
                                $hasCtor, $hasSubclassCtor, $subclassable
                               );
         
-        if $cpp1 {
+        if $cpp {
             my Str $fileName = $k ~ ".cpp";
             spurt CPPDIR ~ $fileName,
-                    addHeaderText(code => $cpp ~ $cpp1, commentChar => '//');
+                    addHeaderText(code => $incl ~ $cpp, commentChar => '//');
             @files_cpp.push: $fileName;
             
             $outSignals ~= $outSignals1;
@@ -375,13 +368,31 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
             
             # SUBCLASSES_WITH_VIRTUAL_METHODS => $out,
         };
+        
+        
+    say "    StrBuffer.c";
+                
+    installTemplate commentMark => '//',
+        source => "gene/templates/StrBuffer.c",
+        destination => "{CPPDIR}StrBuffer.c",
+        :copied;
+        
+    say "    StrBuffer.h";
+                
+    installTemplate commentMark => '//',
+        source => "gene/templates/StrBuffer.h",
+        destination => "{CPPDIR}StrBuffer.h",
+        :copied;
+
                 
     say "Generate other files : end";
 
     # Generate the Qt project file
     @files_hpp.push: "QtWidgetsWrapper.hpp";
     @files_cpp.push: "QtWidgetsWrapper.cpp";
+    @files_cpp.push: "StrBuffer.c";
     @files_h.push: "QtWidgetsWrapper.h";
+    @files_h.push: "StrBuffer.h";
 
     my Str $pro = generate_pro(@files_hpp, @files_cpp, @files_h);
     spurt CPPDIR ~ WRAPPERLIBNAME ~ ".pro", $pro;

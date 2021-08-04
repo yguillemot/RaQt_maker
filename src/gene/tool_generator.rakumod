@@ -21,7 +21,8 @@ sub tool_generator(API :$api, :%exceptions, Bool :$km) is export
 
     # Generate the list of classes of the API
 
-    my Str $out = "";
+    # Being a special case, QApplication is not listed with the otherclasses
+    my Str $out = IND x 2 ~ '"QApplication",' ~ "\n";
 
     for %c.keys.sort -> $k {
         my $v = %c{$k};

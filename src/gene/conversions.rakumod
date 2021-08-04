@@ -1,5 +1,6 @@
 
 
+use config;
 use gene::common;
 
 
@@ -57,6 +58,19 @@ multi precall(  $where, "SPECIAL",
     --> Str) is export
 {
     "QString $dst = QString($src);"
+}
+
+multi precall(  $where, "SPECIAL",
+                "char", "*", $src,
+                "QString", "*", $dst 
+    --> Str) is export
+{
+    "QString {$dst}_tmp;\n" ~
+    "QString * $dst = nullptr;\n" ~
+    "if ($src) \{\n" ~
+    IND ~ "{$dst}_tmp = QString($src);\n" ~
+    IND ~ "$dst = \&{$dst}_tmp;\n" ~
+    "};"
 }
 
 multi precall(  $where, "ENUM",

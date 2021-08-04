@@ -34,6 +34,21 @@ sub QWInt2Pointer(int64)
         returns Pointer is native(&libwrapper) is export { * }
 
 
+# For StrBuffer
+
+sub QWStrBufferAlloc
+        returns Pointer is native(&libwrapper) is export { * }
+        
+sub QWStrBufferWrite(Pointer, Str)
+        is native(&libwrapper) is export { * }
+        
+sub QWStrBufferRead(Pointer)
+        returns Str is native(&libwrapper) is export { * }
+        
+sub QWStrBufferFree(Pointer)
+        is native(&libwrapper) is export { * }
+
+
 # For slots slotCallbacks
 
 sub QWSetupSlotCaller(&f (int32, Str, CArray[Pointer]))

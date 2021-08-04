@@ -14,13 +14,26 @@ use gene::addHeaderText;
 # %callbacks : The list of callbacks precomputed by the hpp_generator
 # $outFileName : The name of the output file
 # $km : The keepMarkers flag (see the replace module)
+
+# Inputs :
+#   $k : Class name
+#   $v : Class description
+#   %exceptions : Where all the exceptions are stored
+#   $hasCtor : True if class has a constructor
+#   $hasSubclassCtor : True if the class has a subclass constructor
+#   $subclassable : True if the class may be subclassed
+#   $km : If true, keep the insertion marks in the generated file
+#
+# Outputs :
+#   Returns a list of 4 strings:
+#       - $includes : The "#include" lines of code
+#       - $out : The main code
+#       - $outSignals : Code for the signals dictionnary
+#       - $outSlots : Code for the slots dictionnary
+#
 sub generate_cpp(Str $k, Qclass $v, %exceptions,
                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
                     $km = False) is export
-                    
-     # Arguments ?  Variables locales ?              
-     # %callbacks, @hppClasses,
-     
 {
 
 #     my Str $templateFileName = "gene/templates/QtWidgetsWrapper.cpp.template";
@@ -31,6 +44,7 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
     # say "\n" x 2;
 
     # Init strings which will be inserted in the template
+    my Str $includes = "";          # List "#include" lines
     my Str $out;                    # Code of the classes
     my Str $outSignals = "";        # Signals dictionary
     my Str $outSlots = "";          # Slots dictionary
@@ -44,9 +58,15 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
     my Str $wsclassname = $prefixSubclassWrapper ~ $k; # Wrapper subclass name
     
     
+    # Look for a "#include" exception related to the class
+    if %exceptions{$k}{'cpp-include'}:exists {
+        # say "EXCEPTION cpp-include : $k";
+        $includes ~= %exceptions{$k}{'cpp-include'};
+    }
+    
     # if $v.isQObj {    ### NO MORE NEEDED
     if True {
-    
+
         # Main Qt class (QWidget, QPushButton, QVBoxlayout, etc...)
     
         MLOOP: for $v.methods -> $m {
@@ -54,7 +74,7 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
             
             next if $m.isVirtual;  ###  Always ???
     
-            # Look for exception
+            # Look for an exception related to the method
             my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, showNames => False);
             # say "?EXCEPTION $exk";
             if %exceptions{$exk}{'cpp'}:exists {
@@ -80,10 +100,10 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
                     my $tot = $a.ftot ~~ "COMPOSITE"
                                 ?? $a.subtype.ftot
                                 !! $a.ftot;
-                    $txt1 ~= IND;
-                    $txt1 ~= precall($k, $tot,
+                    my $pc = precall($k, $tot,
                                     cType($a), cPostop($a), $a.fname,
                                     qType($a), qPostop($a), 'x' ~ $a.fname);
+                    $txt1 ~= indent($pc, IND);
                     $txt1 ~= "\n";
                 }
 
@@ -150,19 +170,23 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
                 # say qProto($m);
                 my $rt = $m.returnType;
                 my $retType = trim cRetType $m;
-                $out ~= $retType ~ " " ~ $wclassname
-                            ~ $m.name ~ $number ~ cSignature($m) ~ "\n";
+                $out ~= $retType ~ " " ~ $wclassname ~ $m.name ~ $number
+                    ~ cSignature($m, showObjectPointer => !$m.isStatic) ~ "\n";
                 $out ~= "\{\n";
-                $out ~= IND ~ "$k * ptr = reinterpret_cast<$k *>(obj);\n";
+                
+                # A static method doesn't need an object pointer
+                if !$m.isStatic {
+                    $out ~= IND ~ "$k * ptr = reinterpret_cast<$k *>(obj);\n";
+                }
 
                 for $m.arguments -> $a {
                     my $tot = $a.ftot ~~ "COMPOSITE"
                                 ?? $a.subtype.ftot
                                 !! $a.ftot;
-                    $out ~= IND;
-                    $out ~= precall($k, $tot,
-                                    cType($a), cPostop($a), $a.fname,
-                                    qType($a), qPostop($a), 'x' ~ $a.fname);
+                    my $pc = precall($k, $tot,
+                                     cType($a), cPostop($a), $a.fname,
+                                     qType($a), qPostop($a), 'x' ~ $a.fname);
+                    $out ~= indent($pc, IND);
                     $out ~= "\n";
                 }
 
@@ -172,7 +196,13 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
                     $out ~= $rt.const ~ " " ~ $qualif ~ qType($rt)
                             ~ " " ~ qPostop($rt) ~ " retVal = ";
                 }
-                $out ~= "ptr->" ~ $m.name ~ qCallUse($m, "x") ~ ";\n";
+                
+                if $m.isStatic {
+                    $out ~= $k ~ "::" ~ $m.name;
+                } else {
+                    $out ~= "ptr->" ~ $m.name
+                }
+                $out ~= qCallUse($m, "x") ~ ";\n";
 
                 for $m.arguments -> $a {
                     my $tot = $a.ftot ~~ "COMPOSITE"
@@ -181,7 +211,7 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
                     my $pc = postcall($m.name, $k, $tot, "arg",
                             qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,
                             cType($a), cPostop($a), $a.fname);
-                    $out ~= IND ~ $pc ~ "\n" if $pc ne "";
+                    $out ~= indent($pc, IND) ~ "\n" if $pc ne "";
                 }
                 if $retType ne "void" { 
                     my $pc = postcall($m.name, $k, $rt.ftot, "ret",
@@ -236,122 +266,14 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
 
     } 
     
-#        ### NO MORE NEEDED
-#       else {
-#         # Subsidiary class (QColor, QEvent, QRect, etc...
-#         
-# 
-#         
-#     }
-    
-    
-    
-    return $out, $outSignals, $outSlots;
-    
+    if $subclassable {
+        $includes ~= "#include \"$k.hpp\"" ~ "\n";
+    } else {
+        $includes ~= "#include \"$k.h\"" ~ "\n";
+    }
+    $includes ~= "\n";
 
-
-#     # Main classes code generation
-#     
-# #     CLOOP: for %c.sort>>.kv -> ($k, $v) {
-# #         next CLOOP if !$v.whiteListed || $v.blackListed;
-# #         next CLOOP if !$v.isQObj;
-# #         
-# #         my $strs = cpp_main_class_gen($api, %exceptions, %callbacks, $k, $v);
-# #         $out = "";
-# #         $outSignals ~= $strs[1];
-# #         $outSlots ~= $strs[2];
-# # 
-# #         # If subclasses can be defined, include the .hpp file
-# #         # before the code
-# #         if $k (elem) $hppClassesSet {
-# #             $out ~= '#include "' ~ $prefixSubclass ~ $k ~ '.hpp"';
-# #             $out ~= "\n\n";
-# #         }
-# #         $out ~= $strs[0];
-# #         
-# #         # Create the class wrapper Cpp file
-# #         my Str $fileName =  $k ~ 'Wrapper.cpp';
-# #         my $code = $classCppTemplate;
-# #         replace $code, "//", "CPP_CLASS_DATA", $out, $km;
-# #         spurt CPPDIR ~ $fileName, $code;
-# #         
-# #         @cppFiles.push($fileName);
-# #     }
-# 
-#     #--------------------------------------------
-# 
-#     # SubAPI classes code generation
-#     
-# #     SLOOP: for %c.sort>>.kv -> ($k, $v) {
-# #         next SLOOP if !$v.whiteListed || $v.blackListed;
-# #         next SLOOP if $v.isQObj;
-# # 
-# #         my $strs = cpp_subapi_class_gen($api, %exceptions, $k, $v);
-# #         $out = $strs[0];
-# #         $outSctors ~= $strs[1];
-# #         $outSubapi ~= $strs[2];
-# #         
-# #         # Create the class wrapper Cpp file
-# #         my Str $fileName =  $k ~ 'Wrapper.cpp';
-# #         my $code = $classCppTemplate;
-# #         replace $code, "//", "CPP_CLASS_DATA", $out, $km;
-# #         spurt CPPDIR ~ $fileName, $code;
-# #         
-# #         @cppFiles.push($fileName);
-# #     }
-# 
-#     # Declaration of callbacks pointers
-#     for %callbacks.sort>>.kv -> ($n, $m) {
-#         my $signature = qSignature($m, showParenth => False);
-#         $outCbi ~= "void (*" ~ $n ~ ')' ~ "\n";
-#         $outCbi ~= IND ~ '(int32_t objId, const char *slotName'
-#                                     ~ $signature ~ ') = 0;' ~ "\n\n";
-#     }
-# 
-#     # Callbacks setup
-#     for %callbacks.sort>>.kv -> ($n, $m) {
-#         my $name = $n;
-#         $name ~~ s/^s/S/;
-#         $name = $prefixWrapper ~ 'Setup' ~ $name;
-#         my $signature = qSignature($m, showParenth => False);
-#         $outCbs ~= "void $name" ~ '(' ~ "\n";
-#         $outCbs ~= IND ~ 'void (*f)(int32_t objId, const char *slotName'
-#                                                 ~ $signature ~ '))' ~ "\n";
-#         $outCbs ~= '{' ~ "\n";
-#         $outCbs ~= IND ~ "$n = f;\n";
-#         $outCbs ~= '}' ~ "\n\n";
-#     }
-# 
-#     #--------------------------------------------
-#     
-# 
-# 
-#     my $code = slurp $templateFileName;
-# 
-#     # replace $code, "//", "MAIN_CLASSES_CPP_CODE", $out, $km;
-#     replace $code, "//", "MAIN_CLASSES_CPP_CODE", "", $km;
-# 
-# 
-#     replace $code, "//", "SIGNALS_DICTIONARY", $outSignals, $km;
-#     replace $code, "//", "SLOTS_DICTIONARY", $outSlots, $km;
-#     replace $code, "//", "CALLBACKS_SETUP", $outCbs, $km;
-#     replace $code, "//", "SUBCLASSES_CTORS", $outSctors, $km;
-#     replace $code, "//", "SUBAPI_CLASSES_CPP_CODE", $outSubapi, $km;
-#     replace $code, "//", "CALLBACKS_POINTERS_DECLARATION", $outCbi, $km;
-#     $code = addHeaderText(code => $code, commentChar => '//');
-# 
-#     spurt CPPDIR ~ $cppFile, $code;
-#     
-#     my Str $proFile = slurp "gene/templates/RakuQtWidgets.pro.template";
-#     my Str $data = [~] 'SOURCES += ' <<~>> @cppFiles <<~>> "\n";
-#     replace $proFile, "#", "LIST_OF_CPP_SOURCES", $data, $km;
-#     $data = [~] 'HEADERS += ' <<~>> @hppFiles <<~>> "\n";
-#     replace $proFile, "#", "LIST_OF_HPP_SOURCES", $data, $km;
-#     spurt CPPDIR ~ PROFILE, $proFile;
-#     
-#     say "Generate the .cpp file : stop";
-#     say "";
-
+    return $includes, $out, $outSignals, $outSlots;
 }
 
 

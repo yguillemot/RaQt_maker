@@ -15,7 +15,13 @@
 #
 
 # Allowed keywords:
-my regex Keyword { 'rakumod' || 'wrappers' || 'cpp' || 'h' || 'hpp' || 'use' };
+my regex Keyword {  || 'rakumod' 
+                    || 'wrappers' 
+                    || 'cpp' 
+                    || 'cpp-include' 
+                    || 'h' 
+                    || 'hpp' 
+                    || 'use' };
 
 sub read_exceptions(Str $exceptionsDirName --> Hash) is export
 {

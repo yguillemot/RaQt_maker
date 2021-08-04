@@ -19,7 +19,8 @@ sub installTemplate(Str :$source!, Str :$destination!,
                     Str :$commentMark = '#',
                     Bool :$keepMarkers = False,
                     Str :$shebang = "",
-                    :%modify = {} )
+                    :%modify = {},
+                    Bool :$copied)
     is export
 {
     my Str $code = slurp $source;
@@ -32,7 +33,9 @@ sub installTemplate(Str :$source!, Str :$destination!,
         replace $code, $commentMark, $k, $v, $keepMarkers;
     }
     
-    $code = addHeaderText(code => $code, commentChar => $commentMark);
+    $code = addHeaderText(code => $code,
+                          commentChar => $commentMark,
+                          copied => $copied);
     
     spurt $destination, $shebang ~ $code;
 }

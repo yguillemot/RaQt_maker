@@ -1,0 +1,13 @@
+
+
+v0.0.3  2020/08/04
+    * Fix the guessuse tool which was missing QApplication
+    * Add a few more elements in the white list
+    * Fix the call of static C++ methods
+    * Add exceptions for getOpenFileName and getSaveFileName in QFileDialog
+    * Update examples
+    * Fix the name of the repository of the generated module in META6.json
+
+v0.0.2  2021/07/18
+    * First released version
+

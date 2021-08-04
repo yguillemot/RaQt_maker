@@ -388,7 +388,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $wrapperName = $wclassname ~ $m.name
                         ~ ($m.number ?? "_" ~ $m.number !! "");
             $outn ~= "sub " ~ $wrapperName
-                        ~ strNativeWrapperArgsDecl($m) ~ "\n";
+                        ~ strNativeWrapperArgsDecl($m,
+                                    showObjectPointer => !$m.isStatic) ~ "\n";
             $outn ~= IND;
             if qRet($m) !~~ "void" {
                 $outn ~= "returns " ~ nType($m.returnType) ~ " ";
@@ -463,7 +464,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             }
 
 
-            my ($pc, $o) = strArgsRakuCallDecl($m);
+            my ($pc, $o) = strArgsRakuCallDecl($m, static => $m.isStatic);
             my Bool $returnSomething = qRet($m) !~~ "void";
             $outm ~= [~] (IND x 2) <<~>> $pc;
 
