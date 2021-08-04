@@ -234,10 +234,12 @@ sub MAIN ( #| C++ filtered header to read
 #     spurt "virtuals.txt", $virtuals;
 
 
-    # Copy the build.rakumod, LICENSE and README.md files in the target directory
+    # Copy the build.rakumod, LICENSE, README.md and Changes files
+    # in the target directory
     copy "../Files/Module/Build.rakumod", TARGETDIR ~ "Build.rakumod";
     copy "../Files/Module/LICENSE", TARGETDIR ~ "LICENSE";
     copy "../Files/Module/README.md", TARGETDIR ~ "README.md";
+    copy "../Files/Module/Changes", TARGETDIR ~ "Changes";
     
     # Copy the test scripts in the target directory
     my @tests = dir "../Files/Module/t";
