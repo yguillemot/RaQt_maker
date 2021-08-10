@@ -154,7 +154,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                                                       useRole => $multiFiles)
                                 ~ " \{\n";
 
-                my ($pc, $o) = strArgsRakuCtorWrapperCall($ctor);
+                my ($pc, $o) = rakuWrapperCallElems($ctor);
                 if $multiFiles {
                     for classesInSignature($ctor) -> $cl {
 #                     say "CL = '$cl'";
@@ -198,7 +198,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                                                       useRole => $multiFiles)
                                     ~ " \{\n";
 
-                    ($pc, $o) = strArgsRakuCtorWrapperCall($ctor);
+                    ($pc, $o) = rakuWrapperCallElems($ctor);
                     
                     if $multiFiles {
                         for classesInSignature($ctor) -> $cl {
@@ -388,8 +388,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $wrapperName = $wclassname ~ $m.name
                         ~ ($m.number ?? "_" ~ $m.number !! "");
             $outn ~= "sub " ~ $wrapperName
-                        ~ strNativeWrapperArgsDecl($m,
-                                    showObjectPointer => !$m.isStatic) ~ "\n";
+                        ~ strNativeWrapperArgsDecl($m) ~ "\n";
             $outn ~= IND;
             if qRet($m) !~~ "void" {
                 $outn ~= "returns " ~ nType($m.returnType) ~ " ";
@@ -464,7 +463,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             }
 
 
-            my ($pc, $o) = strArgsRakuCallDecl($m, static => $m.isStatic);
+            my ($pc, $o) = rakuWrapperCallElems($m);
             my Bool $returnSomething = qRet($m) !~~ "void";
             $outm ~= [~] (IND x 2) <<~>> $pc;
 
@@ -660,7 +659,7 @@ sub generate_callbacks_rakumod(%callbacks, Bool :$multiFiles = False) is export
                                        showNames => True,
                                        showParenth => False) ~ ")\n";
         $outcbh ~= "\{\n";
-        my ($po, $o, @classes) = strArgsRakuCallbackCall($m, :$multiFiles);
+        my ($po, $o, @classes) = RakuCallbackCallElems($m, :$multiFiles);
         $outcbh ~= [~] IND <<~>> $po.lines <<~>> "\n";
         $outcbh ~= IND ~ '$CM.objs{$objectId}."$slotName"' ~ $o ~ "\n";
         $outcbh ~= "}\n\n";

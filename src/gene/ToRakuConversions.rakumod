@@ -244,7 +244,8 @@ sub toRaku(Str $val is copy, Str $cls, %qClasses,
 
 #| Return arguments string of the native wrapper declaration
 # $showObjectPointer : if true the signature starts with the object pointer
-#                      when needed (i.e. when the method is not a ctor)
+#                      when needed (i.e. when the method is neither static
+#                                   nor a ctor)
 # $showParenth : if true, add parentheses around the signature
 # $startWithSep : if true and $showParenth is false, output a comma first
 # $showNames : if true, args names are added to the string
@@ -252,14 +253,13 @@ sub strNativeWrapperArgsDecl(Function $f,
                              Bool :$showObjectPointer = True,
                              Bool :$showParenth = True,
                              Bool :$startWithSep = True,
-                             Bool :$showNames,
-                             Bool :$static --> Str) is export
+                             Bool :$showNames) is export
 {
     my $o = "";
     my $sep = "";
 
     # Add the object pointer if needed
-    if $f.name !~~ "ctor" && $showObjectPointer {
+    if $f.name !~~ "ctor" && !$f.isStatic && $showObjectPointer {
         $o ~= "Pointer";
         $o ~= ' $obj' if $showNames;
         $sep = ", ";
@@ -284,11 +284,12 @@ sub strNativeWrapperArgsDecl(Function $f,
 
 
 
-# Return code to precompute arguments in a callback handler
-# then the list of arguments passed to the callback
-# then the list of classes used as argument if $multiFiles is True
-sub strArgsRakuCallbackCall(Function $f, 
-                    Bool :$multiFiles = False --> List) is export
+# Return in a three elements list :
+#  * A Str of the code needed to precompute arguments in a callback handler
+#  * A Str containing the arguments list passed to the callback
+#  * The list of classes used as argument if $multiFiles is True
+sub RakuCallbackCallElems(Function $f, 
+                          Bool :$multiFiles = False --> List) is export
 {
     my $o = "(";
     my $po = "";
@@ -317,15 +318,16 @@ sub strArgsRakuCallbackCall(Function $f,
 }
 
 
-
-# Return code to precompute arguments then the arguments string
-# of the native wrapper call
-sub strArgsRakuCallDecl(Function $f, Bool :$static --> List) is export
+# Return in a two elements list :
+#  * A list of Str, one for each line of code needed to precompute arguments
+#    before calling a native wrapper
+#  * A Str containing the arguments list passed to the wrapper
+sub rakuWrapperCallElems(Function $f --> List) is export
 {
     my $o;
     my @po = ();
     my $sep;
-    if $static {
+    if $f.isStatic || $f.name ~~ "ctor" {
         $o = "(";
         $sep = "";
     } else {
@@ -349,33 +351,6 @@ sub strArgsRakuCallDecl(Function $f, Bool :$static --> List) is export
     return (@po, $o);
 }
 
-
-
-# Return a list of lines of code to precompute arguments then the
-#  arguments string of the ctor method wrapper call
-sub strArgsRakuCtorWrapperCall(Function $f --> List) is export
-{
-    my $o = "(";
-    my @po = ();
-    my $sep = "";
-    my $c = 0;
-    for $f.arguments -> $a {
-        $c++;
-
-        my Str $convLine = precall_raku($c, $a.ftot, $a.fname,
-                                            rType($a), $a.const, $a.postop);
-        if $convLine {
-            @po.push($convLine ~ "\n");
-            $o ~= $sep ~ '$a' ~ $c;
-        } else {
-            $o ~= $sep ~ '$' ~ $a.fname;
-        }
-
-        $sep = ", ";
-    }
-    $o ~= ")";
-    return (@po, $o);
-}
 
 
 ###############################################################################
