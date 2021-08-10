@@ -21,6 +21,8 @@ src/*.so*
 src/*.txt
 src/*.lst
 src/*.md
+module/*
 
-
+# Local tools
+src/*.sh
 

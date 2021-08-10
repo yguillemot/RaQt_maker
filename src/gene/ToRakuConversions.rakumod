@@ -169,30 +169,30 @@ sub classeReturned(Function $f --> Str) is export
 }
 
 
-#| Return the Raku arguments of the method (without its invocant) in a list
-# coded inside a string.
-# Each element of the list is either the type of the argument when it has no
-# default value, either a list of three elements: the type, name and default
-# value of this argument.
-# This list is intended to be used as an argument of the createSignature sub
-# called at compile time.
-sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
-{
-    my Str $o = "(";
-    my Str $sep = "";
-    for $f.arguments -> $a {
-        $o ~= $sep;
-        my Str $rtp = rType($a);
-        $sep = ", ";
-        if $a.value {
-            $o ~= '("' ~ $rtp ~ '" ,"' ~ $a.fname ~ '",
-                            ' ~ toRaku($a.value, $rtp, %qClasses) ~ ')';
-        } else {
-            $o ~= '"' ~ $rtp ~ '"';
-        }
-    }
-    return $o ~ $sep ~ ')';
-}
+# #| Return the Raku arguments of the method (without its invocant) in a list
+# # coded inside a string.
+# # Each element of the list is either the type of the argument when it has no
+# # default value, either a list of three elements: the type, name and default
+# # value of this argument.
+# # This list was intended to be used as an argument of the createSignature sub
+# # called at compile time.
+# sub StrRakuParamsLst(Function $f, %qClasses --> Str) is export
+# {
+#     my Str $o = "(";
+#     my Str $sep = "";
+#     for $f.arguments -> $a {
+#         $o ~= $sep;
+#         my Str $rtp = rType($a);
+#         $sep = ", ";
+#         if $a.value {
+#             $o ~= '("' ~ $rtp ~ '" ,"' ~ $a.fname ~ '",
+#                             ' ~ toRaku($a.value, $rtp, %qClasses) ~ ')';
+#         } else {
+#             $o ~= '"' ~ $rtp ~ '"';
+#         }
+#     }
+#     return $o ~ $sep ~ ')';
+# }
 
 
 
@@ -314,23 +314,6 @@ sub strArgsRakuCallbackCall(Function $f,
     }
     $o ~= ")";
     return ($po, $o, @classes);
-}
-
-
-
-
-
-# Return arguments string of the new method declaration
-sub strArgsRakuBlessCall(Function $f --> Str) is export
-{
-    my $o = "(";
-    my $sep = "";
-    for $f.arguments -> $a {
-        $o ~= $sep ~ ':$' ~ $a.name;
-        $sep = ", ";
-    }
-    $o ~= ")";
-    return $o;
 }
 
 
