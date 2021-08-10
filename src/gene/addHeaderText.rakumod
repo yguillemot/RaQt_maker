@@ -24,8 +24,8 @@ sub addHeaderText(Str :$code,
     my Str $verb = $copied ?? "copied" !! "generated";
 
     # Replace the keywords
-    $text ~~ s/_VERSION_/$geneVersion/;
-    $text ~~ s/_REPOSITORY_/$repository/;
+    $text ~~ s/_VERSION_/{GENEVERSION}/;
+    $text ~~ s/_REPOSITORY_/{REPOSITORY}/;
     $text ~~ s/_VERB_/$verb/;
 
     # Set text as a comment

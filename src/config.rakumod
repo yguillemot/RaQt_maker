@@ -3,16 +3,16 @@
 # Module info
 
 # Version of the generator
-our constant $geneVersion = "0.0.3";
+our constant GENEVERSION = "0.0.4";
 
 # Version of the produced code
 our constant MODNAME = "Qt::QtWidgets";
-our constant MODVERSION = "0.0.3";
+our constant MODVERSION = "0.0.4";
 our constant MODAUTH = "cpan:YGUILLEMO";
 our constant MODAPI = "2";
 
 # Source repository
-our constant $repository = "https://github.com/yguillemot/RaQt_maker";
+our constant REPOSITORY = "https://github.com/yguillemot/RaQt_maker";
 
 
 ###################################################################
@@ -42,11 +42,6 @@ our constant LIBPREFIX = LIBBASEPREFIX ~ "QtWidgets::";
 our constant $hFile = "QtWidgetsWrapper.h";
 our constant $hppFile = "QtWidgetsWrapper.hpp";
 our constant $cppFile = "QtWidgetsWrapper.cpp";
-# our constant $LibDirectory = "Qt";
-# our constant $LibSubDirectory = "Qt/QtWidgets";
-# our constant $mainRakuFile = "QtWidgets.rakumod";
-# our constant $helpersRakuFile = "QtHelpers.rakumod";
-# our constant $wrappersRakuFile = "QtWrappers.rakumod";
 
 our constant WRAPPERLIBNAME = "RakuQtWidgets";
 
