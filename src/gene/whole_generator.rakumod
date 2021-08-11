@@ -172,7 +172,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                     $signalslHash, $slotsHash, $callbacksHash) =
                 generate_rakumod($k, $v, %c, %exceptions,
                                  $hasCtor, $hasSubclassCtor, $subclassable,
-                                 %virtuals, :multiFiles);
+                                 %virtuals);
 
 
         
@@ -214,7 +214,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     say "Generate other files : start";
     
     my Str ($outscbw, $outcbh, $outicbp, $outcdecl)
-                = generate_callbacks_rakumod(%callbacks, :multiFiles);
+                = generate_callbacks_rakumod(%callbacks);
 
 
     say "    QtWidgets.rakumod";

@@ -287,9 +287,8 @@ sub strNativeWrapperArgsDecl(Function $f,
 # Return in a three elements list :
 #  * A Str of the code needed to precompute arguments in a callback handler
 #  * A Str containing the arguments list passed to the callback
-#  * The list of classes used as argument if $multiFiles is True
-sub rakuCallbackCallElems(Function $f, 
-                          Bool :$multiFiles = False --> List) is export
+#  * The list of classes used in the arguments list
+sub rakuCallbackCallElems(Function $f --> List) is export
 {
     my $o = "(";
     my $po = "";
@@ -303,7 +302,7 @@ sub rakuCallbackCallElems(Function $f,
         if $a.ftot ~~ "CLASS" {
         
             my $tname = $a.fbase;
-            @classes.push: $tname if $multiFiles;
+            @classes.push: $tname;
         
             $po ~= 'my ' ~ $tname ~ ' $a' ~ $c ~ ' = '
                         ~ $tname ~ '.new($' ~ $a.name ~ ');' ~ "\n";

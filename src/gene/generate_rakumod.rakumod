@@ -13,8 +13,7 @@ sub versionedName(Str $name --> Str)
 
 sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
-                    %virtuals, Bool :$multiFiles = False,
-                    :$km = False) is export
+                    %virtuals, :$km = False) is export
 {
 
 #     say "Generate the .rakumod file : start";
@@ -66,8 +65,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         @qRefs.push: "QtSigsloty";
     }
 
-    my Str $isExport = $multiFiles ?? "" !! " is export";
-    my Str $prole = ($multiFiles && $v.isQObj) ?? PREFIXROLE !! "";
+    my Str $prole = $v.isQObj ?? PREFIXROLE !! "";
     
     my Bool $haveParents = False;
     for $v.parents -> $p {
@@ -83,7 +81,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         @qRefs.push: "QtBase";
     }
     
-    if $multiFiles && !$noCtor && $v.isQObj {
+    if !$noCtor && $v.isQObj {
         $outm ~= "\n{IND}does {PREFIXROLE}$k" ;
         @rRefs.push: $k;
         
@@ -144,28 +142,22 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                 $outn ~= "sub " ~ $wclassname ~ $suffixCtor ~ $ctorNum
                                 ~ strNativeWrapperArgsDecl($ctor) ~ "\n";
                 $outn ~= IND ~ "returns Pointer is native(\&libwrapper)";
-                $outn ~= $isExport;
                 $outn ~= " \{ * }\n";
                 $outn ~= "\n";
 
                 # Subroutine(s) ctor calling the native wrapper
                 $outm ~= IND ~ "multi sub ctor"
-                                ~ strArgsRakuCtorDecl($ctor, %c,
-                                                      useRole => $multiFiles)
+                                ~ strArgsRakuCtorDecl($ctor, %c, :useRole)
                                 ~ " \{\n";
 
                 my ($pc, $o) = rakuWrapperCallElems($ctor);
-                if $multiFiles {
-                    for classesInSignature($ctor) -> $cl {
-#                     say "CL = '$cl'";
-                        if %c{$cl}.isQObj {
-                            @rRefs.push: $cl;
-                        } else {
-                            @qRefs.push: $cl;
-                        }
+                for classesInSignature($ctor) -> $cl {
+                    # say "CL = '$cl'";
+                    if %c{$cl}.isQObj {
+                        @rRefs.push: $cl;
+                    } else {
+                        @qRefs.push: $cl;
                     }
-                } else {
-                    @qRefs.append: classesInSignature($ctor);
                 }
 
                 $outm ~= [~] (IND x 2) <<~>> $pc;
@@ -188,28 +180,22 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     $outn ~= "sub " ~ $wsclassname ~ $suffixCtor ~ $ctorNum
                                     ~ strNativeWrapperArgsDecl($ctor) ~ "\n";
                     $outn ~= IND ~ "returns Pointer is native(\&libwrapper)";
-                    $outn ~= $isExport;
                     $outn ~= " \{ * }\n";
                     $outn ~= "\n";
 
                     # Subroutine(s) ctor calling the native subclass wrapper
                     $outm ~= IND ~ "multi sub subClassCtor"
-                                    ~ strArgsRakuCtorDecl($ctor, %c,
-                                                      useRole => $multiFiles)
+                                    ~ strArgsRakuCtorDecl($ctor, %c, :useRole)
                                     ~ " \{\n";
 
                     ($pc, $o) = rakuWrapperCallElems($ctor);
                     
-                    if $multiFiles {
-                        for classesInSignature($ctor) -> $cl {
-                            if %c{$cl}.isQObj {
-                                @rRefs.push: $cl;
-                            } else {
-                                @qRefs.push: $cl;
-                            }
+                    for classesInSignature($ctor) -> $cl {
+                        if %c{$cl}.isQObj {
+                            @rRefs.push: $cl;
+                        } else {
+                            @qRefs.push: $cl;
                         }
-                    } else {
-                        @qRefs.append: classesInSignature($ctor);
                     }
 
                     $outm ~= [~] (IND x 2) <<~>> $pc;
@@ -227,8 +213,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     # Declaration of the callbacks validation method wrapper
                     $outn ~= "sub " ~ $prefixWrapper ~ 'validateCB_' ~ $k
                                         ~ '(Pointer, int32, Str)' ~ "\n";
-                    $outn ~= IND ~ "is native(\&libwrapper)"
-                                            ~ $isExport ~ " \{ * }\n";
+                    $outn ~= IND ~ "is native(\&libwrapper)" ~ " \{ * }\n";
                     $outn ~= "\n";
 
                     # Declaration of the callbacks validation method
@@ -359,8 +344,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         
         # Declaration of the native dtor wrapper
         $outn ~= "sub " ~ $wclassname ~ $suffixDtor ~ '(Pointer)' ~ "\n";
-        $outn ~= IND ~ "is native(\&libwrapper)"
-                                        ~ $isExport ~ " \{ * }\n";
+        $outn ~= IND ~ "is native(\&libwrapper)" ~ " \{ * }\n";
         $outn ~= "\n";
     }
     
@@ -393,9 +377,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             if qRet($m) !~~ "void" {
                 $outn ~= "returns " ~ nType($m.returnType) ~ " ";
             }
-#             say "MULTIFILES : ", $multiFiles;
             $outn ~= "is native(\&libwrapper)";
-            $outn ~= $isExport;
             $outn ~= " \{ * }\n";
             $outn ~= "\n";
             
@@ -425,31 +407,26 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             # Call of the native wrapper
             $outm ~= IND ~ ($m.number ?? "multi method" !! "method") ~ " ";
             $outm ~= $m.name;
-            $outm ~= strRakuArgsDecl($m, %c, useRole => $multiFiles)
+            $outm ~= strRakuArgsDecl($m, %c, :useRole)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
             
-            if $multiFiles {
+            # If the method returns a Qt class, to instantiate an
+            # associated raku object will be needed and the "use QXxx"
+            # instruction have to be added.
+            # (Having simultaneously "use QXxx" and "use RQXxx" is
+            # not harmful if not useful.)
+            my Str $cr = classeReturned($m);
+            @qRefs.push: $cr if $cr;
             
-                # If the method returns a Qt class, to instantiate an
-                # associated raku object will be needed and the "use QXxx"
-                # instruction have to be added.
-                # (Having simultaneously "use QXxx" and "use RQXxx" is
-                # not harmful if not useful.)
-                my Str $cr = classeReturned($m);
-                @qRefs.push: $cr if $cr;
-                
-                for classesInSignature($m) -> $cl {
-                    if %c{$cl}.isQObj {
-                        @rRefs.push: $cl;
-                    } else {
-                        @qRefs.push: $cl;
-                    }
+            for classesInSignature($m) -> $cl {
+                if %c{$cl}.isQObj {
+                    @rRefs.push: $cl;
+                } else {
+                    @qRefs.push: $cl;
                 }
-
-            } else {
-                @qRefs.append: classesInSignature($m);
             }
+
 
             # PROVISIONAL (TODO) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             # (WAITING FOR A TRUE CORRECT HANDLING)
@@ -508,21 +485,17 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $qualifiedClass = $k;
 
             $outm ~= IND ~ "method " ~ $m.name
-                            ~ strRakuArgsDecl($m, %c, useRole => $multiFiles)
+                            ~ strRakuArgsDecl($m, %c, :useRole)
                             ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
             $outm ~= "\n";
 
-            if $multiFiles {
-                for classesInSignature($m) -> $cl {
-                    if %c{$cl}.isQObj {
-                        @rRefs.push: $cl;
-                    } else {
-                        @qRefs.push: $cl;
-                    }
+            for classesInSignature($m) -> $cl {
+                if %c{$cl}.isQObj {
+                    @rRefs.push: $cl;
+                } else {
+                    @qRefs.push: $cl;
                 }
-            } else {
-                @qRefs.append: classesInSignature($m);
             }
 
             $outSignals ~=
@@ -611,13 +584,11 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     }
     
     # Add the needed "use" calls
-    if $multiFiles {
-        for $qRefsSet.keys.sort -> $qcl {
-            $outu ~= "use {LIBPREFIX}{versionedName($qcl)};\n" if $qcl !~~ $k;
-        }
-        for (set @rRefs).keys.sort -> $qcl {
-            $outu ~= "use {LIBPREFIX}{PREFIXROLE}{versionedName($qcl)};\n";
-        }
+    for $qRefsSet.keys.sort -> $qcl {
+        $outu ~= "use {LIBPREFIX}{versionedName($qcl)};\n" if $qcl !~~ $k;
+    }
+    for (set @rRefs).keys.sort -> $qcl {
+        $outu ~= "use {LIBPREFIX}{PREFIXROLE}{versionedName($qcl)};\n";
     }
     
     # say "\n";
@@ -630,7 +601,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
  
  
  
-sub generate_callbacks_rakumod(%callbacks, Bool :$multiFiles = False) is export
+sub generate_callbacks_rakumod(%callbacks) is export
 {
     my Str $outscbw = "";    # Setup callback wrappers
     my Str $outcbh = "";     # Callback handlers related to Qt virtual methods
@@ -659,7 +630,7 @@ sub generate_callbacks_rakumod(%callbacks, Bool :$multiFiles = False) is export
                                        showNames => True,
                                        showParenth => False) ~ ")\n";
         $outcbh ~= "\{\n";
-        my ($po, $o, @classes) = rakuCallbackCallElems($m, :$multiFiles);
+        my ($po, $o, @classes) = rakuCallbackCallElems($m);
         $outcbh ~= [~] IND <<~>> $po.lines <<~>> "\n";
         $outcbh ~= IND ~ '$CM.objs{$objectId}."$slotName"' ~ $o ~ "\n";
         $outcbh ~= "}\n\n";
