@@ -288,7 +288,7 @@ sub strNativeWrapperArgsDecl(Function $f,
 #  * A Str of the code needed to precompute arguments in a callback handler
 #  * A Str containing the arguments list passed to the callback
 #  * The list of classes used as argument if $multiFiles is True
-sub RakuCallbackCallElems(Function $f, 
+sub rakuCallbackCallElems(Function $f, 
                           Bool :$multiFiles = False --> List) is export
 {
     my $o = "(";
