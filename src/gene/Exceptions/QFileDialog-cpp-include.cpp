@@ -25,11 +25,14 @@ except for the addition of some indentation.
 When the keyword is "use", each word following "BEGIN" will be embedded in
 a raku "use" statement before to be inserted in the destination file.
 
+When the keyword is "cpp-include", each word following "BEGIN" will be embedded
+in a C "#include" statement before to be inserted in the destination file.
+
 Currently, the "use" and "cpp-include" keywords should only be use with a
 class destination, never with a method destination.
 
 
 BEGIN
 
-#include "StrBuffer.h"
+"StrBuffer.h"
 

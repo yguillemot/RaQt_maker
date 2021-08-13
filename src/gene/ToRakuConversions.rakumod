@@ -258,9 +258,16 @@ sub strNativeWrapperArgsDecl(Function $f,
     my $o = "";
     my $sep = "";
 
+    # Add the return buffer pointer if needed
+    if retBufNeeded($f) {
+        $o ~= "Pointer";
+        $o ~= ' $retBuffer' if $showNames;
+        $sep = ", ";
+    }
+
     # Add the object pointer if needed
     if $f.name !~~ "ctor" && !$f.isStatic && $showObjectPointer {
-        $o ~= "Pointer";
+        $o ~= $sep ~ "Pointer";
         $o ~= ' $obj' if $showNames;
         $sep = ", ";
     }
@@ -326,7 +333,11 @@ sub rakuWrapperCallElems(Function $f --> List) is export
     my $o;
     my @po = ();
     my $sep;
-    if $f.isStatic || $f.name ~~ "ctor" {
+    if retBufNeeded($f) {
+        $o = '($retBuffer, self.address';
+        $sep = ", ";
+        @po.push('my Pointer $retBuffer = QWStrBufferAlloc;' ~ "\n");
+    } elsif $f.isStatic || $f.name ~~ "ctor" {
         $o = "(";
         $sep = "";
     } else {

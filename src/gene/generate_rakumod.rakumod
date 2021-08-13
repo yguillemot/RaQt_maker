@@ -374,7 +374,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             $outn ~= "sub " ~ $wrapperName
                         ~ strNativeWrapperArgsDecl($m) ~ "\n";
             $outn ~= IND;
-            if qRet($m) !~~ "void" {
+            if qRet($m) !~~ "void" && !retBufNeeded($m) {
                 $outn ~= "returns " ~ nType($m.returnType) ~ " ";
             }
             $outn ~= "is native(\&libwrapper)";
@@ -447,19 +447,28 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             # $outm ~= "say \"Before calling $wrapperName\";\n";
 
             $outm ~= IND x 2
-                        ~ ($returnSomething ?? 'my $result = ' !! '')
+                        ~ ( $returnSomething && !retBufNeeded($m)
+                                ?? 'my $result = '
+                                !! '' )
                         ~ $wrapperName ~ $o ~ ";\n";
 
             if $returnSomething {
-                my $rt = $m.returnType;
-                my $poc = postcall_raku('$result', $rt.ftot,
-                                                            qPostop($rt),
-                                        '$result1', rType($rt));               
-                if $poc {
-                    $outm ~= IND x 2 ~ $poc ~ "\n";
-                    $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";
+                if !retBufNeeded($m) {
+                    my $rt = $m.returnType;
+                    my $poc = postcall_raku('$result', $rt.ftot,
+                                                                qPostop($rt),
+                                            '$result1', rType($rt));               
+                    if $poc {
+                        $outm ~= IND x 2 ~ $poc ~ "\n";
+                        $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";
+                    } else {
+                        $outm ~= IND x 2 ~ 'return $result;' ~ "\n";
+                    }
                 } else {
-                    $outm ~= IND x 2 ~ 'return $result;' ~ "\n";
+                    $outm ~= IND x 2 ~ 'my Str $returnedString ='
+                                    ~ ' QWStrBufferRead($retBuffer);' ~ "\n";
+                    $outm ~= IND x 2 ~ 'QWStrBufferFree($retBuffer);' ~ "\n";
+                    $outm ~= IND x 2 ~ 'return $returnedString;' ~ "\n";
                 }
             }
 

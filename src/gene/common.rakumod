@@ -687,17 +687,38 @@ sub qProto(Function $f --> Str) is export
 }
 
 
+#| Return true if the returned value needs a buffer on the heap
+sub retBufNeeded(Function $f --> Bool) is export
+{
+    # TODO : Move this sub elsewhere ?
+    #        In natives.rakumod ?
+
+    qRet($f) ~~ "QString"
+}
+
 
 #| Return the C return type of a method
 sub cRetType(Function $f --> Str) is export
 {
-    cType($f.returnType) ~ " " ~ cPostop($f.returnType)
+    retBufNeeded($f)
+        ?? "void"
+        !! cRawRetType $f
+}
+
+
+#| Return the C return type a method would have without bufferisation 
+sub cRawRetType(Function $f --> Str) is export
+{
+    trim(cType($f.returnType) ~ " " ~ cPostop($f.returnType))
 }
 
 
 #| Return the arguments of $f with C types and names
 # $showObjectPointer : if true the signature starts with the object pointer
 #                      when needed (i.e. when the method is not a ctor)
+#             Note: If the function needs a return buffer, the buffer address
+#                   is the first parameter and the object pointer is the 
+#                   second one.
 # $showParenth : if true, add parentheses around the arguments
 # $startWithSep : if true and $showParenth is false, output a comma first
 sub cSignature(Function $f,
@@ -718,6 +739,15 @@ sub cSignature(Function $f,
             $out = "void * obj";
         } else {
             $out = "void * obj, $out";
+        }
+    }
+
+    # Add the return buffer address if needed
+    if retBufNeeded($f) {
+        if $out eq "" {
+            $out = "void * retBuffer";
+        } else {
+            $out = "void * retBuffer, $out";
         }
     }
 
