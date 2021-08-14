@@ -25,11 +25,10 @@
     QCoreApplication::quit()            # For quit() in QApplication
 
 	QTextEdit::ctor(QWidget*)
-#    QTextEdit::toPlainText()
-    
-#	QTextEdit::setPlainText(const QString&)
-#	QTextEdit::setReadOnly(bool)
-#	QTextEdit::textChanged()
+    QTextEdit::toPlainText()
+	QTextEdit::setPlainText(const QString&)
+	QTextEdit::setReadOnly(bool)
+	QTextEdit::textChanged()
 	
     QLayout::addWidget(QWidget*)
     QBoxLayout::addLayout(QLayout*, int)
