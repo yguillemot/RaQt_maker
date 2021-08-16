@@ -249,9 +249,9 @@ sub removeArgs(Str $sig is copy, Int $n --> Str) is export
 {
     my $p = $sig.chars;
     for (1..$n) {
-    say "'", $sig, "' : ", $p, " ", $p.WHAT;;
+        # say "'", $sig, "' : ", $p, " ", $p.WHAT;;
         $p = rindex $sig, ',', $p - 1;
-    say "'", $sig, "' : ", $p, " ", $p.WHAT;;
+        # say "'", $sig, "' : ", $p, " ", $p.WHAT;;
         return '()' if !$p;
     }
     $sig.substr-rw($p) = ')';
