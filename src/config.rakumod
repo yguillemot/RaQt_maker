@@ -3,11 +3,11 @@
 # Module info
 
 # Version of the generator
-our constant GENEVERSION = "0.0.4";
+our constant GENEVERSION = "0.0.5";
 
 # Version of the produced code
 our constant MODNAME = "Qt::QtWidgets";
-our constant MODVERSION = "0.0.4";
+our constant MODVERSION = "0.0.5";
 our constant MODAUTH = "cpan:YGUILLEMO";
 our constant MODAPI = "2";
 
