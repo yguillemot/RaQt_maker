@@ -1,6 +1,12 @@
 
+v0.0.4  2021/08/16
+    * Remove unused code
+    * Rename and simplify functions
+    * Fix bugs in generated code
+    * Add some elements in the white list
+    * Update examples
 
-v0.0.3  2020/08/04
+v0.0.3  2021/08/04
     * Fix the guessuse tool which was missing QApplication
     * Add a few more elements in the white list
     * Fix the call of static C++ methods
