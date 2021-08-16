@@ -28,7 +28,7 @@ class QtSigsloty is QtBase is export {
         # Look for an already registered signal
         my SigSlot $ss;
         if %signals{$class}:exists {
-            for %signals{$class} -> $s {
+            for @(%signals{$class}) -> $s {
                 if $s.name eq $meth.name && $s.sig eq $signature {
                     $ss = $s;
                     last;
@@ -39,7 +39,8 @@ class QtSigsloty is QtBase is export {
         # If the signal is already registered (is a plainQt one) add
         # its signature else register the signal
         if $ss {
-            $ss.signature = removeInvocant $meth.signature;
+            # Doesn't work : removed in RaQt_maker v0.0.4
+            # $ss.signature = removeInvocant $meth.signature;
         } else {
             %signals{$class}.push(SigSlot.new(
                     name => $meth.name,
@@ -88,7 +89,7 @@ class QtSigsloty is QtBase is export {
         # Look for an already registered signal
         my SigSlot $ss;
         if %signals{$class}:exists {
-            for %signals{$class} -> $s {
+            for @(%signals{$class}) -> $s {
                 if $s.name eq $meth.name && $s.sig eq $signature {
                     $ss = $s;
                     last;
@@ -99,6 +100,7 @@ class QtSigsloty is QtBase is export {
         # If the signal is already registered (is a plainQt one) add
         # its signature else register the signal
         if $ss {
+            # Doesn't work : removed in RaQt_maker v0.0.4
             $ss.signature = removeInvocant $meth.signature;
         } else {
             %signals{$class}.push(SigSlot.new(
@@ -136,7 +138,7 @@ class QtSigsloty is QtBase is export {
         # Look for an already registered slot
         my SigSlot $ss;
         if %slots{$class}:exists {
-            for %slots{$class} -> $s {
+            for @(%slots{$class}) -> $s {
                 if $s.name eq $meth.name && $s.sig eq $signature {
                     $ss = $s;
                     last;
@@ -147,6 +149,7 @@ class QtSigsloty is QtBase is export {
         # If the slot is already registered (is a plainQt one) add
         # its signature else register the slot
         if $ss {
+            # Doesn't work : removed in RaQt_maker v0.0.4
             $ss.signature = removeInvocant $meth.signature;
         } else {
             %slots{$class}.push(SigSlot.new(
@@ -713,14 +716,16 @@ sub showSigsSlots is export {
     for %signals.kv -> $k, $v {
         say "   ", $k, "\t:";
         for @$v -> $u {
-            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple;
+            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple,
+                "\t", $u.signature;
         }
     }
     say "SLOTS :";
     for %slots.kv -> $k, $v {
         say "   ", $k, "\t:";
         for @$v -> $u {
-            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple;
+            say "\t", $u.name, " ", $u.sig, " ", $u.sigIsSimple,
+                "\t", $u.signature;
         }
     }
     say "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";

@@ -62,9 +62,9 @@ sub libwrapper is export {
 
 
 # Global hashes
-our %signals is export;  # className -> @[SigSlot( "signal(signature)", isSimpleSig )]
+our %signals is export;  # className => @[SigSlot( "signal(signature)", isSimpleSig )]
 our %slots is export;
-our %callbacks is export;  # classname -> @virtualMethodName 
+our %callbacks is export;  # classname => @virtualMethodName 
 
 
 
@@ -82,6 +82,13 @@ class SigSlot is export {
 }
 
 BEGIN {
+
+# Ideally, %signals and %slots should be initialized from the trait_mod
+# of QtSignal and QtSlot defined in the class QtSigSloty.
+# Unfortunately, this doesn't work: the parts of these hashes defined inside
+# the library are no more visible from the main program.
+# That's why these hashes are initialized here.
+
 #BEGIN_INSERTION_HERE
 #SIGNALS_HASH
 #END_INSERTION_HERE
@@ -233,7 +240,7 @@ sub slotAcceptsSig(Signature $dst, Signature $src --> Int) is export
     
     # Return the number of parameters in $sig without
     # a related parameter in $slot
-    return $sig.count - $slot.count;
+    return ($sig.count - $slot.count).Int;
 }
 
 
