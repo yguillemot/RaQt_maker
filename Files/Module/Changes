@@ -2,7 +2,7 @@
 v0.0.4  2021/08/16
     * Fix corrupt strings returned by methods from the Qt API
     * Fix signal/slot to/from Qt with non default arguments
-    * Add QFileDialog class
+    * Add a few methods in QTextEdit
     * Update an old example a add a new one
 
 v0.0.3  2021/08/04
