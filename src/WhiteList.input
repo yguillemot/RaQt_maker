@@ -63,13 +63,14 @@
 	QWidget::update()
 	QWidget::update(int, int, int, int)
 
-    	QWidget::enterEvent(QEvent*)
-        QWidget::leaveEvent(QEvent*)
-        QWidget::mouseMoveEvent(QMouseEvent*)
-        QWidget::mousePressEvent(QMouseEvent*)
-        QWidget::mouseReleaseEvent(QMouseEvent*)
-        QWidget::paintEvent(QPaintEvent*)
-
+    QWidget::enterEvent(QEvent*)
+    QWidget::leaveEvent(QEvent*)
+    QWidget::mouseMoveEvent(QMouseEvent*)
+    QWidget::mousePressEvent(QMouseEvent*)
+    QWidget::mouseReleaseEvent(QMouseEvent*)
+    QWidget::paintEvent(QPaintEvent*)
+	QWidget::closeEvent(QCloseEvent*)
+	
 	QWidget::setFocus()
 	QWidget::setFocus(Qt::FocusReason)
 	QWidget::setFocusPolicy(Qt::FocusPolicy)
@@ -245,5 +246,13 @@
 	
 	QFileDialog::getOpenFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)
 	QFileDialog::getSaveFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)	
+	
+    QDialog::exec()
+	
+	QMessageBox::ctor(QWidget*)
+	QMessageBox::setInformativeText(const QString&)
+	QMessageBox::setStandardButtons(StandardButtons)
+	QMessageBox::setText(const QString&)
+
 	
 	

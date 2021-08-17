@@ -354,7 +354,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     for $v.methods -> $m {
         next if $m.blackListed || !$m.whiteListed;
         next if $m.isSignal || $m.name ~~ "ctor";
-        next if $m.isVirtual;
+        next if $m.isVirtual && !$m.isSlot;     # !$m.isSlot since v0.0.5
         
 #         say "Generate method ", $m.name;
 

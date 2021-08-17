@@ -16,7 +16,7 @@ class Meth {
 sub readList(Str $file --> List) is export
 {
     if !$file.IO.e || !$file.IO.f {
-        # If there is no input file empty listes are assumed
+        # If there is no input file then empty lists are assumed
         return (), ();
     }
 

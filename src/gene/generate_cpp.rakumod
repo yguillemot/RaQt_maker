@@ -64,7 +64,8 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
     MLOOP: for $v.methods -> $m {
         next MLOOP if !$m.whiteListed || $m.blackListed;
         
-        next if $m.isVirtual;  ###  Always ???
+        next if $m.isVirtual && !$m.isSlot;  # Always skip virtual ???
+                                             # v0.0.5: added exception for slots
 
         # Look for an exception related to the method
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, showNames => False);

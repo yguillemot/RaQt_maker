@@ -951,6 +951,13 @@ sub vmethods(API $api, Str $k --> Hash) is export
     {
         my $cl = %c{$className};
         for $cl.methods.sort -> $m {
+        
+            # V0.0.5: There is a problem with QDialog::exec which is
+            #         a "virtual slot". So, currently, the generation
+            #         of code related to virtual methods is disabled
+            #         the slots.
+            next if $m.isSlot;
+
             next if !$m.isVirtual || $m.blackListed || !$m.whiteListed;
             next if %virtuals{$m.name}:exists;
             %virtuals{$m.name} = $className, $m;
