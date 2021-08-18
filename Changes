@@ -1,8 +1,9 @@
 
 v0.0.5  2021/??/??
     * Qualifier "virtual" is now ignored on a slot (Pb with QDialog::exec())
-    - Add QMessageBox class
-    - Add QWidget::closevent()
+    - Add QMessageBox class in the white list
+    - Add QWidget::closevent() in the white list
+    * Fix a bug in the generated code of event handlers
 
 v0.0.4  2021/08/16
     * Remove unused code

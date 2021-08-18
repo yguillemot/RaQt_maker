@@ -46,8 +46,9 @@ sub generate_hpp(Str $k, Qclass $v, %exceptions, %virtuals --> List) is export
             }
             $out ~= "\n";
             $out ~= IND x 3 ~ ");\n";
+            $out ~= IND x 2 ~ "} else \{\n";
+            $out ~= IND x 3 ~ $k ~ '::' ~ $vm.name ~ qCallUse($vm) ~ ";\n";
             $out ~= IND x 2 ~ "}\n";
-            $out ~= IND x 2 ~ $k ~ '::' ~ $vm.name ~ qCallUse($vm) ~ ";\n";
             $out ~= IND ~ "}\n\n";
         }
 
