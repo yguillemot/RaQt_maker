@@ -305,12 +305,20 @@ sub nType($arg --> Str) is export
 }
 
 # When $useRole is True, the role prefix is added to the name of classes
-sub rType($arg, Bool :$useRole = False --> Str) is export
+# When $noEnum is True, the rnum types are replaced with "Int" 
+sub rType($arg,
+          Bool :$useRole = False,
+          Bool :$noEnum = False
+          --> Str) is export
 {
     my Str $prefix = $useRole ?? PREFIXROLE !! "";
     given $arg.ftot {
         when "CLASS" { $prefix ~ $arg.base }
-        when "ENUM" { $arg.fclass ~ '::' ~ $arg.fbase }
+        when "ENUM" {
+            $noEnum
+                ?? "Int"
+                !! ($arg.fclass ~ '::' ~ $arg.fbase)
+        }
         when "NATIVE" {
             #   TODO : This case should be dealed in natives.rakumod and not here
             if $arg.fbase ~~ "char" && $arg.fpostop ~~ "*" { "Str" }
@@ -765,14 +773,16 @@ sub cSignature(Function $f,
 #| Return the Raku signature (Raku types without arg names) of $f
 # $showParenth : if true, add parentheses around the signature
 # $startWithSep : if true and $showParenth is false, output a comma first
+# $noEnum : if true, enum types are replaced with "Int"
 sub rSignature(Function $f,
                Bool :$showParenth = True,
-               Bool :$startWithSep = True       --> Str) is export
+               Bool :$startWithSep = True,
+               Bool :$noEnum = False --> Str) is export
 {
     my Str $out = "";
     my $sep = "";
     for $f.arguments -> $a {
-        $out ~= $sep ~ rType($a);
+        $out ~= $sep ~ rType($a, :$noEnum);
         $sep = ", ";
     }
 

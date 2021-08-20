@@ -155,7 +155,7 @@ sub classesInSignature(Function $f --> List) is export
     return @o;
 }
 
-# Return the name of the name of the Qt classe returned by the function
+# Return the name of the Qt class returned by the function
 # or Nil if the function doesn't return a Qt class
 sub classeReturned(Function $f --> Str) is export
 {

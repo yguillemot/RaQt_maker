@@ -397,11 +397,18 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     ~ IND x 2 ~ 'sig => "' ~ rSignature($m) ~ '",' ~ "\n"
                     ~ IND x 2 ~ 'qSig => "'
                             ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
-                    ~ IND x 2 ~ 'signature => :' ~ rSignature($m) ~ ',' ~ "\n"
+                    ~ IND x 2 ~ 'signature => :'
+                            ~ rSignature($m, :noEnum) ~ ',' ~ "\n"
                     ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                     ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                     ~ IND x 2 ~ 'isSlot => True,' ~ "\n"
                     ~ IND ~ '));' ~ "\n";
+                    
+                # Note: Currently, an enum name is replaced with "Int" in
+                #       the "signature" field (:noEnum parameter of rSignature).
+                #       This avoids problems with enums defined in some Qt class
+                #       unknown from QtHelpers module where the %slots global
+                #       hash is initialised. 
             }
 
             

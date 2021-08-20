@@ -254,5 +254,119 @@
 	QMessageBox::setStandardButtons(StandardButtons)
 	QMessageBox::setText(const QString&)
 
+	############################################################
+	# TODO:
+	
+	#          GridLayout
+	QGridLayout::ctor(QWidget*)
+	QGridLayout::ctor()
+
+	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
+	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
+	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
+	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
+
+	QGridLayout::cellRect(int, int)
+	QGridLayout::columnCount()
+	QGridLayout::columnMinimumWidth(int)
+	QGridLayout::columnStretch(int)
+	QGridLayout::setColumnMinimumWidth(int, int)
+	QGridLayout::setColumnStretch(int, int)
+	QGridLayout::rowCount()
+	QGridLayout::rowMinimumHeight(int)
+	QGridLayout::rowStretch(int)
+	QGridLayout::setRowMinimumHeight(int, int)
+	QGridLayout::setRowStretch(int, int)
+	
+    QGridLayout::setSpacing(int)
+	QGridLayout::setHorizontalSpacing(int)
+	QGridLayout::setVerticalSpacing(int)
+	QGridLayout::spacing()
+	QGridLayout::horizontalSpacing()
+	QGridLayout::verticalSpacing()
+
+
+	#          AbstractSlider
+	QAbstractSlider::hasTracking()
+	QAbstractSlider::invertedAppearance()
+	QAbstractSlider::invertedControls()
+	QAbstractSlider::maximum()
+	QAbstractSlider::minimum()
+	QAbstractSlider::orientation()
+	QAbstractSlider::pageStep()
+	QAbstractSlider::setMaximum(int)
+	QAbstractSlider::setMinimum(int)
+	QAbstractSlider::setOrientation(Qt::Orientation)
+	QAbstractSlider::setPageStep(int)
+	QAbstractSlider::setRange(int, int)
+### QAbstractSlider::setRepeatAction(SliderAction, int, int)
+	QAbstractSlider::setSingleStep(int)
+	QAbstractSlider::setSliderDown(bool)
+	QAbstractSlider::setSliderPosition(int)
+	QAbstractSlider::setTracking(bool)
+	QAbstractSlider::setValue(int)
+	QAbstractSlider::singleStep()
+	QAbstractSlider::value()
+	QAbstractSlider::valueChanged(int)
+	QAbstractSlider::sliderMoved(int)
+	QAbstractSlider::sliderPosition()
+	QAbstractSlider::sliderPressed()
+	QAbstractSlider::sliderReleased()
 	
 	
+	#          Slider
+	QSlider::ctor(QWidget*)
+	QSlider::ctor(Qt::Orientation, QWidget*)
+	QSlider::setTickInterval(int)
+	QSlider::setTickPosition(TickPosition)
+	QSlider::tickInterval()
+	QSlider::tickPosition()
+	
+	#          CheckBox
+	QCheckBox::checkState()
+	QCheckBox::ctor(QWidget*)
+	QCheckBox::ctor(const QString&, QWidget*)
+	QCheckBox::isTristate()
+	QCheckBox::setCheckState(Qt::CheckState)
+	QCheckBox::setTristate(bool)
+	QCheckBox::stateChanged(int)
+	
+	
+	#          RadioButton
+	QRadioButton::ctor(QWidget*)
+	QRadioButton::ctor(const QString&, QWidget*)
+
+	
+	#          GroupBox
+### QGroupBox::alignment()
+	QGroupBox::clicked(bool)
+	QGroupBox::ctor(QWidget*)
+	QGroupBox::ctor(const QString&, QWidget*)
+	QGroupBox::isCheckable()
+	QGroupBox::isChecked()
+	QGroupBox::isFlat()
+	QGroupBox::setAlignment(int)
+	QGroupBox::setCheckable(bool)
+	QGroupBox::setChecked(bool)
+	QGroupBox::setFlat(bool)
+	QGroupBox::setTitle(const QString&)
+	QGroupBox::title()
+	QGroupBox::toggled(bool)
+
+	
+	#          Dial
+	QDial::ctor(QWidget*)
+	QDial::notchSize()
+	QDial::notchTarget()
+	QDial::notchesVisible()
+	QDial::setNotchTarget(double)
+	QDial::setNotchesVisible(bool)
+	QDial::setWrapping(bool)
+	QDial::wrapping()
+
+	
+	#          AbstractSpinBox
+	#          SpinBox
+    #          ComboBox
+
+    	
