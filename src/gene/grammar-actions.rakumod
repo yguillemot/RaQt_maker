@@ -450,7 +450,8 @@ class qtClassesActions is export {
         make Argument.new(
             base => $<typename>.made.base,
             postop => $<typename>.made.postop,
-            name => "UNNAMED",
+            name => "???",
+            value => $<value>.made,
             const => $<typename>.made.const
         );
         self.success($/);

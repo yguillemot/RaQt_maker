@@ -4,7 +4,7 @@ v0.0.5  2021/??/??
     - Add QMessageBox class in the white list
     - Add QWidget::closevent() in the white list
     * Fix a bug in the generated code of event handlers
-    - Add QSlider, QDial, QChexBox and QRadioButton in the white list
+    - Add QSlider, QDial, QCheckBox and QRadioButton in the white list
     - Update examples
 
 v0.0.4  2021/08/16
