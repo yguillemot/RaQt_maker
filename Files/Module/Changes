@@ -1,4 +1,7 @@
-
+v0.0.6  2021/??/??
+    * Add QGridLayout class
+    * Add a new example
+    
 v0.0.5  2021/28/08
     * Fix a bug in event handlers
     * Add QSlider, QDial, QCheckBox and QRadioButton classes

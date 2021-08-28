@@ -368,38 +368,43 @@
 	QDial::setWrapping(bool)
 	QDial::wrapping()
 
+
+# Version 0.0.6
+	
+	         GridLayout
+    	QGridLayout::ctor(QWidget*)
+    	QGridLayout::ctor()
+    
+    	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
+    	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
+    	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
+    	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
+    
+    	QGridLayout::cellRect(int, int)
+    	QGridLayout::columnCount()
+    	QGridLayout::columnMinimumWidth(int)
+    	QGridLayout::columnStretch(int)
+    	QGridLayout::setColumnMinimumWidth(int, int)
+    	QGridLayout::setColumnStretch(int, int)
+    	QGridLayout::rowCount()
+    	QGridLayout::rowMinimumHeight(int)
+    	QGridLayout::rowStretch(int)
+    	QGridLayout::setRowMinimumHeight(int, int)
+    	QGridLayout::setRowStretch(int, int)
+    	
+        QGridLayout::setSpacing(int)
+    	QGridLayout::setHorizontalSpacing(int)
+    	QGridLayout::setVerticalSpacing(int)
+    	QGridLayout::spacing()
+    	QGridLayout::horizontalSpacing()
+    	QGridLayout::verticalSpacing()	
+    
 	
 	
 	############################################################
 	# TODO:
-	
-	#          GridLayout
-    # 	QGridLayout::ctor(QWidget*)
-    # 	QGridLayout::ctor()
-    # 
-    # 	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
-    # 	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
-    # 	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
-    # 	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
-    # 
-    # 	QGridLayout::cellRect(int, int)
-    # 	QGridLayout::columnCount()
-    # 	QGridLayout::columnMinimumWidth(int)
-    # 	QGridLayout::columnStretch(int)
-    # 	QGridLayout::setColumnMinimumWidth(int, int)
-    # 	QGridLayout::setColumnStretch(int, int)
-    # 	QGridLayout::rowCount()
-    # 	QGridLayout::rowMinimumHeight(int)
-    # 	QGridLayout::rowStretch(int)
-    # 	QGridLayout::setRowMinimumHeight(int, int)
-    # 	QGridLayout::setRowStretch(int, int)
-    # 	
-    #     QGridLayout::setSpacing(int)
-    # 	QGridLayout::setHorizontalSpacing(int)
-    # 	QGridLayout::setVerticalSpacing(int)
-    # 	QGridLayout::spacing()
-    # 	QGridLayout::horizontalSpacing()
-    # 	QGridLayout::verticalSpacing()	
+
+
 	#          AbstractSpinBox
 	#          SpinBox
     #          ComboBox

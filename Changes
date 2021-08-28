@@ -1,4 +1,7 @@
-
+v0.0.6  2021/??/??
+    * Add QGridLayout class
+    * Add sudoku example
+    
 v0.0.5  2021/08/28
     * Qualifier "virtual" is now ignored on a slot (Pb with QDialog::exec())
     * Add QMessageBox class in the white list
