@@ -1,11 +1,12 @@
 
-v0.0.5  2021/??/??
+v0.0.5  2021/08/28
     * Qualifier "virtual" is now ignored on a slot (Pb with QDialog::exec())
-    - Add QMessageBox class in the white list
-    - Add QWidget::closevent() in the white list
+    * Add QMessageBox class in the white list
+    * Add QWidget::closevent() in the white list
     * Fix a bug in the generated code of event handlers
-    - Add QSlider, QDial, QCheckBox and QRadioButton in the white list
-    - Update examples
+    * Add QSlider, QDial, QCheckBox and QRadioButton classes in the white list
+    * Add Sliders.raku example
+    * Fix the parsing of unnamed arguments with a default value
 
 v0.0.4  2021/08/16
     * Remove unused code

@@ -17,7 +17,16 @@
 	QAbstractButton::setText(const QString&)
 	QAbstractButton::text()
 	QAbstractButton::click()
-
+	QAbstractButton::isCheckable()
+	QAbstractButton::isChecked()
+	QAbstractButton::isDown()
+	QAbstractButton::released()
+	QAbstractButton::setAutoExclusive(bool)
+	QAbstractButton::setCheckable(bool)
+	QAbstractButton::setChecked(bool)
+	QAbstractButton::setDown(bool)
+	QAbstractButton::toggle()
+	QAbstractButton::toggled(bool)
 
 
 #	QApplication::exec()                # Special case
@@ -59,7 +68,11 @@
 	QWidget::setFixedSize(int, int)
 	QWidget::setFixedWidth(int)
 	QWidget::setMinimumSize(int, int)
-
+	QWidget::setMaximumHeight(int)
+	QWidget::setMaximumSize(int, int)
+	QWidget::setMaximumWidth(int)
+	QWidget::setMinimumHeight(int)
+	QWidget::setMinimumWidth(int)
 	QWidget::update()
 	QWidget::update(int, int, int, int)
 
@@ -83,6 +96,13 @@
 	# For test
 	 QWidget::render(QPaintDevice*, const QPoint&, const QRegion&, RenderFlags)
 	# QWidget::grab(const QRect&)
+	
+    QWidget::mapFrom(const QWidget*, const QPoint&)
+	QWidget::mapFromGlobal(const QPoint&)
+	QWidget::mapFromParent(const QPoint&)
+	QWidget::mapTo(const QWidget*, const QPoint&)
+	QWidget::mapToGlobal(const QPoint&)
+	QWidget::mapToParent(const QPoint&)
 
     QPoint::ctor()
     QPoint::ctor(int, int)
@@ -160,7 +180,13 @@
 	QPainter::setPen(const QColor&)
 	QPainter::setPen(const QPen&)
 	QPainter::setPen(Qt::PenStyle)
-
+	
+	### To be tested !!!
+    QPainter::drawText(const QRect&, int, const QString&, QRect*)
+	QPainter::drawText(int, int, const QString&)
+	QPainter::setFont(const QFont&)
+    QPainter::drawRect(const QRect&)
+	
 	QBrush::ctor()
 	QBrush::ctor(Qt::BrushStyle)
 	QBrush::ctor(const QColor&, Qt::BrushStyle)
@@ -191,10 +217,12 @@
 	QAction::triggered(bool)
 	QAction::setDisabled(bool)
 	QAction::setEnabled(bool)
+	QAction::text()
 
 	QMenu::ctor(QWidget*)
 	QMenu::ctor(const QString&, QWidget*)
 	QMenu::exec()
+    QMenu::exec(const QPoint&, QAction*)
 	QMenu::addAction(const QString&)
 	# QMenu::addAction(const QString&, const QObject*, const char*, const QKeySequence&)
 
@@ -205,6 +233,7 @@
 	QLabel::setMargin(int)
 	QLabel::setText(const QString&)
 	QLabel::setTextFormat(Qt::TextFormat)
+   	QLabel::text()
 
 	QLineEdit::ctor(QWidget*)
 	QLineEdit::ctor(const QString&, QWidget*)
@@ -254,37 +283,10 @@
 	QMessageBox::setStandardButtons(StandardButtons)
 	QMessageBox::setText(const QString&)
 
-	############################################################
-	# TODO:
 	
-	#          GridLayout
-	QGridLayout::ctor(QWidget*)
-	QGridLayout::ctor()
 
-	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
-	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
-	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
-	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
 
-	QGridLayout::cellRect(int, int)
-	QGridLayout::columnCount()
-	QGridLayout::columnMinimumWidth(int)
-	QGridLayout::columnStretch(int)
-	QGridLayout::setColumnMinimumWidth(int, int)
-	QGridLayout::setColumnStretch(int, int)
-	QGridLayout::rowCount()
-	QGridLayout::rowMinimumHeight(int)
-	QGridLayout::rowStretch(int)
-	QGridLayout::setRowMinimumHeight(int, int)
-	QGridLayout::setRowStretch(int, int)
-	
-    QGridLayout::setSpacing(int)
-	QGridLayout::setHorizontalSpacing(int)
-	QGridLayout::setVerticalSpacing(int)
-	QGridLayout::spacing()
-	QGridLayout::horizontalSpacing()
-	QGridLayout::verticalSpacing()
-
+# Version 0.0.5
 
 	#          AbstractSlider
 	QAbstractSlider::hasTracking()
@@ -303,6 +305,8 @@
 	QAbstractSlider::setSingleStep(int)
 	QAbstractSlider::setSliderDown(bool)
 	QAbstractSlider::setSliderPosition(int)
+	QAbstractSlider::setInvertedAppearance(bool)
+	QAbstractSlider::setInvertedControls(bool)
 	QAbstractSlider::setTracking(bool)
 	QAbstractSlider::setValue(int)
 	QAbstractSlider::singleStep()
@@ -365,8 +369,39 @@
 	QDial::wrapping()
 
 	
+	
+	############################################################
+	# TODO:
+	
+	#          GridLayout
+    # 	QGridLayout::ctor(QWidget*)
+    # 	QGridLayout::ctor()
+    # 
+    # 	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
+    # 	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
+    # 	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
+    # 	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
+    # 
+    # 	QGridLayout::cellRect(int, int)
+    # 	QGridLayout::columnCount()
+    # 	QGridLayout::columnMinimumWidth(int)
+    # 	QGridLayout::columnStretch(int)
+    # 	QGridLayout::setColumnMinimumWidth(int, int)
+    # 	QGridLayout::setColumnStretch(int, int)
+    # 	QGridLayout::rowCount()
+    # 	QGridLayout::rowMinimumHeight(int)
+    # 	QGridLayout::rowStretch(int)
+    # 	QGridLayout::setRowMinimumHeight(int, int)
+    # 	QGridLayout::setRowStretch(int, int)
+    # 	
+    #     QGridLayout::setSpacing(int)
+    # 	QGridLayout::setHorizontalSpacing(int)
+    # 	QGridLayout::setVerticalSpacing(int)
+    # 	QGridLayout::spacing()
+    # 	QGridLayout::horizontalSpacing()
+    # 	QGridLayout::verticalSpacing()	
 	#          AbstractSpinBox
 	#          SpinBox
     #          ComboBox
 
-    	
+ 	
