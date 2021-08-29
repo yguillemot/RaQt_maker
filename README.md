@@ -311,6 +311,8 @@ they need currently unsupported types)
 be implemented.  
 * ColorlessList.output lists all the other classes and methods.  
 
+Enums are automatically extracted and should not be added in the white list.
+
 5.1 - Initialize ColorlessList.output
 
 The file WhiteList.input is mandatory. 

@@ -371,35 +371,53 @@
 
 # Version 0.0.6
 	
-	         GridLayout
-    	QGridLayout::ctor(QWidget*)
-    	QGridLayout::ctor()
+    #     GridLayout
+    QGridLayout::ctor(QWidget*)
+    QGridLayout::ctor()
+
+    QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
+    QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
+    QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
+    QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
+
+    QGridLayout::cellRect(int, int)
+    QGridLayout::columnCount()
+    QGridLayout::columnMinimumWidth(int)
+    QGridLayout::columnStretch(int)
+    QGridLayout::setColumnMinimumWidth(int, int)
+    QGridLayout::setColumnStretch(int, int)
+    QGridLayout::rowCount()
+    QGridLayout::rowMinimumHeight(int)
+    QGridLayout::rowStretch(int)
+    QGridLayout::setRowMinimumHeight(int, int)
+    QGridLayout::setRowStretch(int, int)
     
-    	QGridLayout::addLayout(QLayout*, int, int, Qt::Alignment)
-    	QGridLayout::addLayout(QLayout*, int, int, int, int, Qt::Alignment)
-    	QGridLayout::addWidget(QWidget*, int, int, Qt::Alignment)
-    	QGridLayout::addWidget(QWidget*, int, int, int, int, Qt::Alignment)
+    QGridLayout::setSpacing(int)
+    QGridLayout::setHorizontalSpacing(int)
+    QGridLayout::setVerticalSpacing(int)
+    QGridLayout::spacing()
+    QGridLayout::horizontalSpacing()
+    QGridLayout::verticalSpacing()	
     
-    	QGridLayout::cellRect(int, int)
-    	QGridLayout::columnCount()
-    	QGridLayout::columnMinimumWidth(int)
-    	QGridLayout::columnStretch(int)
-    	QGridLayout::setColumnMinimumWidth(int, int)
-    	QGridLayout::setColumnStretch(int, int)
-    	QGridLayout::rowCount()
-    	QGridLayout::rowMinimumHeight(int)
-    	QGridLayout::rowStretch(int)
-    	QGridLayout::setRowMinimumHeight(int, int)
-    	QGridLayout::setRowStretch(int, int)
-    	
-        QGridLayout::setSpacing(int)
-    	QGridLayout::setHorizontalSpacing(int)
-    	QGridLayout::setVerticalSpacing(int)
-    	QGridLayout::spacing()
-    	QGridLayout::horizontalSpacing()
-    	QGridLayout::verticalSpacing()	
-    
-	
+
+    #   QFrame
+	QFrame::ctor(QWidget*, Qt::WindowFlags)
+	QFrame::frameRect()
+	QFrame::frameShadow()
+	QFrame::frameShape()
+	QFrame::frameStyle()
+	QFrame::frameWidth()
+	QFrame::lineWidth()
+	QFrame::midLineWidth()
+	QFrame::setFrameRect(const QRect&)
+	QFrame::setFrameShadow(Shadow)
+	QFrame::setFrameShape(Shape)
+	QFrame::setFrameStyle(int)
+	QFrame::setLineWidth(int)
+	QFrame::setMidLineWidth(int)
+	QFrame::sizeHint()
+
+
 	
 	############################################################
 	# TODO:
