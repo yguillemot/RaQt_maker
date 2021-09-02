@@ -134,6 +134,7 @@ for ((1,0), (2,0), (0,1), (2,1), (0,2), (1,2)) -> ($i, $j) {
        && $rc.blue != 0 && $rc.blue != 255,   "There is no label in ($i, $j)";
 }
     
+# Uncomment the following line to see what the test does
 # my $status = $qApp.exec;
 
 # done-testing;  # optional with 'plan'

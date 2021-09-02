@@ -10,11 +10,10 @@ use Qt::QtWidgets::QMenu;
 use Qt::QtWidgets::QMouseEvent;
 use Qt::QtWidgets::QPaintEvent;
 use Qt::QtWidgets::QPainter;
+use Qt::QtWidgets::QPen;
 use Qt::QtWidgets::QPoint;
 use Qt::QtWidgets::QWidget;
 use Qt::QtWidgets::Qt;
-
-use Qt::QtWidgets::RQWidget;
 
 
 my constant H = 30;
@@ -115,9 +114,9 @@ class ColoredWidget is QWidget
     {
         my $painter = QPainter.new();
         $painter.begin(self);
-            my $brush = QBrush.new(self.color, Qt::SolidPattern);
-            $painter.setBrush($brush);
-            $painter.drawRect(0, 0, $ev.rect.width, $ev.rect.height);
+            $painter.setBrush: QBrush.new: self.color, Qt::SolidPattern;
+            $painter.setPen: QPen.new: self.color;
+            $painter.drawRect: 0, 0, $ev.rect.width, $ev.rect.height;
         $painter.end();
     }
 }
@@ -216,11 +215,11 @@ for (0..8) -> $c {
 # for (0..8) -> $b {
 #     my @block = ();
 #     for (0..8) -> $i {
-#         my $l =
-#         my $c = 
+#         my $l =   ??? TBD !!!
+#         my $c =   ??? TBD !!!
 #         @boxes[$l; $c].bind: @block;
 #     }
-#     @columns.push: @blocks;
+#     @blocks.push: @block;
 # }
 
 
@@ -234,3 +233,4 @@ say "--------------------------------------------------------------------";
 
 say "L : ", @lines;
 say "C : ", @columns;
+say "B : ", @blocks;

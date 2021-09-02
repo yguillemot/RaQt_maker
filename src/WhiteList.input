@@ -416,12 +416,38 @@
 	QFrame::setLineWidth(int)
 	QFrame::setMidLineWidth(int)
 	QFrame::sizeHint()
-
-
 	
+
+# There is no suited example or test currently
+#
+# 	QSizePolicy::controlType()
+# 	QSizePolicy::ctor()
+# 	QSizePolicy::ctor(Policy, Policy, ControlType)
+# 	# QSizePolicy::expandingDirections()
+# 	QSizePolicy::hasHeightForWidth()
+# 	QSizePolicy::hasWidthForHeight()
+# 	QSizePolicy::horizontalPolicy()
+# 	QSizePolicy::horizontalStretch()
+# 	QSizePolicy::retainSizeWhenHidden()
+# 	QSizePolicy::setControlType(ControlType)
+# 	QSizePolicy::setHeightForWidth(bool)
+# 	QSizePolicy::setHorizontalPolicy(Policy)
+# 	QSizePolicy::setHorizontalStretch(int)
+# 	QSizePolicy::setRetainSizeWhenHidden(bool)
+# 	QSizePolicy::setVerticalPolicy(Policy)
+# 	QSizePolicy::setVerticalStretch(int)
+# 	QSizePolicy::setWidthForHeight(bool)
+# 	QSizePolicy::transpose()
+# 	QSizePolicy::transposed()
+# 	QSizePolicy::verticalPolicy()
+# 	QSizePolicy::verticalStretch()
+# 
+# # 	QWidget::setSizePolicy(QSizePolicy)
+#  	QWidget::setSizePolicy(QSizePolicy::Policy, QSizePolicy::Policy)
+	
+
 	############################################################
 	# TODO:
-
 
 	#          AbstractSpinBox
 	#          SpinBox
