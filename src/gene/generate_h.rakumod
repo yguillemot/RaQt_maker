@@ -101,9 +101,9 @@ sub generate_callbacks_h(%callbacks --> Str) is export
         my $signature = qSignature($m,
                                   showObjectPointer => False,
                                   showParenth => False);
-                                  
+        
         my $cb = "EXTERNC void $name" ~ '(' ~ "\n";
-        $cb ~= IND ~ 'void (*f)(int32_t objId, const char *slotName';
+        $cb ~= IND ~ qRet($m) ~ ' (*f)(int32_t objId, const char *slotName';
         $cb ~= $signature ~ '));' ~ "\n\n";
                     
         $outcb ~= $cb;

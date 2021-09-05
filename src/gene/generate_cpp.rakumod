@@ -302,7 +302,7 @@ sub generate_callbacks_cpp(%callbacks --> List) is export
     # Declaration of callbacks pointers
     for %callbacks.sort>>.kv -> ($n, $m) {
         my $signature = qSignature($m, showParenth => False);
-        $outCbi ~= "void (*" ~ $n ~ ')' ~ "\n";
+        $outCbi ~= qRet($m) ~ " (*" ~ $n ~ ')' ~ "\n";
         $outCbi ~= IND ~ '(int32_t objId, const char *slotName'
                                     ~ $signature ~ ') = 0;' ~ "\n\n";
     }
@@ -314,8 +314,9 @@ sub generate_callbacks_cpp(%callbacks --> List) is export
         $name = $prefixWrapper ~ 'Setup' ~ $name;
         my $signature = qSignature($m, showParenth => False);
         $outCbs ~= "void $name" ~ '(' ~ "\n";
-        $outCbs ~= IND ~ 'void (*f)(int32_t objId, const char *slotName'
-                                                ~ $signature ~ '))' ~ "\n";
+        $outCbs ~= IND ~ qRet($m)
+                            ~ ' (*f)(int32_t objId, const char *slotName'
+                                                    ~ $signature ~ '))' ~ "\n";
         $outCbs ~= '{' ~ "\n";
         $outCbs ~= IND ~ "$n = f;\n";
         $outCbs ~= '}' ~ "\n\n";

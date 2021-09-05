@@ -453,4 +453,11 @@
 	#          SpinBox
     #          ComboBox
 
- 	
+    ### ???
+    QWidget::hasHeightForWidth()
+    QWidget::heightForWidth(int)
+
+#     # ??? Always valid ???
+#     QBoxLayout::hasHeightForWidth()
+#     QBoxLayout::heightForWidth(int)
+

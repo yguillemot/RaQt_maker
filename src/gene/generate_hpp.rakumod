@@ -31,14 +31,17 @@ sub generate_hpp(Str $k, Qclass $v, %exceptions, %virtuals --> List) is export
         for %virtuals.keys.sort -> $vn {
             my ($vk, $vm) = %virtuals{$vn};
 
-            $out ~= IND ~ qRet($vm) ~ ' ' ~ $vm.name ~ qSignature($vm) ~ "\n";
+            my $rt = qRet($vm);
+            my $maybeReturn = $rt ~~ "void" ?? "" !! "return ";
+            
+            $out ~= IND ~ $rt ~ ' ' ~ $vm.name ~ qSignature($vm) ~ "\n";
             $out ~= IND ~ "\{\n";
             $out ~= IND x 2 ~ "if (m_" ~ $vn ~ ") \{\n";
 
             my $callbackName = 'callback' ~ callbackSuffix($vm);
             %callbacks{$callbackName} = $vm;
 
-            $out ~= IND x 3 ~ '(*callback'
+            $out ~= IND x 3 ~ $maybeReturn ~ '(*callback'
                                      ~ callbackSuffix($vm) ~")(\n";
             $out ~= IND x 4 ~ 'm_objId, "' ~ $vn ~ '"';
             for $vm.arguments -> $a {
@@ -47,7 +50,8 @@ sub generate_hpp(Str $k, Qclass $v, %exceptions, %virtuals --> List) is export
             $out ~= "\n";
             $out ~= IND x 3 ~ ");\n";
             $out ~= IND x 2 ~ "} else \{\n";
-            $out ~= IND x 3 ~ $k ~ '::' ~ $vm.name ~ qCallUse($vm) ~ ";\n";
+            $out ~= IND x 3 ~ $maybeReturn ~ $k ~ '::'
+                                        ~ $vm.name ~ qCallUse($vm) ~ ";\n";
             $out ~= IND x 2 ~ "}\n";
             $out ~= IND ~ "}\n\n";
         }
@@ -91,7 +95,7 @@ sub callbackSuffix(Function $vm --> Str)
     }
 
     return $out;
-
+    
     sub typeSymbol(FinalType $a --> Str)
     {
         given $a.ftot {
@@ -111,7 +115,8 @@ sub generate_callbacks_hpp(%callbacks, %allVirtuals --> List) is export
     # Declaration of the pointers to the callbacks
     my Str $outx = "";
     for %callbacks.sort>>.kv -> ($n, $m) {
-        $outx ~= 'extern void (*' ~ $n ~ ')(int objId, const char *slotName';
+        my $rt = qRet($m);
+        $outx ~= "extern $rt " ~ '(*' ~ $n ~ ')(int objId, const char *slotName';
         $outx ~= qSignature($m, showParenth => False) ~ ');' ~ "\n";
     }
 

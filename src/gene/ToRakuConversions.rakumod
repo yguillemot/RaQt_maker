@@ -273,9 +273,11 @@ sub strNativeWrapperArgsDecl(Function $f,
     }
 
     # Add the arguments
+    my $c = 0;
     for $f.arguments -> $a {
+        $c++;
         $o ~= $sep ~ nType($a);
-        $o ~= ' $' ~ $a.name if $showNames;
+        $o ~= ' $' ~ ($a.name ~~ '???' ?? "a$c" !! $a.name) if $showNames;
         $sep = ", ";
     }
 
@@ -304,7 +306,10 @@ sub rakuCallbackCallElems(Function $f --> List) is export
     my @classes = ();    # Accumulate here classes which have to be declared
     for $f.arguments -> $a {
         $c++;
-
+        
+        # The name of the argument may be undefined
+        my $aName = $a.name ~~ '???' ?? "a$c" !! $a.name;
+        
         # If the arg type is a class, a ctor from a pointer have to be provided
         if $a.ftot ~~ "CLASS" {
         
@@ -312,10 +317,10 @@ sub rakuCallbackCallElems(Function $f --> List) is export
             @classes.push: $tname;
         
             $po ~= 'my ' ~ $tname ~ ' $a' ~ $c ~ ' = '
-                        ~ $tname ~ '.new($' ~ $a.name ~ ');' ~ "\n";
+                        ~ $tname ~ '.new($' ~ $aName ~ ');' ~ "\n";
             $o ~= $sep ~ '$a' ~ $c;
         } else {
-            $o ~= $sep ~ '$' ~ $a.name;
+            $o ~= $sep ~ '$' ~ $aName;
         }
         $sep = ", ";
     }
