@@ -35,10 +35,10 @@ sub generate_hpp(Str $k, Qclass $v, %exceptions, %virtuals --> List) is export
             $out ~= IND ~ "\{\n";
             $out ~= IND x 2 ~ "if (m_" ~ $vn ~ ") \{\n";
 
-            my $callbackName = 'slotCallback' ~ callbackSuffix($vm);
+            my $callbackName = 'callback' ~ callbackSuffix($vm);
             %callbacks{$callbackName} = $vm;
 
-            $out ~= IND x 3 ~ '(*slotCallback'
+            $out ~= IND x 3 ~ '(*callback'
                                      ~ callbackSuffix($vm) ~")(\n";
             $out ~= IND x 4 ~ 'm_objId, "' ~ $vn ~ '"';
             for $vm.arguments -> $a {
@@ -83,10 +83,16 @@ sub callbackSuffix(Function $vm --> Str)
     }
     $out ~= $preout;
     if $count > 1 { $out ~= $count; }
+    
+    # Add another suffix if the callback returns something 
+    my $retTypeSymbol = typeSymbol($vm.returnType);
+    if $retTypeSymbol ne "void" {
+        $out ~= 'Returns' ~ $retTypeSymbol;
+    }
 
     return $out;
 
-    sub typeSymbol(Argument $a --> Str)
+    sub typeSymbol(FinalType $a --> Str)
     {
         given $a.ftot {
             when "CLASS"    { return $a.fbase }
