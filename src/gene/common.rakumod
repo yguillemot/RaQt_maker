@@ -419,6 +419,8 @@ class Function does Validation {
         # isStatic and isVirtual are mutually exclusive
 
     has Bool $.isProtected is default(False);
+    has Bool $.isConst is default(False);
+    has Bool $.isOverride is default(False);
     has Rtype $.returnType;
     has Argument @.arguments is rw;
 

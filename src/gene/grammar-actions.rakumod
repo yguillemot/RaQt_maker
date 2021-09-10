@@ -212,6 +212,15 @@ class qtClassesActions is export {
         my $signal =  index($*subblocMode, "Q_SIGNAL") !~~ Nil;
         my $static =  ?$<prespecifier> && $<prespecifier>.made eq 'static';
         my $virtual =  ?$<prespecifier> && $<prespecifier>.made eq 'virtual';
+        
+        my $const = False;
+        my $override = False;
+        for $<prespecifier> {
+            given $_.made {
+                when 'override' { $override = True }
+                when 'const' { $const = True }
+            }
+        }
 
         # Are this flags consistent ?
         my $pb =    ($signal && $slot)
@@ -236,6 +245,8 @@ class qtClassesActions is export {
                 isStatic => $static,
                 isVirtual => $virtual,
                 isProtected => $protected,
+                isConst => $const,
+                isOverride => $override,
                 returnType => Rtype.new(base => $<typename>.made.base,
                                         postop => $<typename>.made.postop,
                                         const => $<typename>.made.const),
@@ -244,6 +255,11 @@ class qtClassesActions is export {
     }
 
     method prespecifier($/)
+    {
+        make trim $/.Str;
+    }
+
+    method postspecifier($/)
     {
         make trim $/.Str;
     }

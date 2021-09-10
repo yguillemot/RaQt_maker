@@ -254,8 +254,10 @@ class filterActions is export {
     {
         # say "\tMETH ", $<name>.made, " : ", $*subblocMode;
         my $txt = $<mprespecifiers> ?? $<mprespecifiers>.made !! "";
-        make $txt ~ $<typename>.made ~ " " ~ $<name>.made
-                                    ~ $<param_block>.made ~ ";\n";
+        $txt ~= $<typename>.made ~ " " ~ $<name>.made
+                                    ~ $<param_block>.made;
+        $txt ~= " " ~ $<mpostspecifiers>.made if $<mpostspecifiers>;
+        make $txt  ~ ";\n"; 
     }
 
     method mprespecifiers($/) {
@@ -264,6 +266,10 @@ class filterActions is export {
         } else {
             make "";
         }
+    }
+
+    method mpostspecifiers($/) {
+        make [~] $<postspecifier>>>.made <<~>> " ";
     }
 
     method method_end($/)
@@ -415,8 +421,20 @@ method usualtypedef($/) {
         }
     }
 
-# rule postspecifier
-# rule noexcept
+    method postspecifier($/) {
+        my $specifier = $/.Str.trim;
+        given $specifier {
+            when 'override' { make $specifier }
+            when 'const' { make $specifier }
+            # "noexcept" is ignored here
+            default { make "" }
+        }
+    }
+
+    method noexcept($/) {
+        # Currently, "noexcept" is always ignored
+        make "";
+    }
 
     method value($/)
     {

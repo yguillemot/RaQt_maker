@@ -134,11 +134,13 @@ grammar letsgo is export {
     rule method {
         <mprespecifiers>? <typename> <__attribute__>?
         <name> <param_block>
-        <postspecifier>* <refmark>? <__attribute__>? <method_end>
+        <mpostspecifiers>? <refmark>? <__attribute__>? <method_end>
     }
 
 
     rule mprespecifiers { <prespecifier>* }
+    
+    rule mpostspecifiers { <postspecifier>* }
 
     rule method_end {
         [ <eq_something>? ';' ] || [ <bracedblock> ]
@@ -371,9 +373,9 @@ grammar letsgo is export {
         || <__attribute__>
     }
 
-    rule postspecifier { 'override' | 'const' | <noexcept> }
+    rule postspecifier { 'override' || 'const' || <noexcept> }
 
-    rule noexcept { [ 'noexcept' <parenthblock> ] | 'noexcept' }
+    rule noexcept { [ 'noexcept' <parenthblock> ] || 'noexcept' }
 
 
     rule value {

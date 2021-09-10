@@ -83,7 +83,7 @@ grammar qtClasses is export {
 
     rule method {
         <prespecifier>? <typename>
-        <name> '(' <params> ')' ';'
+        <name> '(' <params> ')' <postspecifier>* ';'
     }
 
     # A C++ method can't be simultaneously virtual and static
@@ -91,7 +91,7 @@ grammar qtClasses is export {
             'virtual' | 'static'
     }
 
-    # rule postspecifier { 'override' | 'const' }
+    rule postspecifier { 'override' | 'const' }
 
 
 
