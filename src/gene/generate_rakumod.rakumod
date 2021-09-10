@@ -634,7 +634,11 @@ sub generate_callbacks_rakumod(%callbacks) is export
         my $signature = strNativeWrapperArgsDecl($m,
                                                  showParenth => False,
                                                  showObjectPointer => False);
-        $outscbw ~= "sub $name" ~ '(&f (int32, Str' ~ $signature ~ '))' ~ "\n";
+        my $return = qRet($m) !~~ "void"
+                ?? ' --> ' ~ nType($m.returnType)
+                !! "";
+        $outscbw ~= "sub $name" ~ '(&f (int32, Str' ~ $signature
+                                ~ $return ~ '))' ~ "\n";
         $outscbw ~= IND x 2 ~ 'is native(&libwrapper) is export { * }' ~ "\n\n";
     }
 
