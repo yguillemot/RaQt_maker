@@ -215,7 +215,7 @@ class qtClassesActions is export {
         
         my $const = False;
         my $override = False;
-        for $<prespecifier> {
+        for $<postspecifier> {
             given $_.made {
                 when 'override' { $override = True }
                 when 'const' { $const = True }
@@ -236,7 +236,6 @@ class qtClassesActions is export {
             note "\tvirtual : ", $virtual;
             self.abort;
         }
-
 
         make Function.new(
                 name => $<name>.made,
