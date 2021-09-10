@@ -30,11 +30,12 @@ sub generate_hpp(Str $k, Qclass $v, %exceptions, %virtuals --> List) is export
         # Overriding methods
         for %virtuals.keys.sort -> $vn {
             my ($vk, $vm) = %virtuals{$vn};
-
+            
             my $rt = qRet($vm);
             my $maybeReturn = $rt ~~ "void" ?? "" !! "return ";
             
-            $out ~= IND ~ $rt ~ ' ' ~ $vm.name ~ qSignature($vm) ~ "\n";
+            $out ~= IND ~ $rt ~ ' ' ~ $vm.name ~ qSignature($vm)
+                            ~ ($vm.isConst ?? " const" !! "") ~ "\n";
             $out ~= IND ~ "\{\n";
             $out ~= IND x 2 ~ "if (m_" ~ $vn ~ ") \{\n";
 
