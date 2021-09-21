@@ -43,6 +43,7 @@
     QBoxLayout::addLayout(QLayout*, int)
 	QLayout::setAlignment(QWidget*, Qt::Alignment)
 	QLayout::setAlignment(QLayout*, Qt::Alignment)
+	QLayout::setContentsMargins(int, int, int, int)
 
 
     QVBoxLayout::ctor()
@@ -244,11 +245,17 @@
 	QLineEdit::editingFinished()
 	QLineEdit::returnPressed()
 
+	QFont::pointSize()
 	QFont::setPointSize(int)
 	QFont::ctor()
 	QFont::setFamily(const QString&)
+	QFont::italic()
     QFont::setItalic(bool)
+	QFont::bold()
     QFont::setBold(bool)
+    
+	QFont::stretch()
+	QFont::setStretch(int)
 
 # Version 0.0.3
 
@@ -270,8 +277,6 @@
     
 	QWidget::resizeEvent(QResizeEvent*)
 	
-	QFont::stretch()
-	QFont::setStretch(int)
 	
 	QFileDialog::getOpenFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)
 	QFileDialog::getSaveFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)	
@@ -443,7 +448,7 @@
 # 	QSizePolicy::verticalStretch()
 # 
 # # 	QWidget::setSizePolicy(QSizePolicy)
-#  	QWidget::setSizePolicy(QSizePolicy::Policy, QSizePolicy::Policy)
+  	QWidget::setSizePolicy(QSizePolicy::Policy, QSizePolicy::Policy)
 	
 
 	############################################################
