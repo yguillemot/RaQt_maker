@@ -404,7 +404,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     
     # Generate the basic tests file
     my Str $basicTest = generate_basicTest(@qtClasses, @otherQtClasses);
-    spurt TARGETDIR ~ "t/00-Basic.t", $basicTest; 
+    spurt TARGETDIR ~ "t/000-Basic.t", $basicTest; 
 }
 
 
