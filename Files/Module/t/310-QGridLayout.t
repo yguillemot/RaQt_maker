@@ -2,7 +2,6 @@
 # Test QGridLayout using QLabel
 
 use Test;
-plan 16;
 
 use Qt::QtWidgets;
 use Qt::QtWidgets::QApplication;
@@ -81,6 +80,25 @@ my @l = ();
 
 # Create a grid layout
 my $gl = QGridLayout.new;
+
+
+# Do some basic tests first
+
+$gl.setHorizontalSpacing(5);
+$gl.setVerticalSpacing(12);
+
+ok $gl.horizontalSpacing == 5, "Set a first horizontalSpacing";
+ok $gl.verticalSpacing == 12, "Set a first verticalSpacing";
+ok $gl.spacing == -1, "Vertical and horizontal spacing differ";
+
+$gl.setSpacing(10);
+ok $gl.horizontalSpacing == 10,
+                            "Set a first horizontalSpacing";
+ok $gl.verticalSpacing == 10, "Set a first verticalSpacing";
+ok $gl.spacing == 10, "Same vertical and horizontal spacing";
+
+
+# Do the functional test now
 
 # with a minimal size for colums and lines (otherwhise some lines or columns
 # may shrink) (in this example it would be line Y=2 and colum X=2)
@@ -166,4 +184,4 @@ backgroundTest  3,     3;
 # Uncomment the following line to see what the test does
 # my $status = $qApp.exec;
 
-# done-testing;  # optional with 'plan'
+done-testing;
