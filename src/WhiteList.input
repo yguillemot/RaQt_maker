@@ -45,6 +45,11 @@
 	QLayout::setAlignment(QLayout*, Qt::Alignment)
 	QLayout::setContentsMargins(int, int, int, int)
 
+    # v0.0.6
+    QBoxLayout::setStretch(int, int)
+	QBoxLayout::setStretchFactor(QWidget*, int)
+	QBoxLayout::setStretchFactor(QLayout*, int)
+	QBoxLayout::stretch(int)
 
     QVBoxLayout::ctor()
     QHBoxLayout::ctor()

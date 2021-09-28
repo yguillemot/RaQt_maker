@@ -1,6 +1,10 @@
 v0.0.6  2021/??/??
-    * Add QGridLayout class
-    * Add sudoku example
+    * Add QGridLayout class in the white list
+    * Add QBoxLayout stretch methods in the white list
+    * Add sudoku example (related to QGridLayout)
+    * Callbacks for overriden methods can now return some value
+    * The possible const keyword of overriden method is now taken into account
+    * Add some tests
     
 v0.0.5  2021/08/28
     * Qualifier "virtual" is now ignored on a slot (Pb with QDialog::exec())
