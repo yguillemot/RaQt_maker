@@ -5,6 +5,7 @@ v0.0.6  2021/??/??
     * Callbacks for overriden methods can now return some value
     * The possible const keyword of overriden method is now taken into account
     * Add some tests
+    * Add some already extracted main.E files
     
 v0.0.5  2021/08/28
     * Qualifier "virtual" is now ignored on a slot (Pb with QDialog::exec())
