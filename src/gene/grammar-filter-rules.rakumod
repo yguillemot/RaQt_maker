@@ -18,7 +18,7 @@ grammar letsgo is export {
 
     rule groups { <group>* }
 
-    rule group { <typedef> || <class> || <namespace> }
+    rule group { <typedef> || <class> || <namespace> || <enum> }
 
 
 
@@ -205,7 +205,8 @@ grammar letsgo is export {
     
     rule enum_type { ':' <enum_used_type> }
     
-    token enum_used_type { 'int' || 'quint8' || 'qint32' }
+    token enum_used_type { 'int' || 'qint8'  || 'qint32'  || 'qint64'
+                                 || 'quint8' || 'quint32' || 'quint64' }
 
 
     ########################################################################

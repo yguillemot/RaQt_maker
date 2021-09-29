@@ -37,7 +37,7 @@ grammar onyva {
 
     rule typedeftop { 'typedef' <nobracesc> ';' }
     
-    rule groupetop {  <classe> || <namespace> || <groupetopa> }
+    rule groupetop {  <classe> || <namespace> || <enumclass> || <groupetopa> }
 
     rule groupetopa { <nobracesc> <groupe> ';'? }
     
@@ -52,6 +52,10 @@ grammar onyva {
     
     
     rule namespace { 'namespace' <basename> <groupe> }
+    
+    rule enumclass { 'enum' 'class' <name>  <enum_type>? <groupe> ';' }
+    rule enum_type { ':' <name> }
+
 
     token base { <groupea>+ <nobrace>? }
     
@@ -139,12 +143,17 @@ class onyvaActions {
         make $<parent>.made;
 	}
 
-	method namespace ($/)
+	method namespace($/)
 	{
         # Only Qt namespace is kept
         if $<basename>.made ~~ "Qt" {
             $out ~= $/ ~ "\n";
         }
+	}
+
+	method enumclass($/)
+	{
+        $out ~= $/ ~ "\n";
 	}
 
     method name($/)

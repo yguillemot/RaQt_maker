@@ -58,8 +58,10 @@ class filterActions is export {
             make $<class>.made;
         } elsif $<namespace> {
             make $<namespace>.made;
-        } else {
+        } elsif $<typedef> {
             make $<typedef>.made;
+        } else {
+            make $<enum>.made
         }
     }
 
