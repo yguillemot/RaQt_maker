@@ -22,7 +22,7 @@ grammar qtClasses is export {
     
         :my Str $*currentClass = "";       # Used to detect ctor and dtor
         
-        <class> || <typedef> }
+        <class> || <typedef> || <enum> }
 
     rule class {
 
@@ -98,7 +98,7 @@ grammar qtClasses is export {
     ########################################################################
     # Enums :
 
-    rule enum { <enumstart> '{' <enumcore> '}' ';' }
+    rule enum { <enumstart> '{' <enumcore>? '}' ';' }
 
     rule enumstart { 'enum' <name>? }
 
@@ -233,34 +233,36 @@ grammar qtClasses is export {
        <group9> [ <op9> <group9> ]?
     }
 
-    token op9 { '==' | '!=' }
+    token op9 { '==' || '!=' }
 
     rule group9 {
        <group7> [ <op7> <group7> ]?
     }
 
-    token op7 { '<<' | '>>' }
+    token op7 { '<<' || '>>' }
 
     rule group7 {
        <group6> [ <op6> <group6> ]*
     }
 
-    token op6 { '+' | '-' }
+    token op6 { '+' || '-' }
 
     rule group6 {
        <group5> [ <op5> <group5> ]*
     }
 
-    token op5 { '*' | '/' }
+    token op5 { '*' || '/' }
 
     rule group5 {
         <op3>?  <group3>
     }
 
-    token op3 { '+' | '-' | '!' | '~' }
+    token op3 { '+' || '-' || '!' || '~' }
 
     rule group3 {
-        <qualifiedName> | <numericalValue> | '(' <enum_expression> ')'
+        || 'int'? '(' <enum_expression> ')'
+        || <numericalValue>
+        || <qualifiedName> 
     }
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -269,7 +271,7 @@ grammar qtClasses is export {
     # Braced block with possible nested braced blocks
     token bracedblock { '{' <bracedblockcore> '}' }
 
-    token bracedblockcore { <nobrace> | <b_bblock> }
+    token bracedblockcore { <nobrace> || <b_bblock> }
 
     token b_bblock { <a_bblock>+ <nobrace>? }
 
@@ -280,7 +282,7 @@ grammar qtClasses is export {
     # Parenthesized block with possible nested parenthesized blocks
     token parenthblock { '(' <parenthblockcore> ')' }
 
-    token parenthblockcore { <noparenth> | <b_pblock> }
+    token parenthblockcore { <noparenth> || <b_pblock> }
 
     token b_pblock { <a_pblock>+ <noparenth>? }
 
@@ -291,7 +293,7 @@ grammar qtClasses is export {
     # Angle brackets block with possible other nested blocks
     token angleblock { '<' <angleblockcore> '>' }
 
-    token angleblockcore { <noangle> | <b_ablock> }
+    token angleblockcore { <noangle> || <b_ablock> }
 
     token b_ablock { <a_ablock>+ <noangle>? }
 
@@ -302,7 +304,7 @@ grammar qtClasses is export {
     # Square brackets block with possible other nested blocks
     token squareblock { '[' <squareblockcore> ']' }
 
-    token squareblockcore { <nosquare> | <b_sblock> }
+    token squareblockcore { <nosquare> || <b_sblock> }
 
     token b_sblock { <a_sblock>+ <nosquare>? }
 

@@ -38,7 +38,8 @@ sub parser(Str $fileName --> API) is export
     }
 
     say '';
-
+    say "Parsing done";
+    
     my %c = $match.made.qclasses;
 
 
@@ -232,7 +233,7 @@ sub parser(Str $fileName --> API) is export
 
 
 
-    # Sort classes in disconnected groups then levels inside each groups
+    # Sort classes in disconnected groups then levels inside each groups.
     # Groups names are only used to differentiate groups.
     # Similarly, absolute values of levels are insignificant; relative
     # values only matter.

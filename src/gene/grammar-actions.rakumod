@@ -24,10 +24,14 @@ class qtClassesActions is export {
     has Int $.lastSuccessIndex;
     has Int $.aborted = 0;
 
-    submethod BUILD
+    my $self;       # Used to call method abort from a subroutine
+
+
+    submethod TWEAK
     {
         %!allEnumValues = ();
         %!topLevelTypedefs = ();
+        $self = self;
     }
 
 
@@ -281,14 +285,28 @@ class qtClassesActions is export {
 
         my @items = ();
         my %vals = ();
-        for $<enumcore>.made -> $t {
-            @items.push([$t.name, $t.rawValue]);
-            %vals{$t.name} = $t.value;
+        if $<enumcore> {
+            for $<enumcore>.made -> $t {
+                @items.push([$t.name, $t.rawValue]);
+                %vals{$t.name} = $t.value;
+            }
         }
 
-        make QEnum.new( name => $<enumstart>.made,
-                        items => @items,
-                        values => %vals);
+        my $enum = QEnum.new(name => $<enumstart>.made,
+                             items => @items,
+                             values => %vals);
+        
+        if $*currentClass !~~ "" {
+            # This enum is defined inside a class
+            make $enum;
+        } else {
+            # This is a toplevel enum : create a toplevel enum class
+            my $className = $<enumstart>.made;
+            my $c = Qclass.new(name => $className);
+            $c.enums = { $className => $enum };
+            %!qclasses{$className} = $c;
+        }
+        
         self.success($/);
     }
 
@@ -319,9 +337,12 @@ class qtClassesActions is export {
         }
 
         $!currentEnum.items.push([$<name>.made, $rawValue]);
-
-        %!allEnumValues{$*currentClass ~ "::" ~ $<name>.made}
-                                                        = $!currentEnumValue;
+    
+        # if $*currentClass ~~ "" this is a top level enum class
+        my $class = $*currentClass !~~ ""
+            ?? $*currentClass
+            !! $!currentEnum.name;
+        %!allEnumValues{$class ~ "::" ~ $<name>.made} = $!currentEnumValue;
 
         make Triplet.new(name => $<name>.made,
                          rawValue => $rawValue,
@@ -638,7 +659,11 @@ class qtClassesActions is export {
             when '&' { return $a +& $b; }
             when '|' { return $a +| $b; }
 
-            default { die "Unknown operation \"$op\""; }
+            default {
+                note "Unknown operation \"$op\"";
+                die "Can't parse successfuly near line ", $self.abort;
+                note "Aborting in $?FILE:$?LINE";
+            }
         }
     }
 
@@ -681,7 +706,7 @@ class qtClassesActions is export {
                                                 <<~>> ("::" ~ $enumref));
                 }
             }
-
+    
             my $ok = False;
             TLOOP: for @targets -> $t {
                 if %!allEnumValues{$t}:exists {
@@ -701,7 +726,11 @@ class qtClassesActions is export {
                     say " A = \"\"";
                 }
                 say "Targets = ", @targets;
-                die "An enum references an unknown enum !";
+                note "An enum references an unknown enum !";
+                note "Can't parse successfuly near line ", self.abort;
+                
+                note "Aborting in $?FILE:$?LINE";
+                exit;
             }
 
 
