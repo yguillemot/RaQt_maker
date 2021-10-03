@@ -191,7 +191,7 @@ grammar qtClasses is export {
 
 
     rule value {
-            <expression>
+            <expression> || <empty_list>
     }
     rule value_elem {
            <quotedchar>
@@ -209,7 +209,8 @@ grammar qtClasses is export {
 
     token extended_value { <[a..zA..Z_0..9\.\(\)|\<\>\&\:\=\+\-\?\*\\\'\ \~]>+ }
 
-
+    token empty_list { '{' '}' }
+    
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Arithmetic associated with the enum value
 
