@@ -272,7 +272,7 @@ grammar qtClasses is export {
     # Braced block with possible nested braced blocks
     token bracedblock { '{' <bracedblockcore> '}' }
 
-    token bracedblockcore { <nobrace> || <b_bblock> }
+    token bracedblockcore { || <b_bblock> || <nobrace> }
 
     token b_bblock { <a_bblock>+ <nobrace>? }
 
@@ -283,7 +283,7 @@ grammar qtClasses is export {
     # Parenthesized block with possible nested parenthesized blocks
     token parenthblock { '(' <parenthblockcore> ')' }
 
-    token parenthblockcore { <noparenth> || <b_pblock> }
+    token parenthblockcore { || <b_pblock> || <noparenth> }
 
     token b_pblock { <a_pblock>+ <noparenth>? }
 
@@ -294,7 +294,7 @@ grammar qtClasses is export {
     # Angle brackets block with possible other nested blocks
     token angleblock { '<' <angleblockcore> '>' }
 
-    token angleblockcore { <noangle> || <b_ablock> }
+    token angleblockcore { <b_ablock> || <noangle> }
 
     token b_ablock { <a_ablock>+ <noangle>? }
 
@@ -305,7 +305,7 @@ grammar qtClasses is export {
     # Square brackets block with possible other nested blocks
     token squareblock { '[' <squareblockcore> ']' }
 
-    token squareblockcore { <nosquare> || <b_sblock> }
+    token squareblockcore { || <b_sblock> || <nosquare> }
 
     token b_sblock { <a_sblock>+ <nosquare>? }
 
@@ -315,7 +315,7 @@ grammar qtClasses is export {
 ######################################################################
 
 
-    token noangle { <-[<>]>* }
+    token noangle { <-[<\>]>* }
 
     token nobrace { <-[{}]>* }
 
