@@ -201,7 +201,9 @@ grammar qtClasses is export {
     }
     token quotedchar { '\'' . '\'' }
     token numericalvalue {    # TODO :  numericalvalue vs numericalValue !!!
-            <hexnumber> || [ '-'? <number> [ '.' <number> ]? ]
+        || <hexnumber> 
+        || [ '-'? <floatingValue> ] 
+        || [ '-'? <decnumber> ]
     }
     rule functioncall { <completetypename>? <parenthblock> }
 
@@ -339,13 +341,19 @@ grammar qtClasses is export {
 
     token qualifiedName { <name> ["::" <name>]* }
 
-    token numericalValue { <simpleNumericalValue> 'u'? }
+    token numericalValue { <floatingValue> || <integerValue> }
+    
+    token floatingValue { <simpleFloatingValue> 'f'? }
+    
+    token simpleFloatingValue { <decnumber> '.' <decnumber>? }
+    
+    token integerValue { <simpleIntegerValue> 'u'? }
 
-    token simpleNumericalValue {
-        <number> | <hexnumber>
+    token simpleIntegerValue {
+        <hexnumber> || <decnumber> 
     }
 
-    token number { \d+ }
+    token decnumber { \d+ }
 
     token hexnumber { '0' <[xX]> <xdigit>+ }
 

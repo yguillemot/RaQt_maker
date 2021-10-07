@@ -325,7 +325,6 @@ class qtClassesActions is export {
     }
 
     method enumelem($/) {
-
         my $name = $<name>.made;
         my $rawValue;
         if $<enumvalue> {
@@ -610,7 +609,7 @@ class qtClassesActions is export {
         make ~$/;
     }
 
-    method group9($/) {
+    method group9($/) {    
         given $<op7>.made {
             when '<<' { make($<group7>[0].made +< $<group7>[1].made); }
             when '>>' { make($<group7>[0].made +> $<group7>[1].made); }
@@ -718,15 +717,17 @@ class qtClassesActions is export {
             }
 
             if !$ok {
-                say "ERROR : $enumref not found !";
-                say " C = ", $*currentClass;
-                say " P = ", @!parents;
+                note "";
+                note "ERROR : $enumref not found !";
+                note " C = ", $*currentClass;
+                note " P = ", @!parents;
                 if %!ancestors{$*currentClass}:exists {
-                    say " A = ", %!ancestors{$*currentClass};
+                    note " A = ", %!ancestors{$*currentClass};
                 } else {
-                    say " A = \"\"";
+                    note " A = \"\"";
                 }
-                say "Targets = ", @targets;
+                note "Targets = ", @targets;
+                note "";
                 note "An enum references an unknown enum !";
                 note "Can't parse successfuly near line ", self.abort;
                 
@@ -752,7 +753,7 @@ class qtClassesActions is export {
 # Idem braced : parenth
 
     method angleblock($/) {
-        make $/.Str;
+        make trim $/.Str;
     }
 
 # token angleblockcore
@@ -760,7 +761,7 @@ class qtClassesActions is export {
 # token a_ablock
 
     method squareblock($/) {
-        make $/.Str;
+        make trim $/.Str;
     }
 
 # token squareblockcore
@@ -778,24 +779,40 @@ class qtClassesActions is export {
 
     method name($/)
     {
-        make $/.Str;
+        make trim $/.Str;
     }
 
     method qualifiedName($/)
     {
-        make $/.Str;
+        make trim $/.Str;
     }
 
 
    method numericalValue($/) {
-        make $<simpleNumericalValue>.made;
+        if $<integerValue> {
+            make $<integerValue>.made;
+        } else {
+            make $<floatingValue>.made;
+        }
+    }
+    
+    method floatingValue($/) {
+        make $<simpleFloatingValue>.made;
+    }
+    
+    method simpleFloatingValue($/) { 
+        make +$/;
+    }
+    
+    method integerValue($/) {
+        make $<simpleIntegerValue>.made;
     }
 
-   method simpleNumericalValue($/) {
+   method simpleIntegerValue($/) {
         make +$/;
     }
 
-# token number
+# token decnumber
 # token hexnumber
 
 }
