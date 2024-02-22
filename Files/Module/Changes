@@ -1,6 +1,7 @@
-v0.0.6  2021/??/??
+v0.0.6  2024/??/??
     * Add QGridLayout class
     * Add a new example
+    * Fix the deprecated use of method Str in class Distribution::Resource
     
 v0.0.5  2021/28/08
     * Fix a bug in event handlers
