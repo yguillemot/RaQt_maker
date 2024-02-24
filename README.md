@@ -30,7 +30,7 @@ So there is very few chances to find issues related to the difference
 between the Qt version used to generate the module and the Qt version
 used when the module runs.
 
-The generator avalaible in this repository should parse
+The generator available in this repository should parse
 any Qt version prior to Qt 5.12.0.
 The produced module should work with any other Qt5 version being compatible
 with the selected classes/methods.
