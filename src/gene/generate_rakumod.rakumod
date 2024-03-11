@@ -423,7 +423,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             # associated raku object will be needed and the "use QXxx"
             # instruction have to be added.
             # (Having simultaneously "use QXxx" and "use RQXxx" is
-            # not harmful if not useful.)
+            # not harmful albeit not useful.)
             my Str $cr = classeReturned($m);
             @qRefs.push: $cr if $cr;
             

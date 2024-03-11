@@ -71,6 +71,7 @@ sub MAIN ( #| C++ filtered header to read
     if $show-groups {
     # Print out classes and groups
         say "\n\n===   CLASSES AND GROUPS   ===";
+        say "     (class : group level)";
         for $api.qclasses.keys.sort:
             { ($api.qclasses{$^a}.group => $api.qclasses{$^a}.level)
                 cmp  ($api.qclasses{$^b}.group => $api.qclasses{$^b}.level)

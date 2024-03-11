@@ -107,6 +107,8 @@ sub parser(Str $fileName --> API) is export
 
 
     # Look for children and descendants
+    # "descendants" are children, children of children, etc...
+    # "children" are the descendants of the first level
 
     my List @notFound = ();
 
