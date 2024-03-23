@@ -53,24 +53,33 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
 
 
 # Return arguments string of the raku method declaration
+# $valueClasses is used to return a list of classes, if any, used to assign
+# default values to arguments
 sub strRakuArgsDecl(Function $f, %qClasses,
-                    Bool :$useRole = False --> Str) is export
+                    $valueClasses,
+                    Bool :$useRole = False,
+                    Bool :$alwaysUseRole = False --> Str) is export
 {
+say "YGYGYG strRakuArgsDecl";
     my $o = "(";
     my $sep = "";
     for $f.arguments -> $a {
         my $qtc = isQtClass $a;
-        my Bool $ur = $useRole && (?$qtc && %qClasses{$qtc}.isQObj); 
+        my Bool $ur = $alwaysUseRole
+                        || ($useRole && (?$qtc && %qClasses{$qtc}.isQObj));
         my $rtp = rType($a, useRole => $ur);
         $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
         if $a.value { 
-            $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses, useRole => $ur)
+            my $valClass = "";
+            $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses, $valClass);
+            $valueClasses.push: $valClass if $valClass;
         }
         $sep = ", ";
     }
     if qRet($f) !~~ "void" {
         my $qtc = isQtClass $f.returnType;
-        my Bool $ur = $useRole && (?$qtc && %qClasses{$qtc}.isQObj); 
+        my Bool $ur = $alwaysUseRole
+                        || ($useRole && (?$qtc && %qClasses{$qtc}.isQObj));
         $o ~= " --> " ~ rType($f.returnType, useRole => $ur);
     }
     $o ~= ")";
@@ -80,8 +89,10 @@ sub strRakuArgsDecl(Function $f, %qClasses,
 
 # Return arguments string of the ctor method declaration
 sub strArgsRakuCtorDecl(Function $f, %qClasses,
-                        Bool :$useRole = False --> Str) is export
+                        Bool :$useRole = False,
+                        Bool :$alwaysUseRole = False --> Str) is export
 {
+say "YGYGYG strArgsRakuCtorDecl";
     my $o = '(QtBase $this';
     my $sep = ", ";
     for $f.arguments -> $a {
@@ -93,12 +104,14 @@ sub strArgsRakuCtorDecl(Function $f, %qClasses,
                 $useRole2 = %qClasses{$argClass}.isQObj;
             }
         }
+        $useRole2 ||= $alwaysUseRole;
 
         $o ~= $sep ~ rType($a, useRole => $useRole2) ~ ' $' ~ $a.fname;
         if $a.value {
+            my Str $vclass = "";
             $o ~= " = " ~ ($a.value ~~ "nullptr"
                             ?? "(" ~ rType($a, useRole => $useRole2) ~ ")"
-                            !! toRaku($a.value, rType($a), %qClasses, 
+                            !! toRaku($a.value, rType($a), %qClasses, $vclass,
                                                     useRole => $useRole2));
         }
     }
@@ -126,10 +139,14 @@ sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
 }
 
 
-# Return the list of Qt classes used in the signature of the function
+# Return the Qt classes used in the signature of the function
+# as a list of two lists.
+# The first one contains the classes directly used
+# The second one is the list of classes used as an enum container
 sub classesInSignature(Function $f --> List) is export
 {
-    my @o;
+print "YGYGYG classesInSignature [{$f.name}]";
+    my (@o, @p);
     for $f.arguments -> $a {
         my $t = isQtClass($a);
         if $t {
@@ -137,7 +154,7 @@ sub classesInSignature(Function $f --> List) is export
         } else {
             my $t = isQtEnum($a);
             if $t {
-                @o.push: $t;
+                @p.push: $t;
             }
         }
     }
@@ -148,11 +165,12 @@ sub classesInSignature(Function $f --> List) is export
         } else {
             my $t = isQtEnum($f.returnType);
             if $t {
-                @o.push: $t;
+                @p.push: $t;
             }
         }
     }
-    return @o;
+say " < {@o} >< {@p} >";    # YGYGYG
+    return @o, @p;
 }
 
 # Return the name of the Qt class returned by the function
@@ -204,10 +222,13 @@ sub classeReturned(Function $f --> Str) is export
 # $val : the string to convert
 # $cls : The target class of this string
 # %qClasses : The hash of known classes
+# $valueClass : returns the class use to initialize the default value if any
 # $useRole : True if role should be use in declaration rather than class
-sub toRaku(Str $val is copy, Str $cls, %qClasses,
+multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
             Bool :$useRole = False --> Str) is export
 {
+say "YGYGYG toRaku val=\"$val\" cls=\"$cls\"";
+    $valueClass = "";
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
         when /'true'/       { $val ~~ s:g/'true'/True/; proceed }
@@ -215,19 +236,30 @@ sub toRaku(Str $val is copy, Str $cls, %qClasses,
         when /'&'/          { $val ~~ s:g/'&'/+&/; proceed }
         when /'(' .*? ')'/         {
             if $val ~~ /^ (\w+) '(' .*? ')' $/ {
+            say "AAAAAAA";
                 if %qClasses{$0.Str}:exists {
+                say "BBBBBBB";
                     if $useRole {
                         # C++ "QXxx(val)" --> Raku "RQXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.NEW1$1/;
+                    say "CCCCCCC1 ", $0;
+                        $valueClass = $0.Str if $0;
                     } else {
                         # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
-                        
+                    say "CCCCCCC2 ", $0;
+                        $valueClass = $0.Str if $0;
+
                         # Process special classes :
                         #       QString.new()      --> ""
                         #       QString.new("xxx") --> "xxx"
                         if $val ~~ m/^ 'QString.new(' ( .*? ) ')' $/ {
+                        say "DDDDDD";
                             $val = $0 ~~ "" ?? '""' !! $0;
+                            $valueClass = "";
+                        } else {
+                            $valueClass = $0.Str if $0;
+                            say "EEEEEEE 0:", $0, "  vc:", $valueClass;
                         }
                     }
                 }
@@ -238,7 +270,22 @@ sub toRaku(Str $val is copy, Str $cls, %qClasses,
     # Replace nullptr with some Raku equivalent
     $val ~~ s/nullptr/($cls)/;
 
+    say "FFFFFFF val = \"$val\"";
     return $val;
+}
+
+
+# Conversion from C++ to Raku for some constants and expressions
+# This version of the sub skips the $valueClass argument
+# $val : the string to convert
+# $cls : The target class of this string
+# %qClasses : The hash of known classes
+# $useRole : True if role should be use in declaration rather than class
+multi sub toRaku(Str $val is copy, Str $cls, %qClasses,
+            Bool :$useRole = False --> Str) is export
+{
+    my Str $vclass = "";
+    toRaku($val, $cls, %qClasses, $vclass, :$useRole);
 }
 
 

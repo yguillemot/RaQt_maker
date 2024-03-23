@@ -1,5 +1,10 @@
 unit module QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 
+#BEGIN_INSERTION_HERE
+#ROLES_DECLARATION
+use Qt::QtWidgets::RQSize;
+#END_INSERTION_HERE
+
 our constant %qType = {
     "Int" => "int",
     "Str" => "QString",

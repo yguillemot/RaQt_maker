@@ -47,6 +47,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
    
     my Str @qtClasses;      # List of the main Qt classes (QWidget, etc...)
     my Str @otherQtClasses; # List of the subsidiary Qt classes (QPoint, etc...)
+
+    my Str @classsesInHelper; # List of classes used in QtHelper.rakumod module
     
     # Walk through all the Qt classes
     CLASS: for %c.sort>>.kv -> ($k, $v) {
@@ -172,9 +174,22 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                     $signalslHash, $slotsHash, $callbacksHash) =
                 generate_rakumod($k, $v, %c, %exceptions,
                                  $hasCtor, $hasSubclassCtor, $subclassable,
-                                 %virtuals);
+                                 %virtuals, @classsesInHelper);
 
-
+say "******************************************************************";
+say "USE";
+say $use;
+say "------------------------------------------------------------------";
+say "CLASS";
+say $class;
+say "------------------------------------------------------------------";
+say "USE";
+say $nsubs;
+say "------------------------------------------------------------------";
+say "ROLE";
+say $role;
+say "------------------------------------------------------------------";
+say "******************************************************************";
         
         $outSignalsHash ~= $signalslHash;
         $outSlotsHash ~= $slotsHash;
@@ -203,6 +218,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
 
         say "";         # Terminate the info line on stdout
     }               # End of the CLASS loop
+
+    say "YGYGYGYGYGYG : ", @classsesInHelper;
     
     
     say "Generate code : end";
@@ -261,10 +278,17 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                                         
 
     say "    QtHelpers.rakumod";
+    # Add the needed "use" calls
+    my Str $useStr = "";
+    my $roles = SetHash.new: @classsesInHelper;
+    for 'R' <<~>> $roles.keys.sort -> $rname {
+        $useStr ~= "use {LIBPREFIX}{versionedName($rname)};\n";
+    }
     installTemplate  commentMark => '#', keepMarkers => $km,
         source => "gene/templates/QtHelpers.rakumod.template",
         destination => "{LIBDIR}QtHelpers.rakumod",
         modify => {
+            ROLES_DECLARATION => $useStr,
             SIGNALS_HASH => $outSignalsHash,
             SLOTS_HASH => $outSlotsHash,
             CALLBACKS_HASH => $outCallbacksHash,

@@ -6,14 +6,14 @@ use gene::replace;
 use gene::addHeaderText;
 use gene::ToRakuConversions;
 
-sub versionedName(Str $name --> Str)
+sub versionedName(Str $name --> Str) is export
 {
     $name ~ ":ver<{MODVERSION}>" ~ ":auth<{MODAUTH}>" ~ ":api<{MODAPI}>"
 }
 
 sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
-                    %virtuals, :$km = False) is export
+                    %virtuals, $classesInHelper, :$km = False) is export
 {
 
 #     say "Generate the .rakumod file : start";
@@ -46,6 +46,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     
     my @rRefs;   # List of Qt roles used in the code
     my @qRefs;   # List of Qt classes used in the code
+    my @qRefsHelper; # List of Qt classes used in signals for QtHelper.rakumod
     
     
     if %exceptions{$k}{'use'}:exists {
@@ -65,6 +66,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         @qRefs.push: "QtSigsloty";
     }
 
+    # TODO: Useless line, should be removed ($prole is never used)
     my Str $prole = $v.isQObj ?? PREFIXROLE !! "";
     
     my Bool $haveParents = False;
@@ -81,7 +83,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         @qRefs.push: "QtBase";
     }
     
-    if !$noCtor && $v.isQObj {
+#     if !$noCtor && $v.isQObj {
+    if !$noCtor {   # YGYG
         $outm ~= "\n{IND}does {PREFIXROLE}$k" ;
         @rRefs.push: $k;
         
@@ -147,18 +150,13 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                 # Subroutine(s) ctor calling the native wrapper
                 $outm ~= IND ~ "multi sub ctor"
-                                ~ strArgsRakuCtorDecl($ctor, %c, :useRole)
+                                ~ strArgsRakuCtorDecl($ctor, %c, :alwaysUseRole)
                                 ~ " \{\n";
 
                 my ($pc, $o) = rakuWrapperCallElems($ctor);
-                for classesInSignature($ctor) -> $cl {
-                    # say "CL = '$cl'";
-                    if %c{$cl}.isQObj {
-                        @rRefs.push: $cl;
-                    } else {
-                        @qRefs.push: $cl;
-                    }
-                }
+                my ($cl-type, $cl-enum) = classesInSignature($ctor);
+                @rRefs.append: @$cl-type;
+                @qRefs.append: @$cl-enum;
 
                 $outm ~= [~] (IND x 2) <<~>> $pc;
                 $outm ~= IND x 2 ~ '$this.address = '
@@ -190,13 +188,9 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                     ($pc, $o) = rakuWrapperCallElems($ctor);
                     
-                    for classesInSignature($ctor) -> $cl {
-                        if %c{$cl}.isQObj {
-                            @rRefs.push: $cl;
-                        } else {
-                            @qRefs.push: $cl;
-                        }
-                    }
+                    my ($cl-type, $cl-enum) = classesInSignature($ctor);
+                    @rRefs.append: @$cl-type;
+                    @qRefs.append: @$cl-enum;
 
                     $outm ~= [~] (IND x 2) <<~>> $pc;
                     $outm ~= IND x 2 ~ '$this.address = '
@@ -359,6 +353,10 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 #         say "Generate method ", $m.name;
 
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, :!showNames);
+say "[[[[[[[[[[[[[[[[[[[[[[[[[";
+say "EXK";
+say $exk;
+say "]]]]]]]]]]]]]]]]]]]]]]]]]";
         if %exceptions{$exk}{'rakumod'}:exists {
             # say "EXCEP RAKUMOD 2 : $exk";
             if %exceptions{$exk}{'wrappers'}:exists {
@@ -415,9 +413,13 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             # Call of the native wrapper
             $outm ~= IND ~ ($m.number ?? "multi method" !! "method") ~ " ";
             $outm ~= $m.name;
-            $outm ~= strRakuArgsDecl($m, %c, :useRole)
+            my @valClasses;
+            my $p = @valClasses;
+            $outm ~= strRakuArgsDecl($m, %c, $p, :alwaysUseRole)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
+            @qRefs.append: @valClasses;
+            say "YGYGYG APP vc: ", @valClasses, " qRefs: ", @qRefs if $m.name ~~ "render";
             
             # If the method returns a Qt class, to instantiate an
             # associated raku object will be needed and the "use QXxx"
@@ -427,13 +429,9 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my Str $cr = classeReturned($m);
             @qRefs.push: $cr if $cr;
             
-            for classesInSignature($m) -> $cl {
-                if %c{$cl}.isQObj {
-                    @rRefs.push: $cl;
-                } else {
-                    @qRefs.push: $cl;
-                }
-            }
+            my ($cl-type, $cl-enum) = classesInSignature($m);
+            @rRefs.append: @$cl-type;
+            @qRefs.append: @$cl-enum;
 
 
             # PROVISIONAL (TODO) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -500,20 +498,18 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $trait = $m.isPrivateSignal ?? "is QtPrivateSignal" !! "is QtSignal";
             # my $qualifiedClass = RAQTNAME ~ '::' ~ $k;
             my $qualifiedClass = $k;
-
+            my @valClasses;
             $outm ~= IND ~ "method " ~ $m.name
-                            ~ strRakuArgsDecl($m, %c, :useRole)
+                            ~ strRakuArgsDecl($m, %c, @valClasses, :useRole)
                             ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
             $outm ~= "\n";
+            @qRefs.append: @valClasses;
 
-            for classesInSignature($m) -> $cl {
-                if %c{$cl}.isQObj {
-                    @rRefs.push: $cl;
-                } else {
-                    @qRefs.push: $cl;
-                }
-            }
+            my ($cl-type, $cl-enum) = classesInSignature($m);
+            @rRefs.append: @$cl-type;
+            @qRefs.append: @$cl-enum;
+            $classesInHelper.append: @$cl-type;
 
             $outSignals ~=
                 IND ~ '%signals<' ~ $qualifiedClass ~ '>.push(SigSlot.new(' ~ "\n"
@@ -521,7 +517,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                 ~ IND x 2 ~ 'sig => "' ~ rSignature($m) ~ '",' ~ "\n"
                 ~ IND x 2 ~ 'qSig => "'
                         ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
-                ~ IND x 2 ~ 'signature => :' ~ rSignature($m) ~ ',' ~ "\n"
+                ~ IND x 2 ~ 'signature => :' ~ rSignature($m, :useRole) ~ ',' ~ "\n"
                 ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                 ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                 ~ IND x 2 ~ 'isSlot => False,' ~ "\n"

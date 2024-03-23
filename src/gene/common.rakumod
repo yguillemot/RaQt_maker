@@ -779,12 +779,13 @@ sub cSignature(Function $f,
 sub rSignature(Function $f,
                Bool :$showParenth = True,
                Bool :$startWithSep = True,
+               Bool :$useRole = False,
                Bool :$noEnum = False --> Str) is export
 {
     my Str $out = "";
     my $sep = "";
     for $f.arguments -> $a {
-        $out ~= $sep ~ rType($a, :$noEnum);
+        $out ~= $sep ~ rType($a, :$useRole, :$noEnum);
         $sep = ", ";
     }
 
