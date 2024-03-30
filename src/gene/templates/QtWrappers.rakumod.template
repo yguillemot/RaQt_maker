@@ -72,6 +72,9 @@ sub QWSetupSlotCallbackIntStr(&f (int32, Str, long, Str))
 sub QWSetupSlotCallbackBool(&f (int32, Str, Bool))
         is native(&libwrapper) is export { * }
 
+sub QWSetupSlotCallbackQSize(&f (int32, Str, Pointer))
+        is native(&libwrapper) is export { * }
+
 sub QWSetupSlotCallbackPointer(&f (int32, Str, Pointer))
         is native(&libwrapper) is export { * }
 

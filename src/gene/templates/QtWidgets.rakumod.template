@@ -391,13 +391,15 @@ sub connect(QtSigsloty $src, $sigName, QtSigsloty $dst, $slotName)
 
     my SigSlot $source;
     my SigSlot $destination;
+#     say "Connect :";
 
     # Does the specified signal exist ?
     # Look not only in the given class, but also in all its parents
     my @classNames = ($src.^name);
-#     say "CLASSLIST (", $src.^name, ")";
+    # say "SIGNAL : ", $sigName;
+    # say "SRC CLASSLIST (", $src.^name, ")";
     for $src.^parents -> $p {
-#         say "\t\t", $p.^name;
+        #  say "\t\t", $p.^name;
         @classNames.push($p.^name);
     }
     SIGLOOP: for @classNames -> $className {
@@ -417,7 +419,10 @@ sub connect(QtSigsloty $src, $sigName, QtSigsloty $dst, $slotName)
     # Does the specified slot exist ?
     # Look not only in the given class, but also in all its parents
     @classNames = ($dst.^name);
+    # say "SLOT : ", $slotName;
+    # say "DST CLASSLIST (", $src.^name, ")";
     for $dst.^parents -> $p {
+        # say "\t\t", $p.^name;
         @classNames.push($p.^name);
     }
     SLOTLOOP: for @classNames -> $className {
@@ -451,6 +456,13 @@ sub connect(QtSigsloty $src, $sigName, QtSigsloty $dst, $slotName)
         die "connect : destination slot or signal ",
                             $dst.^name, ".", $slotName, " not found";
     }
+
+#     say "\tsource : ", $source.name, " (", $source.sig, ") [",
+#            $source.qSig, "] sigIsSimple:", $source.sigIsSimple,
+#            " plainQt:", $source.isPlainQt;
+#     say "\tdestination : ", $destination.name, " (", $destination.sig, ") [",
+#            $destination.qSig, "] sigIsSimple:", $destination.sigIsSimple,
+#            " plainQt:", $destination.isPlainQt;
 
     # Is destination a private signal ?
     if $destination.isPrivate {

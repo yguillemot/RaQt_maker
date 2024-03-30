@@ -7,6 +7,7 @@ use Qt::QtWidgets::QFont;
 use Qt::QtWidgets::QLabel;
 use Qt::QtWidgets::QMainWindow;
 use Qt::QtWidgets::QMenu;
+use Qt::QtWidgets::QSize;
 
 
 
@@ -40,6 +41,8 @@ class MainWindow is QMainWindow {
 
         self.statusBar.showMessage: "Ready";
 
+        connect self, "iconSizeChanged", self, "somethingHappens";
+
         # Initialize the display
         self.refresh;
     }
@@ -52,6 +55,26 @@ class MainWindow is QMainWindow {
     method setStatus(Str $msg)
     {
         self.statusBar.showMessage: $msg;
+
+        if $msg ~~ "10" {
+            my $sz = self.iconSize;
+            say "Icon size : w=", $sz.width, " h=", $sz.height;
+        }
+
+        if $msg ~~ "20" {
+            self.setIconSize: QSize.new(33, 35);
+        }
+
+        if $msg ~~ "30" {
+            my $sz = self.iconSize;
+            say "Icon size : w=", $sz.width, " h=", $sz.height;
+        }
+    }
+
+    method somethingHappens(QSize $s) is QtSlot {
+        say "A : w=", $s.width, " h=", $s.height;
+        my $sz = self.iconSize;
+        say "B : w=", $sz.width, " h=", $sz.height;
     }
 
 }

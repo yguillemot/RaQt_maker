@@ -25,6 +25,7 @@ void (*slotCallbackInt2)(int objId, char *slotName, STD_INT i1, STD_INT i2) = 0;
 void (*slotCallbackStr)(int objId, char *slotName, char *s) = 0;
 void (*slotCallbackIntStr)(int objId, char *slotName, STD_INT i, char *s) = 0;
 void (*slotCallbackBool)(int objId, char *slotName, uchar b) = 0;
+void (*slotCallbackQSize)(int objId, char *slotName, void *p) = 0;
 
 void (*slotCallbackPointer)(int objId, char *slotName, void *p) = 0;
 
@@ -149,6 +150,7 @@ void * QWApplicationCtor(int argc, char **argv)
     slotDict->insert("QWSlot(int)", SLOT(QWSlot(int)));
     slotDict->insert("QWSlot(QString)", SLOT(QWSlot(const QString)));
     slotDict->insert("QWSlot(bool)", SLOT(QWSlot(bool)));
+    slotDict->insert("QWSlot(const QSize&)", SLOT(QWSlot(const QSize&)));
     slotDict->insert("QWLocalToLocalSlot(int)", SLOT(QWLocalToLocalSlot(int)));
 
     // For debug
@@ -407,6 +409,21 @@ void QWConnectorR::QWSlot(const QString str)
                                             str.toLocal8Bit().data());
 }
 
+// Example : signal "iconSizeChanged(const QSize &size)" from QMainWindow
+void QWConnectorR::QWSlot(const QSize &size)
+{
+    // std::cout << "QWConnectorR::QWSlot(QSize &) (C) : slotName = "
+    //           << m_slotName.toLocal8Bit().data()
+    //           << "   id = " << m_objId << "\n";
+    //
+    // std::cout << "QWConnectorR::QWSlot(Qsize &) : slotCallbackQSize called\n";
+    // std::cout << "      data = (0x" << std::hex << size.width() << ", 0x"
+    //           << std::hex << size.height() << ")\n";
+
+  (*slotCallbackQSize)(m_objId, m_slotName.toLocal8Bit().data(),
+                       const_cast<void *>(reinterpret_cast<const void *>(&size)));
+}
+
 void QWConnectorR::QWLocalToLocalSlot(int dataId)
 {
 //     std::cout << "QWConnectorR::QWLocalToLocalSlot(dataId="
@@ -525,6 +542,14 @@ void QWSetupSlotCallbackBool(void (*f)(int32_t objId, char *slotName, uchar b))
 //     std::cout << "QWSetupSlotCallbackBool f=" << (void *)f << "\n";
     slotCallbackBool = f;
 }
+
+
+void QWSetupSlotCallbackQSize(void (*f)(int32_t objId, char *slotName, void *p))
+{
+//     std::cout << "QWSetupSlotCallbackBool f=" << (void *)f << "\n";
+    slotCallbackQSize = f;
+}
+
 
 void QWSetupSlotCallbackPointer(void (*f)(int32_t objId, char *slotName, void *p))
 {

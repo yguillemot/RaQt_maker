@@ -81,6 +81,9 @@ EXTERNC void QWSetupSlotCallbackIntStr(
 EXTERNC void QWSetupSlotCallbackBool(
     void (*f)(int objId, char *slotName, uchar b));
 
+EXTERNC void QWSetupSlotCallbackQSize(
+    void (*f)(int objId, char *slotName, void *p));
+
 EXTERNC void QWSetupSlotCallbackPointer(
     void (*f)(int objId, char *slotName, void *p));
 

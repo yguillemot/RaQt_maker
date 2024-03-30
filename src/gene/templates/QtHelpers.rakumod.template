@@ -8,7 +8,7 @@ use Qt::QtWidgets::RQSize;
 our constant %qType = {
     "Int" => "int",
     "Str" => "QString",
-    "Bool" => "bool"
+    "Bool" => "bool",
 };
 
 # List of main Qt classes
@@ -36,6 +36,7 @@ our constant $simpleSignatures is export = set <
     (Int)
     (Str)
     (Bool)
+    (QSize)
 >;
 
 # Not implemented yet
@@ -53,7 +54,8 @@ our constant %qSigSig is export = {
     "(Str,Str)" => "(QString,QString)",
     "(Int,Str)" => "(int,QString)",
     "(Str,Int)" => "(QString,int)",
-    "(Bool)" => "(bool)"
+    "(Bool)" => "(bool)",
+    "(QSize)" => "(const QSize&)"           # YGYGYG ???
 };
 
 
@@ -237,7 +239,15 @@ sub slotAcceptsSig(Signature $dst, Signature $src --> Int) is export
 
     # Related parameters must have the same type
     for $sig.params Z $slot.params -> ($a, $b) {
-        return -1 if $a.type !~~ $b.type;
+        return -1 if     $a.type !~~ $b.type
+                     &&  $a.type.raku !~~ 'R'~$b.type.raku
+                     &&  'R'~$a.type.raku !~~ $b.type.raku;
+        # Note : The two last lines are here to force the equivalence of a
+        #        QtObject QXXX (found in the user code) and its associated
+        #        role RQXXX (found in the module code).
+        #        They should be used only with Qt names
+        #        (and maybe Qt names which are not QtObj names...)
+        #               ==> TODO: more code needed here
     }
 
     # Sig may have less params than slot if slot params have default values

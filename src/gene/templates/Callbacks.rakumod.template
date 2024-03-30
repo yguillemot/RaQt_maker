@@ -5,6 +5,8 @@ use Qt::QtWidgets::QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_
 use Qt::QtWidgets::QtWrappers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 use Qt::QtWidgets::ConnectionManager:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 
+use Qt::QtWidgets::QSize:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
 #BEGIN_INSERTION_HERE
 #ROLES_DECLARATION
 use Qt::QtWidgets::QPaintEvent;
@@ -42,6 +44,12 @@ sub slotCallbackIntStr(int32 $objectId, Str $slotName, int64 $i, Str $s)
 sub slotCallbackBool(int32 $objectId, Str $slotName, int8 $b)
 {
     $CM.objs{$objectId}."$slotName"(?$b);
+}
+
+sub slotCallbackQSize(int32 $objectId, Str $slotName, Pointer $size)
+{
+    my QSize $a1 = QSize.new($size);
+    $CM.objs{$objectId}."$slotName"($a1)
 }
 
 sub slotCallbackPointer(int32 $objectId, Str $slotName, Pointer $p)
@@ -105,6 +113,7 @@ sub QtSetupEverything is export     # TODO : Should not be exported from here
     QWSetupSlotCallbackStr(&slotCallbackStr);
     QWSetupSlotCallbackIntStr(&slotCallbackIntStr);
     QWSetupSlotCallbackBool(&slotCallbackBool);
+    QWSetupSlotCallbackQSize(&slotCallbackQSize);
     QWSetupSlotCallbackPointer(&slotCallbackPointer);
     QWSetupSlotCallbackComplexSig(&slotCallbackComplexSig);
 
