@@ -60,7 +60,6 @@ sub strRakuArgsDecl(Function $f, %qClasses,
                     Bool :$useRole = False,
                     Bool :$alwaysUseRole = False --> Str) is export
 {
-say "YGYGYG strRakuArgsDecl";
     my $o = "(";
     my $sep = "";
     for $f.arguments -> $a {
@@ -92,7 +91,6 @@ sub strArgsRakuCtorDecl(Function $f, %qClasses,
                         Bool :$useRole = False,
                         Bool :$alwaysUseRole = False --> Str) is export
 {
-say "YGYGYG strArgsRakuCtorDecl";
     my $o = '(QtBase $this';
     my $sep = ", ";
     for $f.arguments -> $a {
@@ -145,7 +143,6 @@ sub strRakuArgsCtorDecl(Function $f, Str $class, %qClasses --> Str) is export
 # The second one is the list of classes used as an enum container
 sub classesInSignature(Function $f --> List) is export
 {
-print "YGYGYG classesInSignature [{$f.name}]";
     my (@o, @p);
     for $f.arguments -> $a {
         my $t = isQtClass($a);
@@ -169,7 +166,6 @@ print "YGYGYG classesInSignature [{$f.name}]";
             }
         }
     }
-say " < {@o} >< {@p} >";    # YGYGYG
     return @o, @p;
 }
 
@@ -227,7 +223,6 @@ sub classeReturned(Function $f --> Str) is export
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
             Bool :$useRole = False --> Str) is export
 {
-say "YGYGYG toRaku val=\"$val\" cls=\"$cls\"";
     $valueClass = "";
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
@@ -236,30 +231,24 @@ say "YGYGYG toRaku val=\"$val\" cls=\"$cls\"";
         when /'&'/          { $val ~~ s:g/'&'/+&/; proceed }
         when /'(' .*? ')'/         {
             if $val ~~ /^ (\w+) '(' .*? ')' $/ {
-            say "AAAAAAA";
                 if %qClasses{$0.Str}:exists {
-                say "BBBBBBB";
                     if $useRole {
                         # C++ "QXxx(val)" --> Raku "RQXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.NEW1$1/;
-                    say "CCCCCCC1 ", $0;
-                        $valueClass = $0.Str if $0;
+                         $valueClass = $0.Str if $0;
                     } else {
                         # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
-                    say "CCCCCCC2 ", $0;
                         $valueClass = $0.Str if $0;
 
                         # Process special classes :
                         #       QString.new()      --> ""
                         #       QString.new("xxx") --> "xxx"
                         if $val ~~ m/^ 'QString.new(' ( .*? ) ')' $/ {
-                        say "DDDDDD";
                             $val = $0 ~~ "" ?? '""' !! $0;
                             $valueClass = "";
                         } else {
                             $valueClass = $0.Str if $0;
-                            say "EEEEEEE 0:", $0, "  vc:", $valueClass;
                         }
                     }
                 }
@@ -270,7 +259,6 @@ say "YGYGYG toRaku val=\"$val\" cls=\"$cls\"";
     # Replace nullptr with some Raku equivalent
     $val ~~ s/nullptr/($cls)/;
 
-    say "FFFFFFF val = \"$val\"";
     return $val;
 }
 

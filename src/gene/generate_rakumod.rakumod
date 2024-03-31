@@ -84,7 +84,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     }
     
 #     if !$noCtor && $v.isQObj {
-    if !$noCtor {   # YGYG
+    if !$noCtor {
         $outm ~= "\n{IND}does {PREFIXROLE}$k" ;
         @rRefs.push: $k;
         
@@ -353,10 +353,6 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 #         say "Generate method ", $m.name;
 
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, :!showNames);
-say "[[[[[[[[[[[[[[[[[[[[[[[[[";
-say "EXK";
-say $exk;
-say "]]]]]]]]]]]]]]]]]]]]]]]]]";
         if %exceptions{$exk}{'rakumod'}:exists {
             # say "EXCEP RAKUMOD 2 : $exk";
             if %exceptions{$exk}{'wrappers'}:exists {
@@ -419,7 +415,6 @@ say "]]]]]]]]]]]]]]]]]]]]]]]]]";
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
             @qRefs.append: @valClasses;
-            say "YGYGYG APP vc: ", @valClasses, " qRefs: ", @qRefs if $m.name ~~ "render";
             
             # If the method returns a Qt class, to instantiate an
             # associated raku object will be needed and the "use QXxx"

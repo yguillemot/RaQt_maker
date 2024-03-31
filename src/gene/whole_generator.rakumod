@@ -176,20 +176,6 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                                  $hasCtor, $hasSubclassCtor, $subclassable,
                                  %virtuals, @classsesInHelper);
 
-say "******************************************************************";
-say "USE";
-say $use;
-say "------------------------------------------------------------------";
-say "CLASS";
-say $class;
-say "------------------------------------------------------------------";
-say "USE";
-say $nsubs;
-say "------------------------------------------------------------------";
-say "ROLE";
-say $role;
-say "------------------------------------------------------------------";
-say "******************************************************************";
         
         $outSignalsHash ~= $signalslHash;
         $outSlotsHash ~= $slotsHash;
@@ -219,7 +205,6 @@ say "******************************************************************";
         say "";         # Terminate the info line on stdout
     }               # End of the CLASS loop
 
-    say "YGYGYGYGYGYG : ", @classsesInHelper;
     
     
     say "Generate code : end";
