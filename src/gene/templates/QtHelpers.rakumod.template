@@ -1,5 +1,7 @@
 unit module QtHelpers:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
 
+use Qt::QtWidgets::Qt:ver<MODULE_VERSION>:auth<MODULE_AUTHOR>:api<MODULE_API>;
+
 #BEGIN_INSERTION_HERE
 #ROLES_DECLARATION
 use Qt::QtWidgets::RQSize;
