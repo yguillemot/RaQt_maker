@@ -8,7 +8,6 @@ use gene::conversions;
 use gene::indent;
 use gene::addHeaderText;
 
-
 # $api : The Qt API description (the output of the parser with the black and
 # white info marks added)
 # %callbacks : The list of callbacks precomputed by the hpp_generator
@@ -19,6 +18,7 @@ use gene::addHeaderText;
 #   $k : Class name
 #   $v : Class description
 #   %exceptions : Where all the exceptions are stored
+#   %virtuals : Where all the virtual methods are stored
 #   $hasCtor : True if class has a constructor
 #   $hasSubclassCtor : True if the class has a subclass constructor
 #   $subclassable : True if the class may be subclassed
@@ -31,7 +31,7 @@ use gene::addHeaderText;
 #       - $outSignals : Code for the signals dictionnary
 #       - $outSlots : Code for the slots dictionnary
 #
-sub generate_cpp(Str $k, Qclass $v, %exceptions,
+sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
                     $km = False) is export
 {
@@ -63,9 +63,27 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions,
 
     MLOOP: for $v.methods -> $m {
         next MLOOP if !$m.whiteListed || $m.blackListed;
-        
-        next if $m.isVirtual && !$m.isSlot;  # Always skip virtual ???
-                                             # v0.0.5: added exception for slots
+
+#         my Bool $overriding = %virtuals{$m.name}:exists
+#                                             && %virtuals{$m.name}[0] ~~ $k;
+        my Bool $overriding = %virtuals{$m.name}:exists;
+        # TODO : The signature of the method should be tested
+
+# if ($k ~~ "QMainWindow") && (m.name ~~ "event") { repl; }
+# if $k ~~ "QMainWindow" {
+#     if $m.name ~~ "event" {
+#        say "YGYGYG overriding : ", $overriding;
+#        say "VIRT: ", %virtuals;
+#     }
+# }
+
+# ********************************************************************
+# overriding ne fonctionnait pas parce que %virtuals{$m.name}[0] ~~ QObject
+# ET NON PAS $k (soit QMainWindow) !!!!!!!!
+# ********************************************************************
+
+        next MLOOP if $overriding && !$m.isSlot;
+                                            # v0.0.5: added exception for slots
 
         # Look for an exception related to the method
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, showNames => False);

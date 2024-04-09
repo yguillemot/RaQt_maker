@@ -956,27 +956,61 @@ sub vmethods(API $api, Str $k --> Hash) is export
 {
     my %c = $api.qclasses;
     my %virtuals = ();
-    gatherVirtuals($k);
+
+    my Str @curMeths = ();
+    for %c{$k}.methods -> $m {
+        @curMeths.push: $m.name if !$m.blackListed && $m.whiteListed;
+    }
+
+    say "DEBUT";
+    gatherVirtuals($k, @curMeths);
+    say "FIN";
     return %virtuals;
 
     # Recursive subroutine used hereabove
-    sub gatherVirtuals(Str $className)
+    sub gatherVirtuals(Str $className, Str @currentMethods)
     {
+        say "gatherVirtuals: ", $className, " ", @currentMethods;
         my $cl = %c{$className};
+        GVLOOP:
         for $cl.methods.sort -> $m {
-        
             # V0.0.5: There is a problem with QDialog::exec which is
             #         a "virtual slot". So, currently, the generation
             #         of code related to virtual methods is disabled
-            #         the slots.
+            #         with the slots.
             next if $m.isSlot;
 
-            next if !$m.isVirtual || $m.blackListed || !$m.whiteListed;
+            # QObject class is a special case implemented in an exception
+            # template and whose methods should never be defined in the
+            # white list, but knowing its virtual methods is needed.
+            next if $className !~~ "QObject"
+                            && ($m.blackListed || !$m.whiteListed);
+
+#             # When class is QObject, some found methods should be unrelated
+#             # to whitelisted/blacklisted methods of the current class.
+#             next if $m.name !(elem) @currentMethods;
+
+            next if !$m.isVirtual;
             next if %virtuals{$m.name}:exists;
+
+            # The arguments of the method should only have whitelisted types
+            for $m.arguments -> $a {
+                my $qc = isQtClass($a);
+                if ($qc) {
+                    say "   USE QTCLASS ", $qc;
+                    next GVLOOP if !%c{$qc}.whiteListed;
+                    next GVLOOP if %c{$qc}.blackListed;
+                }
+            }
+
+      say "FOUND ", $m.name, "   className = ", $className;
             %virtuals{$m.name} = $className, $m;
+#             say "VMETHODS found for ", $className, " : ", $m.name;  # YGYGYG
+#             say $m;
+#             say "";
         }
         for $cl.parents {
-            gatherVirtuals($_);
+            gatherVirtuals($_, @currentMethods);
         }
     }
 }
