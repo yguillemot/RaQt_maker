@@ -956,21 +956,12 @@ sub vmethods(API $api, Str $k --> Hash) is export
 {
     my %c = $api.qclasses;
     my %virtuals = ();
-
-    my Str @curMeths = ();
-    for %c{$k}.methods -> $m {
-        @curMeths.push: $m.name if !$m.blackListed && $m.whiteListed;
-    }
-
-    say "DEBUT";
-    gatherVirtuals($k, @curMeths);
-    say "FIN";
+    gatherVirtuals($k);
     return %virtuals;
 
     # Recursive subroutine used hereabove
-    sub gatherVirtuals(Str $className, Str @currentMethods)
+    sub gatherVirtuals(Str $className)
     {
-        say "gatherVirtuals: ", $className, " ", @currentMethods;
         my $cl = %c{$className};
         GVLOOP:
         for $cl.methods.sort -> $m {
@@ -986,31 +977,27 @@ sub vmethods(API $api, Str $k --> Hash) is export
             next if $className !~~ "QObject"
                             && ($m.blackListed || !$m.whiteListed);
 
-#             # When class is QObject, some found methods should be unrelated
-#             # to whitelisted/blacklisted methods of the current class.
-#             next if $m.name !(elem) @currentMethods;
-
             next if !$m.isVirtual;
+
+            # Don't look for an already found method
             next if %virtuals{$m.name}:exists;
 
             # The arguments of the method should only have whitelisted types
             for $m.arguments -> $a {
                 my $qc = isQtClass($a);
                 if ($qc) {
-                    say "   USE QTCLASS ", $qc;
-                    next GVLOOP if !%c{$qc}.whiteListed;
-                    next GVLOOP if %c{$qc}.blackListed;
+                    my $cc = %c{$qc};
+                    next GVLOOP if !$cc.whiteListed || $cc.blackListed;
                 }
             }
 
-      say "FOUND ", $m.name, "   className = ", $className;
+            # Method found: store it in the hash
             %virtuals{$m.name} = $className, $m;
-#             say "VMETHODS found for ", $className, " : ", $m.name;  # YGYGYG
-#             say $m;
-#             say "";
         }
+
+        # Try again with the parents of the current class
         for $cl.parents {
-            gatherVirtuals($_, @currentMethods);
+            gatherVirtuals($_);
         }
     }
 }

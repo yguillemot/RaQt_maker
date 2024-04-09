@@ -53,11 +53,9 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     # Walk through all the Qt classes
     CLASS: for %c.sort>>.kv -> ($k, $v) {
     
-    say "AAAAAAAAA k=", $k, " v.name=", $v.name;
         # Ignore classes we don't want to implement
         next CLASS: if !$v.whiteListed || $v.blackListed;
         next CLASS: if $v.name (elem) $specialClasses;
-    say "ZZZZZZZZZ k=", $k, " v.name=", $v.name;
 
         ### 1 - Gather data about current class
         
@@ -104,7 +102,6 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
         
 
         # Get all the virtual methods usable from the current class.
-        say "CALL VMETHODS for ", $k, " !!!!!!!!!!!!!!!!!!!!!!!!!";
         my %virtuals = vmethods($api, $k);
         %allVirtuals ,= %virtuals;
 
@@ -209,15 +206,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     }               # End of the CLASS loop
 
     
-    
     say "Generate code : end";
 
-    say "VIRTUALS ==============================================";
-    for %allVirtuals.kv -> $k, $v {
-        say "*** ", $k, " ***";
-        say $v;
-        say "";
-    }
     
     
     ### 6 - Create other files  

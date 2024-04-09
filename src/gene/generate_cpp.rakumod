@@ -67,20 +67,7 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
 #         my Bool $overriding = %virtuals{$m.name}:exists
 #                                             && %virtuals{$m.name}[0] ~~ $k;
         my Bool $overriding = %virtuals{$m.name}:exists;
-        # TODO : The signature of the method should be tested
-
-# if ($k ~~ "QMainWindow") && (m.name ~~ "event") { repl; }
-# if $k ~~ "QMainWindow" {
-#     if $m.name ~~ "event" {
-#        say "YGYGYG overriding : ", $overriding;
-#        say "VIRT: ", %virtuals;
-#     }
-# }
-
-# ********************************************************************
-# overriding ne fonctionnait pas parce que %virtuals{$m.name}[0] ~~ QObject
-# ET NON PAS $k (soit QMainWindow) !!!!!!!!
-# ********************************************************************
+        # TODO : Maybe the signature of the method should be tested
 
         next MLOOP if $overriding && !$m.isSlot;
                                             # v0.0.5: added exception for slots
