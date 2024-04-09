@@ -392,7 +392,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     ~ IND x 2 ~ 'qSig => "'
                             ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
                     ~ IND x 2 ~ 'signature => :'
-                            ~ rSignature($m, :noEnum) ~ ',' ~ "\n"
+                            ~ rSignature($m, :useRole, :noEnum) ~ ',' ~ "\n"
                     ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                     ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                     ~ IND x 2 ~ 'isSlot => True,' ~ "\n"

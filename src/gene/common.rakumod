@@ -965,6 +965,8 @@ sub vmethods(API $api, Str $k --> Hash) is export
         my $cl = %c{$className};
         GVLOOP:
         for $cl.methods.sort -> $m {
+            # say "try ", $m.name, " in class ", $className;
+
             # V0.0.5: There is a problem with QDialog::exec which is
             #         a "virtual slot". So, currently, the generation
             #         of code related to virtual methods is disabled
@@ -976,6 +978,10 @@ sub vmethods(API $api, Str $k --> Hash) is export
             # white list, but knowing its virtual methods is needed.
             next if $className !~~ "QObject"
                             && ($m.blackListed || !$m.whiteListed);
+            ####################################################################
+            # Note: Currently, the overriding of a virtual method will only be
+            #       implemented if its parent virtual method is whitelisted
+            ####################################################################
 
             next if !$m.isVirtual;
 
@@ -990,6 +996,7 @@ sub vmethods(API $api, Str $k --> Hash) is export
                     next GVLOOP if !$cc.whiteListed || $cc.blackListed;
                 }
             }
+            # say "FOUND ", $m.name, " in class ", $className;
 
             # Method found: store it in the hash
             %virtuals{$m.name} = $className, $m;

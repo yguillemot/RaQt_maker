@@ -48,7 +48,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     my Str @qtClasses;      # List of the main Qt classes (QWidget, etc...)
     my Str @otherQtClasses; # List of the subsidiary Qt classes (QPoint, etc...)
 
-    my Str @classsesInHelper; # List of classes used in QtHelper.rakumod module
+    my Str @classesInHelper; # List of classes used in QtHelper.rakumod module
     
     # Walk through all the Qt classes
     CLASS: for %c.sort>>.kv -> ($k, $v) {
@@ -174,7 +174,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                     $signalslHash, $slotsHash, $callbacksHash) =
                 generate_rakumod($k, $v, %c, %exceptions,
                                  $hasCtor, $hasSubclassCtor, $subclassable,
-                                 %virtuals, @classsesInHelper);
+                                 %virtuals, @classesInHelper);
 
         
         $outSignalsHash ~= $signalslHash;
@@ -265,7 +265,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     say "    QtHelpers.rakumod";
     # Add the needed "use" calls
     my Str $useStr = "";
-    my $roles = SetHash.new: @classsesInHelper;
+    my $roles = SetHash.new: @classesInHelper;
     for 'R' <<~>> $roles.keys.sort -> $rname {
         $useStr ~= "use {LIBPREFIX}{versionedName($rname)};\n";
     }

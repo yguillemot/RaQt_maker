@@ -36,6 +36,7 @@ sub generate_h(Str $k, Qclass $v, %exceptions,
     MLOOP: for $v.methods -> $m {
         next MLOOP if !$m.whiteListed || $m.blackListed;
         next MLOOP if $m.isSignal;
+        next MLOOP if $m.isProtected;
         
         # Is this method an exception ?
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, showNames => False);

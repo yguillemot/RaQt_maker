@@ -72,6 +72,10 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
         next MLOOP if $overriding && !$m.isSlot;
                                             # v0.0.5: added exception for slots
 
+        next MLOOP if $m.isProtected;
+        # Probably an overriding method whose virtual parent is not in the
+        # white list.
+
         # Look for an exception related to the method
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, showNames => False);
         # say "?EXCEPTION $exk";
