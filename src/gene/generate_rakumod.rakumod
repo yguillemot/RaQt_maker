@@ -183,7 +183,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                     # Subroutine(s) ctor calling the native subclass wrapper
                     $outm ~= IND ~ "multi sub subClassCtor"
-                                    ~ strArgsRakuCtorDecl($ctor, %c, :useRole)
+                                    ~ strArgsRakuCtorDecl($ctor, %c, :alwaysUseRole)
                                     ~ " \{\n";
 
                     ($pc, $o) = rakuWrapperCallElems($ctor);
@@ -384,6 +384,13 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                 # my $qualifiedClass = RAQTNAME ~ '::' ~ $k;
                 my $qualifiedClass = $k;
+
+                # YGYGYG <<<
+                my ($cl-type, $cl-enum) = classesInSignature($m);
+                @rRefs.append: @$cl-type;
+                @qRefs.append: @$cl-enum;
+                $classesInHelper.append: @$cl-type;
+                # >>> YGYGYG
 
                 $outSlots ~=
                     IND ~ '%slots<' ~ $qualifiedClass ~ '>.push(SigSlot.new(' ~ "\n"
