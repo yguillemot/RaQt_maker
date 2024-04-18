@@ -149,9 +149,11 @@ sub doc_generator(API :$api, :%exceptions) is export
                  $out ~= "#### Method " ~ $k ~ ".new"
                                             ~ strRakuArgsCtorDecl($m, $k, %c);
             } else {
-                my @valClasses;
+                my @valQClasses;
+                my @valRClasses;
                 $out ~= "#### Method "
-                    ~ $methodName ~ strRakuArgsDecl($m, %c, @valClasses);
+                    ~ $methodName ~ strRakuArgsDecl($m, %c,
+                                                @valQClasses, @valRClasses);
             }
 
             $out ~= "\n\t" ~ $qualifiers if $qualifiers ne "";

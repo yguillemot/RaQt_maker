@@ -416,20 +416,26 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             # Call of the native wrapper
             $outm ~= IND ~ ($m.number ?? "multi method" !! "method") ~ " ";
             $outm ~= $m.name;
-            my @valClasses;
-            my $p = @valClasses;
-            $outm ~= strRakuArgsDecl($m, %c, $p, :alwaysUseRole)
+            my @valQClasses;
+            my @valRClasses;
+            my $q = @valQClasses;
+            my $r = @valRClasses;
+            $outm ~= strRakuArgsDecl($m, %c, $q, $r, :alwaysUseRole)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
-            @qRefs.append: @valClasses;
-            
-            # If the method returns a Qt class, to instantiate an
-            # associated raku object will be needed and the "use QXxx"
-            # instruction have to be added.
-            # (Having simultaneously "use QXxx" and "use RQXxx" is
-            # not harmful albeit not useful.)
-            my Str $cr = classeReturned($m);
-            @qRefs.push: $cr if $cr;
+            @qRefs.append: @valQClasses;
+            @rRefs.append: @valRClasses;
+   say "EEEEEYGYGYG Q1 : ", @valQClasses;
+   say "EEEEEYGYGYG R1 : ", @valRClasses;
+
+#YGYGYG  sans doute plus necessaire
+#             # If the method returns a Qt class, to instantiate an
+#             # associated raku object will be needed and the "use QXxx"
+#             # instruction have to be added.
+#             # (Having simultaneously "use QXxx" and "use RQXxx" is
+#             # not harmful albeit not useful.)
+#             my Str $cr = classeReturned($m);
+#             @qRefs.push: $cr if $cr;
             
             my ($cl-type, $cl-enum) = classesInSignature($m);
             @rRefs.append: @$cl-type;
@@ -465,7 +471,11 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     my $rt = $m.returnType;
                     my $poc = postcall_raku('$result', $rt.ftot,
                                                                 qPostop($rt),
-                                            '$result1', rType($rt));               
+                                            '$result1', rType($rt));
+                    # If a QXxx object was created, replace it with its
+                    # associated role RQXxx
+                    $poc ~~
+                        s/ 'my $' (\w+) ' = Q' (\w+) '.new' /my \$$0 = RQ$1.new/;
                     if $poc {
                         $outm ~= IND x 2 ~ $poc ~ "\n";
                         $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";
@@ -500,13 +510,18 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $trait = $m.isPrivateSignal ?? "is QtPrivateSignal" !! "is QtSignal";
             # my $qualifiedClass = RAQTNAME ~ '::' ~ $k;
             my $qualifiedClass = $k;
-            my @valClasses;
+            my @valQClasses;
+            my @valRClasses;
             $outm ~= IND ~ "method " ~ $m.name
-                            ~ strRakuArgsDecl($m, %c, @valClasses, :useRole)
+                            ~ strRakuArgsDecl($m, %c,
+                                    @valQClasses, @valRClasses, :useRole)
                             ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
             $outm ~= "\n";
-            @qRefs.append: @valClasses;
+            @qRefs.append: @valQClasses;
+            @rRefs.append: @valRClasses;
+   say "EEEEEYGYGYG Q : ", @valQClasses;
+   say "EEEEEYGYGYG R : ", @valRClasses;
 
             my ($cl-type, $cl-enum) = classesInSignature($m);
             @rRefs.append: @$cl-type;

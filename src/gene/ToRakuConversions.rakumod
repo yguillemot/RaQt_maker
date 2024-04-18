@@ -56,7 +56,7 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
 # $valueClasses is used to return a list of classes, if any, used to assign
 # default values to arguments
 sub strRakuArgsDecl(Function $f, %qClasses,
-                    $valueClasses,
+                    $valueQClasses, $valueRClasses,
                     Bool :$useRole = False,
                     Bool :$alwaysUseRole = False --> Str) is export
 {
@@ -70,8 +70,17 @@ sub strRakuArgsDecl(Function $f, %qClasses,
         $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
         if $a.value { 
             my $valClass = "";
-            $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses, $valClass);
-            $valueClasses.push: $valClass if $valClass;
+            say "YGYGYG Ici !";
+            $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses,
+                                            $valClass, useRole => $ur);
+        print "VALCLASS = '", $valClass;
+            if $valClass ~~ m/^ 'R' (\w+) / {
+                $valueRClasses.push: $0.Str;
+         say "'  ==>  '", $0.Str, "'";
+            } else {
+                $valueQClasses.push: $valClass if $valClass;
+         say "'  ==>  '", $valClass, "'";
+            }
         }
         $sep = ", ";
     }
@@ -221,8 +230,9 @@ sub classeReturned(Function $f --> Str) is export
 # $valueClass : returns the class use to initialize the default value if any
 # $useRole : True if role should be use in declaration rather than class
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
-            Bool :$useRole = False --> Str) is export
+            Bool :$useRole = False --> Str)
 {
+say "YGYGYG toRaku  in = ", $val, "      useRole = ", $useRole;
     $valueClass = "";
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
@@ -234,23 +244,22 @@ multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
                 if %qClasses{$0.Str}:exists {
                     if $useRole {
                         # C++ "QXxx(val)" --> Raku "RQXxx.new(val)"
-                        $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.NEW1$1/;
-                         $valueClass = $0.Str if $0;
+                        $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.new$1/;
+                        $valueClass = 'R' ~ $0.Str if $0;
                     } else {
                         # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
                         $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
                         $valueClass = $0.Str if $0;
-
-                        # Process special classes :
-                        #       QString.new()      --> ""
-                        #       QString.new("xxx") --> "xxx"
-                        if $val ~~ m/^ 'QString.new(' ( .*? ) ')' $/ {
-                            $val = $0 ~~ "" ?? '""' !! $0;
-                            $valueClass = "";
-                        } else {
-                            $valueClass = $0.Str if $0;
-                        }
                     }
+
+                    # Process special classes :
+                    #       QString.new()      --> ""
+                    #       QString.new("xxx") --> "xxx"
+                    if $val ~~ m/^ 'R'? 'QString.new(' ( .*? ) ')' $/ {
+                        $val = $0 ~~ "" ?? '""' !! $0;
+                        $valueClass = "";
+                    }
+
                 }
             }
         }
@@ -259,6 +268,7 @@ multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
     # Replace nullptr with some Raku equivalent
     $val ~~ s/nullptr/($cls)/;
 
+say "YGYGYG toRaku out = ", $val;
     return $val;
 }
 
@@ -270,7 +280,7 @@ multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
 # %qClasses : The hash of known classes
 # $useRole : True if role should be use in declaration rather than class
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses,
-            Bool :$useRole = False --> Str) is export
+            Bool :$useRole = False --> Str)
 {
     my Str $vclass = "";
     toRaku($val, $cls, %qClasses, $vclass, :$useRole);
@@ -433,7 +443,9 @@ multi sub precall_raku(Int $c, "CLASS", Str $argName,
 # A nullptr is not allowed
 multi sub precall_raku(Int $c, "CLASS", Str $argName,
                         Str $rakuTypeName, Str $const, "&" --> Str)
-{ 'my $a' ~ $c ~ ' = $' ~ $argName ~ '.address;' }
+    {
+      say "YGYGYG ZZZZ argName : ", $argName;
+        'my $a' ~ $c ~ ' = $' ~ $argName ~ '.address;' }
 
 # Conversion from Real to Num needed before native call
 multi sub precall_raku(Int $c, "NATIVE", Str $argName,
