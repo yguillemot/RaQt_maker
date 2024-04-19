@@ -9,6 +9,7 @@ use gene::blackAndWhite;
 use gene::output;
 use gene::exceptions;
 use gene::rmDirContent;
+use gene::loadTreeTools;
 
 use gene::doc_generator;
 use gene::tool_generator;
@@ -36,7 +37,9 @@ sub MAIN ( #| C++ filtered header to read
            Bool :$show-groups,
            #| Count and display how many types are defined in the Qt source.
            #| Print out this types in List_xxx.txt files.
-           Bool :$count-types
+           Bool :$count-types,
+           #| Show the load tree of the generated modules
+           Bool :$show-modules-tree
          )
 {
     my $okToGenerate = $generate;
@@ -255,5 +258,14 @@ sub MAIN ( #| C++ filtered header to read
     }
     
     say "";
+
+
+    if $show-modules-tree {
+        dumpRawTree($api, "RawModulesLoadTree.txt");
+        lookForLoops($api);
+        makeDot_InLoop($api, "ModulesInLoop.dot");
+        makeDot_OutOfLoops($api, "ModulesOutLoops.dot");
+        makeDot($api, "Modules.dot");
+    }
 
 } # End of sub MAIN

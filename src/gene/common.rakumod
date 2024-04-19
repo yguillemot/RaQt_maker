@@ -118,6 +118,23 @@ role Validation {
 
 ##############################################################################
 
+# Used to find out possible module load loops and to determine if a module
+# have to be seen directly or through a role
+# (There is one module for each Qt class)
+role LoadTreeElement {
+    has Str %.needed;    # List of modules needed by the current one
+                         # %.needed{$moduleName} = How_string
+                         #      How_string is "UNDEFINED"
+                         #                 or "DIRECT"
+                         #                 or "ROLE"
+
+    has Bool $.notInLoop is rw;     # Not in a module load loop
+    has Bool $.flag is rw;  # Used while computing $.notInLoop to avoid
+                            # infinite recursion if a loop is found
+}
+
+##############################################################################
+
 
 #| Local type (ie Raku, Native, C or Qt type)
 class Ltype {
@@ -537,7 +554,7 @@ sub availableSignatures(Function $f --> List) is export
 
 
 #| Store the prototypes of the methods of a QObject C++ class
-class Qclass does Validation {
+class Qclass does Validation does LoadTreeElement {
     has Str $.name;
     has Bool $.generic is rw = False;
     has Bool $.visible is rw = False;
