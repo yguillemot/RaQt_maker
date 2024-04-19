@@ -261,6 +261,7 @@ sub MAIN ( #| C++ filtered header to read
 
 
     if $show-modules-tree {
+        populateTree($api);
         dumpRawTree($api, "RawModulesLoadTree.txt");
         lookForLoops($api);
         makeDot_InLoop($api, "ModulesInLoop.dot");
