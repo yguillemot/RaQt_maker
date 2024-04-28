@@ -128,7 +128,7 @@ role LoadTreeElement {
                          #                 or "DIRECT"
                          #                 or "ROLE"
 
-    has Bool $.notInLoop is rw;     # Not in a module load loop
+    has Str $.inLoop is rw;   # Is part of a module load loop
     has Bool $.flag is rw;  # Used while computing $.notInLoop to avoid
                             # infinite recursion if a loop is found
 }
