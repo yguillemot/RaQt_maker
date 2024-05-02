@@ -37,6 +37,17 @@ sub populateTree(API $api) is export {
                                  blackListed => True,
                                  visible => True;
 
+# Each QObj needs QtWidgets. So it's not added here because the resulting
+# graph would too large to be useful.
+#
+#      $api.qclasses<QtWidgets> = Qclass.new:
+#                                  name => "QtBase",
+#                                  parents => < QtBase QtHelpers QtWrappers >,
+#                                  children => < a lot ... >,
+#                                  whiteListed => False,
+#                                  blackListed => True,
+#                                  visible => True;
+
 
 
     # Populate with parents classes
@@ -345,4 +356,71 @@ sub montrerEtat($api, Str $f) is export {
 #
 
 #
+
+
+# All whiteListed classes and methods should already be defined
+sub lookForDependencies(API $api) is export {
+
+    # Reset
+    for $api.qclasses.kv -> $k, $v {
+        next if  !$v.visible && (!$v.whiteListed || $v.blackListed);
+        for $v.parents -> $p {
+            $v.needed = ();
+        }
+    }
+
+
+    # Populate with parents classes
+    for $api.qclasses.kv -> $k, $v {
+        next if  !$v.visible && (!$v.whiteListed || $v.blackListed);
+        for $v.parents -> $p {
+            $v.needed{$p} = "DIRECT";
+        }
+    }
+
+    # Add classes used in the arguments of the methods
+
+    # Loop on classes
+    CLOOP: for $api.qclasses.kv -> $k, $v {
+        next CLOOP if !$v.visible && (!$v.whiteListed || $v.blackListed);
+
+        # Loop on methods
+        MLOOP: for $v.methods -> $m {
+#             next MLOOP if $m.blackListed;
+            next MLOOP if !$m.whiteListed || $m.blackListed;
+
+            # Process returned type
+            if $m.name ne "ctor" {
+                if $m.returnType.ftot ~~ "CLASS" {
+                    my Str $dep = $m.returnType.fbase;
+                    # Does class exist ?   TODO : TEST VRAIMENT NECESSAIRE ???
+                    if ($dep ne $k) and $api.qclasses{$dep}:exists {
+                        # Set as "ROLE" unless already "DIRECT"
+                        $v.needed{$dep} = "ROLE" if $v.needed{$dep}:!exists;
+                    }
+                }
+            }
+
+            # Process arguments types
+            for $m.arguments -> $a {
+                if $a.ftot ~~ "CLASS" {
+                    my Str $dep = $a.fbase;
+                    # Does class exist ?   TODO : TEST VRAIMENT NECESSAIRE ???
+                    if ($dep ne $k) and $api.qclasses{$dep}:exists {
+                        # Does a default value exist ?
+                        if $a.value {
+                            $v.needed{$dep} = "DIRECT";
+                        } else {
+                            # Set as "ROLE" unless already "DIRECT"
+                            $v.needed{$dep} = "ROLE" if $v.needed{$dep}:!exists;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+}
 
