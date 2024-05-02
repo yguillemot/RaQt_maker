@@ -168,14 +168,14 @@ sub lookForLoops(API $api) is export {
     }
 
     sub goSearch($k1) {
-        say "--- $k1 ---";
+        # say "--- $k1 ---";
         my $obj := $api.qclasses{$k1};
-        say "needed : ", $obj.needed;
+        # say "needed : ", $obj.needed;
         my $oldFlag = $obj.flag;
         $obj.flag = True;
         return if $oldFlag;
         for $obj.needed.keys -> $k2 {
-        say "* $objName : $k1 : $k2";
+            # say "* $objName : $k1 : $k2";
             if $k2 ~~ $objName {
                 $loop = True;
                 return;
@@ -191,7 +191,7 @@ sub makeDot(API $api, Str $f) is export {
     for $api.qclasses.keys.sort -> $k {
         my $obj = $api.qclasses{$k};
         next if !$obj.visible && (!$obj.whiteListed || $obj.blackListed);
-        say "$k : ", $obj.needed;
+        # say "$k : ", $obj.needed;
         for $obj.needed.keys.sort -> $k1 {
             # my $obj1 = $api.qclasses{$k1};
             # next if !$obj1.whiteListed || $obj1.blackListed;
