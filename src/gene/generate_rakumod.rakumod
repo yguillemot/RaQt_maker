@@ -150,7 +150,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                 # Subroutine(s) ctor calling the native wrapper
                 $outm ~= IND ~ "multi sub ctor"
-                                ~ strArgsRakuCtorDecl($ctor, %c, :alwaysUseRole)
+                                ~ strArgsRakuCtorDecl($ctor, %c, :markers)
                                 ~ " \{\n";
 
                 my ($pc, $o) = rakuWrapperCallElems($ctor);
@@ -183,7 +183,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                     # Subroutine(s) ctor calling the native subclass wrapper
                     $outm ~= IND ~ "multi sub subClassCtor"
-                                    ~ strArgsRakuCtorDecl($ctor, %c, :alwaysUseRole)
+                                    ~ strArgsRakuCtorDecl($ctor, %c, :markers)
                                     ~ " \{\n";
 
                     ($pc, $o) = rakuWrapperCallElems($ctor);
@@ -399,7 +399,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     ~ IND x 2 ~ 'qSig => "'
                             ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
                     ~ IND x 2 ~ 'signature => :'
-                            ~ rSignature($m, :useRole, :noEnum) ~ ',' ~ "\n"
+                            ~ rSignature($m, :markers, :noEnum) ~ ',' ~ "\n"
                     ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                     ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                     ~ IND x 2 ~ 'isSlot => True,' ~ "\n"
@@ -420,7 +420,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my @valRClasses;
             my $q = @valQClasses;
             my $r = @valRClasses;
-            $outm ~= strRakuArgsDecl($m, %c, $q, $r, :alwaysUseRole)
+            $outm ~= strRakuArgsDecl($m, %c, $q, $r, :markers)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
             @qRefs.append: @valQClasses;
@@ -514,7 +514,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my @valRClasses;
             $outm ~= IND ~ "method " ~ $m.name
                             ~ strRakuArgsDecl($m, %c,
-                                    @valQClasses, @valRClasses, :useRole)
+                                    @valQClasses, @valRClasses, :markers)
                             ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
             $outm ~= "\n";
@@ -534,7 +534,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                 ~ IND x 2 ~ 'sig => "' ~ rSignature($m) ~ '",' ~ "\n"
                 ~ IND x 2 ~ 'qSig => "'
                         ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
-                ~ IND x 2 ~ 'signature => :' ~ rSignature($m, :useRole) ~ ',' ~ "\n"
+                ~ IND x 2 ~ 'signature => :' ~ rSignature($m, :markers) ~ ',' ~ "\n"
                 ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                 ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                 ~ IND x 2 ~ 'isSlot => False,' ~ "\n"

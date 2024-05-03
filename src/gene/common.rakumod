@@ -324,13 +324,13 @@ sub nType($arg --> Str) is export
 # When $useRole is True, the role prefix is added to the name of classes
 # When $noEnum is True, the rnum types are replaced with "Int" 
 sub rType($arg,
-          Bool :$useRole = False,
+          Bool :$markers = False,
           Bool :$noEnum = False
           --> Str) is export
 {
-    my Str $prefix = $useRole ?? PREFIXROLE !! "";
+    my Str ($prefix, $postfix) = $markers ?? (CNOM, CNCM) !! ("","");
     given $arg.ftot {
-        when "CLASS" { $prefix ~ $arg.base }
+        when "CLASS" { $prefix ~ $arg.base ~ $postfix }
         when "ENUM" {
             $noEnum
                 ?? "Int"
@@ -796,13 +796,13 @@ sub cSignature(Function $f,
 sub rSignature(Function $f,
                Bool :$showParenth = True,
                Bool :$startWithSep = True,
-               Bool :$useRole = False,
+               Bool :$markers = False,
                Bool :$noEnum = False --> Str) is export
 {
     my Str $out = "";
     my $sep = "";
     for $f.arguments -> $a {
-        $out ~= $sep ~ rType($a, :$useRole, :$noEnum);
+        $out ~= $sep ~ rType($a, :$markers, :$noEnum);
         $sep = ", ";
     }
 

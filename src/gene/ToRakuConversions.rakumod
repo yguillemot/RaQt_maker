@@ -57,22 +57,18 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
 # default values to arguments
 sub strRakuArgsDecl(Function $f, %qClasses,
                     $valueQClasses, $valueRClasses,
-                    Bool :$useRole = False,
-                    Bool :$alwaysUseRole = False --> Str) is export
+                    Bool :$markers = False --> Str) is export
 {
     my $o = "(";
     my $sep = "";
     for $f.arguments -> $a {
-        my $qtc = isQtClass $a;
-        my Bool $ur = $alwaysUseRole
-                        || ($useRole && (?$qtc && %qClasses{$qtc}.isQObj));
-        my $rtp = rType($a, useRole => $ur);
+        my $rtp = rType($a, :$markers);
         $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
         if $a.value { 
             my $valClass = "";
             say "YGYGYG Ici !";
             $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses,
-                                            $valClass, useRole => $ur);
+                                            $valClass, :$markers);
         print "VALCLASS = '", $valClass;
             if $valClass ~~ m/^ 'R' (\w+) / {
                 $valueRClasses.push: $0.Str;
@@ -85,10 +81,7 @@ sub strRakuArgsDecl(Function $f, %qClasses,
         $sep = ", ";
     }
     if qRet($f) !~~ "void" {
-        my $qtc = isQtClass $f.returnType;
-        my Bool $ur = $alwaysUseRole
-                        || ($useRole && (?$qtc && %qClasses{$qtc}.isQObj));
-        $o ~= " --> " ~ rType($f.returnType, useRole => $ur);
+        $o ~= " --> " ~ rType($f.returnType, :$markers);
     }
     $o ~= ")";
     return $o;
@@ -97,29 +90,18 @@ sub strRakuArgsDecl(Function $f, %qClasses,
 
 # Return arguments string of the ctor method declaration
 sub strArgsRakuCtorDecl(Function $f, %qClasses,
-                        Bool :$useRole = False,
-                        Bool :$alwaysUseRole = False --> Str) is export
+                        Bool :$markers = False --> Str) is export
 {
     my $o = '(QtBase $this';
     my $sep = ", ";
     for $f.arguments -> $a {
-
-        my Bool $useRole2 = False;
-        if $useRole {
-            my $argClass = isQtClass($a);
-            if $argClass {
-                $useRole2 = %qClasses{$argClass}.isQObj;
-            }
-        }
-        $useRole2 ||= $alwaysUseRole;
-
-        $o ~= $sep ~ rType($a, useRole => $useRole2) ~ ' $' ~ $a.fname;
+        $o ~= $sep ~ rType($a, :$markers) ~ ' $' ~ $a.fname;
         if $a.value {
             my Str $vclass = "";
             $o ~= " = " ~ ($a.value ~~ "nullptr"
-                            ?? "(" ~ rType($a, useRole => $useRole2) ~ ")"
+                            ?? "(" ~ rType($a, :$markers) ~ ")"
                             !! toRaku($a.value, rType($a), %qClasses, $vclass,
-                                                    useRole => $useRole2));
+                                                    :$markers));
         }
     }
     $o ~= ")";
@@ -230,9 +212,9 @@ sub classeReturned(Function $f --> Str) is export
 # $valueClass : returns the class use to initialize the default value if any
 # $useRole : True if role should be use in declaration rather than class
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
-            Bool :$useRole = False --> Str)
+            Bool :$markers = False --> Str)
 {
-say "YGYGYG toRaku  in = ", $val, "      useRole = ", $useRole;
+say "YGYGYG toRaku  in = ", $val, "      markers = ", $markers;
     $valueClass = "";
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
@@ -242,24 +224,29 @@ say "YGYGYG toRaku  in = ", $val, "      useRole = ", $useRole;
         when /'(' .*? ')'/         {
             if $val ~~ /^ (\w+) '(' .*? ')' $/ {
                 if %qClasses{$0.Str}:exists {
-                    if $useRole {
-                        # C++ "QXxx(val)" --> Raku "RQXxx.new(val)"
-                        $val ~~ s/^ (\w+) ('(' .*? ')') $/R$0.new$1/;
-                        $valueClass = 'R' ~ $0.Str if $0;
-                    } else {
-                        # C++ "QXxx(val)" --> Raku "QXxx.new(val)"
-                        $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
-                        $valueClass = $0.Str if $0;
-                    }
+                    my $c = $0.Str;
 
-                    # Process special classes :
-                    #       QString.new()      --> ""
-                    #       QString.new("xxx") --> "xxx"
-                    if $val ~~ m/^ 'R'? 'QString.new(' ( .*? ) ')' $/ {
+
+                    if $val ~~ m/^ 'QString' \s* '(' (.*?) ')' $/ {
+                        # Process special classes :
+                        #    C++ 'QString()'       --> Raku '""'
+                        #    C++ 'QString("xxx")'  --> Raku '"xxx"'
                         $val = $0 ~~ "" ?? '""' !! $0;
                         $valueClass = "";
+                    } else {
+                        # Process ordinary classes
+                        if $markers {
+                            # C++ 'QXxx(val)' --> Raku 'éQXxxè.new(val)'
+                            # ('é' and 'è' being the open and close markers)
+                            $val ~~ s/^ (\w+) ('(' .*? ')') $
+                                                    /{CNOM}$0{CNCM}.new$1/;
+                            $valueClass = $0.Str if $0;
+                        } else {
+                            # C++ 'QXxx(val)' --> Raku 'QXxx.new(val)'
+                            $val ~~ s/^ (\w+) ('(' .*? ')') $/$0.new$1/;
+                            $valueClass = $0.Str if $0;
+                        }
                     }
-
                 }
             }
         }
@@ -280,10 +267,10 @@ say "YGYGYG toRaku out = ", $val;
 # %qClasses : The hash of known classes
 # $useRole : True if role should be use in declaration rather than class
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses,
-            Bool :$useRole = False --> Str)
+                 Bool :$markers = False --> Str)
 {
     my Str $vclass = "";
-    toRaku($val, $cls, %qClasses, $vclass, :$useRole);
+    toRaku($val, $cls, %qClasses, $vclass, :$markers);
 }
 
 
