@@ -758,3 +758,15 @@
 
 	# QGraphicsItem is a virtual class !!!
  	# QGraphicsItem::ctor(QGraphicsItem*)
+
+	QGraphicsEllipseItem::boundingRect()
+	QGraphicsEllipseItem::contains(const QPointF&)
+	QGraphicsEllipseItem::ctor(QGraphicsItem*)
+	QGraphicsEllipseItem::ctor(const QRectF&, QGraphicsItem*)
+	QGraphicsEllipseItem::ctor(qreal, qreal, qreal, qreal, QGraphicsItem*)
+	QGraphicsEllipseItem::setRect(const QRectF&)
+	QGraphicsEllipseItem::setRect(qreal, qreal, qreal, qreal)
+	QGraphicsEllipseItem::setSpanAngle(int)
+	QGraphicsEllipseItem::setStartAngle(int)
+	QGraphicsEllipseItem::spanAngle()
+	QGraphicsEllipseItem::startAngle()
