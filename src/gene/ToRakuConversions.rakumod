@@ -239,7 +239,7 @@ say "YGYGYG toRaku  in = ", $val, "      markers = ", $markers;
                             # C++ 'QXxx(val)' --> Raku 'éQXxxè.new(val)'
                             # ('é' and 'è' being the open and close markers)
                             $val ~~ s/^ (\w+) ('(' .*? ')') $
-                                                    /{CNOM}$0{CNCM}.new$1/;
+                                                    /{CNOM}{$0}{CNCM}.new$1/;
                             $valueClass = $0.Str if $0;
                         } else {
                             # C++ 'QXxx(val)' --> Raku 'QXxx.new(val)'

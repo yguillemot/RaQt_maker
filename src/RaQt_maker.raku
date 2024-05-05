@@ -259,15 +259,15 @@ sub MAIN ( #| C++ filtered header to read
     
     say "";
 
-
-    if $show-modules-tree {
-        populateTree($api);
-        dumpRawTree($api, "RawModulesLoadTree.txt");
-        lookForLoops($api);
-        makeDot_InLoop($api, "ModulesInLoop.dot");
-        makeDot_OutOfLoops($api, "ModulesOutLoops.dot");
-        makeDot($api, "Modules.dot");
-        montrerEtat($api, "Etat.txt");
-    }
+#
+#     if $show-modules-tree {
+#         populateTree($api);
+#         dumpRawTree($api, "RawModulesLoadTree.txt");
+#         lookForLoops($api);
+#         makeDot_InLoop($api, "ModulesInLoop.dot");
+#         makeDot_OutOfLoops($api, "ModulesOutLoops.dot");
+#         makeDot($api, "Modules.dot");
+#         montrerEtat($api, "Etat.txt");
+#     }
 
 } # End of sub MAIN

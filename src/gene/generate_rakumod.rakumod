@@ -11,9 +11,76 @@ sub versionedName(Str $name --> Str) is export
     $name ~ ":ver<{MODVERSION}>" ~ ":auth<{MODAUTH}>" ~ ":api<{MODAPI}>"
 }
 
+# Look for the set of classes required by a QXxx.rakumod module
+# Input
+#    $k : class name ("QXxx")
+#    $v : $api.qclasses{$k}
+# Output
+#    %dep where
+#        %dep.keys : list of "QXxx" classes whose $k depends
+#        %dep{"QXxx"} = "FULL" or "ROLE"
+#             "FULL" means "use Qt::QtWidgets::QXxx" is mandatory
+#             "ROLE" means "use Qt::QtWidgets::RQXxx" is sufficient
+sub lookForDependencies(Str $k, Qclass $v --> Hash)
+{
+    my %dep;
+
+    # Populate with parents classes
+    for $v.parents -> $p {
+        %dep{$p} = "FULL";
+    }
+
+
+    # Add classes used in the arguments of the methods
+
+    # Loop on methods
+    for $v.methods -> $m {
+        next if $m.blackListed || !$m.whiteListed;
+
+        # Process returned type
+        if $m.name ne "ctor" {
+            if $m.returnType.ftot ~~ "CLASS" {
+                my Str $class = $m.returnType.fbase;
+                # Set as "FULL"
+                %dep{$class} = "FULL";
+            }
+        }
+
+        # Process arguments types
+        for $m.arguments -> $a {
+            if $a.ftot ~~ "CLASS" {
+                my Str $class = $a.fbase;
+                if ($class ne $k) {
+                    # Does a default value exist ?
+                    if $a.value {
+                        %dep{$class} = "FULL";
+                    } else {
+                        # Set as "ROLE" unless already "FULL"
+                        %dep{$class} = "ROLE" if %dep{$class}:!exists;
+                    }
+                } else {
+                    %dep{$class} = "FULL";
+                }
+            }
+        }
+
+    }
+
+    return %dep;
+}
+
+
+# Replace the mark class names in $text with the correct name (class name
+# or role name) given data in %dep
+sub fixClassNames(Str $text is rw, %dep)
+{
+    $text ~~ s:global/"{CNOM}" (\w+) "{CNCM}"
+                     /{ %dep{$0} ~~ "FULL" ?? "" !! PREFIXROLE }$0/;
+}
+
 sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
-                    Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
-                    %virtuals, $classesInHelper, :$km = False) is export
+                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
+                     %virtuals, $classesInHelper, :$km = False) is export
 {
 
 #     say "Generate the .rakumod file : start";
@@ -48,6 +115,15 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     my @qRefs;   # List of Qt classes used in the code
     my @qRefsHelper; # List of Qt classes used in signals for QtHelper.rakumod
     
+    my %dependencies = lookForDependencies $k, $v;
+
+    for %dependencies.kv -> $k, $v {
+        if $v eq "FULL" {
+            @qRefs.push: $k;
+        } else {
+            @rRefs.push: $k;
+        }
+    }
     
     if %exceptions{$k}{'use'}:exists {
         # say "EXCEP USE : $k";
@@ -65,18 +141,12 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         # QtSigsloty is exported from QtWidgets.rakumod
         @qRefs.push: "QtSigsloty";
     }
-
-    # TODO: Useless line, should be removed ($prole is never used)
-    my Str $prole = $v.isQObj ?? PREFIXROLE !! "";
     
     my Bool $haveParents = False;
     for $v.parents -> $p {
         $outm ~= "\n{IND}is $p";
         $haveParents = True;
-        @qRefs.push: $p;
     }
-    
-    
     
     if !$haveParents && !$noCtor {
         $outm ~= "\n{IND}is QtBase";
@@ -155,8 +225,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                 my ($pc, $o) = rakuWrapperCallElems($ctor);
                 my ($cl-type, $cl-enum) = classesInSignature($ctor);
-                @rRefs.append: @$cl-type;
                 @qRefs.append: @$cl-enum;
+                # $cl-type : already processed in %dep
 
                 $outm ~= [~] (IND x 2) <<~>> $pc;
                 $outm ~= IND x 2 ~ '$this.address = '
@@ -189,8 +259,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     ($pc, $o) = rakuWrapperCallElems($ctor);
                     
                     my ($cl-type, $cl-enum) = classesInSignature($ctor);
-                    @rRefs.append: @$cl-type;
                     @qRefs.append: @$cl-enum;
+                    # $cl-type : already processed in %dep
 
                     $outm ~= [~] (IND x 2) <<~>> $pc;
                     $outm ~= IND x 2 ~ '$this.address = '
@@ -387,8 +457,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
                 # YGYGYG <<<
                 my ($cl-type, $cl-enum) = classesInSignature($m);
-                @rRefs.append: @$cl-type;
                 @qRefs.append: @$cl-enum;
+                # $cl-type already processed in %dep
                 $classesInHelper.append: @$cl-type;
                 # >>> YGYGYG
 
@@ -399,7 +469,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     ~ IND x 2 ~ 'qSig => "'
                             ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
                     ~ IND x 2 ~ 'signature => :'
-                            ~ rSignature($m, :markers, :noEnum) ~ ',' ~ "\n"
+                            ~ rSignature($m, :forceRole, :noEnum) ~ ',' ~ "\n"
                     ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                     ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                     ~ IND x 2 ~ 'isSlot => True,' ~ "\n"
@@ -423,23 +493,14 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             $outm ~= strRakuArgsDecl($m, %c, $q, $r, :markers)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
-            @qRefs.append: @valQClasses;
-            @rRefs.append: @valRClasses;
-   say "EEEEEYGYGYG Q1 : ", @valQClasses;
-   say "EEEEEYGYGYG R1 : ", @valRClasses;
 
-#YGYGYG  sans doute plus necessaire
-#             # If the method returns a Qt class, to instantiate an
-#             # associated raku object will be needed and the "use QXxx"
-#             # instruction have to be added.
-#             # (Having simultaneously "use QXxx" and "use RQXxx" is
-#             # not harmful albeit not useful.)
-#             my Str $cr = classeReturned($m);
-#             @qRefs.push: $cr if $cr;
+            # Already processed from %dep
+            # @qRefs.append: @valQClasses;
+            # @rRefs.append: @valRClasses;
             
             my ($cl-type, $cl-enum) = classesInSignature($m);
-            @rRefs.append: @$cl-type;
             @qRefs.append: @$cl-enum;
+            # $cl-type already processed from %dep
 
 
             # PROVISIONAL (TODO) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -472,10 +533,11 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     my $poc = postcall_raku('$result', $rt.ftot,
                                                                 qPostop($rt),
                                             '$result1', rType($rt));
-                    # If a QXxx object was created, replace it with its
-                    # associated role RQXxx
+                    # If a QXxx object was created, surround it with class
+                    # name markers
                     $poc ~~
-                        s/ 'my $' (\w+) ' = Q' (\w+) '.new' /my \$$0 = RQ$1.new/;
+                        s/ 'my $' (\w+) ' = Q' (\w+) '.new'
+                                        /my \$$0 = {CNOM}Q{$1}{CNCM}.new/;
                     if $poc {
                         $outm ~= IND x 2 ~ $poc ~ "\n";
                         $outm ~= IND x 2 ~ 'return $result1;' ~ "\n";
@@ -518,14 +580,15 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                             ~ "\n";
             $outm ~= IND x 2 ~ "$trait \{ ... }\n";
             $outm ~= "\n";
-            @qRefs.append: @valQClasses;
-            @rRefs.append: @valRClasses;
-   say "EEEEEYGYGYG Q : ", @valQClasses;
-   say "EEEEEYGYGYG R : ", @valRClasses;
+
+#             Already processed from %dep
+#             @qRefs.append: @valQClasses;
+#             @rRefs.append: @valRClasses;
+
 
             my ($cl-type, $cl-enum) = classesInSignature($m);
-            @rRefs.append: @$cl-type;
             @qRefs.append: @$cl-enum;
+            # $cl-type already processed from %dep
             $classesInHelper.append: @$cl-type;
 
             $outSignals ~=
@@ -534,7 +597,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                 ~ IND x 2 ~ 'sig => "' ~ rSignature($m) ~ '",' ~ "\n"
                 ~ IND x 2 ~ 'qSig => "'
                         ~ qSignature($m, showNames => False) ~ '",' ~ "\n"
-                ~ IND x 2 ~ 'signature => :' ~ rSignature($m, :markers) ~ ',' ~ "\n"
+                ~ IND x 2 ~ 'signature => :' ~ rSignature($m, :forceRole) ~ ',' ~ "\n"
                 ~ IND x 2 ~ 'sigIsSimple => True,' ~ "\n"
                 ~ IND x 2 ~ 'isPlainQt => True,' ~ "\n"
                 ~ IND x 2 ~ 'isSlot => False,' ~ "\n"
@@ -626,6 +689,44 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 #     say "Generate the .rakumod file : stop";
 #     say "";
     
+# sub trouveDans (Str $text, Str $n) {
+#     if $text ~~ m/{CNOM}\w{CNCM}/ {
+#         say "TROUVE DANS $n";
+#     }
+# }
+#
+# trouveDans($outu, "outu");
+# trouveDans($outm, "outm");
+# trouveDans($outn, "outn");
+# trouveDans($outr, "outr");
+# trouveDans($outSignals, "outSignals");
+# trouveDans($outSlots, "outSlots");
+# trouveDans($outcbini, "outcbini");
+
+    say "<<< $k : begin fix dependencies";
+    spurt "/tmp/BEFORE.txt", $outm if $k ~~ "QWidget";
+#     fixClassNames $outu, %dependencies;
+    fixClassNames $outm, %dependencies;
+    fixClassNames $outn, %dependencies;
+    fixClassNames $outr, %dependencies;
+#     fixClassNames $outSignals, %dependencies;
+#     fixClassNames $outSlots, %dependencies;
+#     fixClassNames $outcbini, %dependencies;
+    spurt "/tmp/AFTER.txt", $outm if $k ~~ "QWidget";
+    say "    $k : end fix dependencies >>>";
+
+say "#" x 80;
+say "rRefs :";
+say @rRefs;
+say '';
+say "qRefs :";
+say @qRefs;
+say "";
+say "dependencies : ";
+say %dependencies;
+say "#" x 80;
+
+
     return $outu, $outm, $outn, $outr, $outSignals, $outSlots, $outcbini;
 }
 

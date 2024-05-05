@@ -325,10 +325,13 @@ sub nType($arg --> Str) is export
 # When $noEnum is True, the rnum types are replaced with "Int" 
 sub rType($arg,
           Bool :$markers = False,
+          Bool :$forceRole = False,
           Bool :$noEnum = False
           --> Str) is export
 {
-    my Str ($prefix, $postfix) = $markers ?? (CNOM, CNCM) !! ("","");
+    my Str ($prefix, $postfix) = $forceRole ?? ("R", "")
+                                            !! $markers ?? (CNOM, CNCM)
+                                                        !! ("","");
     given $arg.ftot {
         when "CLASS" { $prefix ~ $arg.base ~ $postfix }
         when "ENUM" {
@@ -797,12 +800,13 @@ sub rSignature(Function $f,
                Bool :$showParenth = True,
                Bool :$startWithSep = True,
                Bool :$markers = False,
+               Bool :$forceRole = False,
                Bool :$noEnum = False --> Str) is export
 {
     my Str $out = "";
     my $sep = "";
     for $f.arguments -> $a {
-        $out ~= $sep ~ rType($a, :$markers, :$noEnum);
+        $out ~= $sep ~ rType($a, :$markers, :$forceRole, :$noEnum);
         $sep = ", ";
     }
 

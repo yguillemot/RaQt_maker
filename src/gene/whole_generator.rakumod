@@ -52,7 +52,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     
     # Walk through all the Qt classes
     CLASS: for %c.sort>>.kv -> ($k, $v) {
-    
+#     CLASS: for "QSize", %c<QSize> -> $k, $v {   # YGYGYG
+
         # Ignore classes we don't want to implement
         next CLASS: if !$v.whiteListed || $v.blackListed;
         next CLASS: if $v.name (elem) $specialClasses;
@@ -210,7 +211,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
 
     
     
-    ### 6 - Create other files  
+    ### 6 - Create other files
     
     say "";
     say "Generate other files : start";
