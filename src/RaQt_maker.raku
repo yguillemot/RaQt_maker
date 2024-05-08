@@ -46,6 +46,21 @@ sub MAIN ( #| C++ filtered header to read
 
     my API $api = parser($fileName);
 
+    # Look for abstract classes
+    for $api.qclasses.kv -> $k, $v {
+        my Bool $pure =  False;
+        for $v.methods -> $m {
+            if $m.isPureVirtual {
+                $pure = True;
+                if !$m.isVirtual {
+                    note "WARNING: $k.", $m.name,
+                                " is pure virtual, but not virtual";
+                }
+            }
+        }
+        $v.isAbstract = $pure;
+    }
+
 
     # Create two lists of Qt classes :
     #   - one of classes which are QObject

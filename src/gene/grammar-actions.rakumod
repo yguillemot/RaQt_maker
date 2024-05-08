@@ -216,7 +216,8 @@ class qtClassesActions is export {
         my $signal =  index($*subblocMode, "Q_SIGNAL") !~~ Nil;
         my $static =  ?$<prespecifier> && $<prespecifier>.made eq 'static';
         my $virtual =  ?$<prespecifier> && $<prespecifier>.made eq 'virtual';
-        
+        my $pureVirtual = ?$<eq_something> && $<eq_something>.made eq '0';
+
         my $const = False;
         my $override = False;
         for $<postspecifier> {
@@ -247,6 +248,7 @@ class qtClassesActions is export {
                 isSignal => $signal,
                 isStatic => $static,
                 isVirtual => $virtual,
+                isPureVirtual => $pureVirtual,
                 isProtected => $protected,
                 isConst => $const,
                 isOverride => $override,
@@ -266,6 +268,18 @@ class qtClassesActions is export {
     {
         make trim $/.Str;
     }
+
+    method eq_something($/)
+    {
+        make "0" if $<zero>;
+    }
+
+#     method zero($/)   # YGYGYG
+#     {
+#         make "0";
+#     }
+
+# rule delete_or_default
 
 # # rule postspecifier
 

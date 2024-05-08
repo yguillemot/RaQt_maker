@@ -438,6 +438,7 @@ class Function does Validation {
     has Bool $.isVirtual is default(False);
         # isStatic and isVirtual are mutually exclusive
 
+    has Bool $.isPureVirtual is default(False);
     has Bool $.isProtected is default(False);
     has Bool $.isConst is default(False);
     has Bool $.isOverride is default(False);
@@ -561,6 +562,7 @@ class Qclass does Validation does LoadTreeElement {
     has Str $.name;
     has Bool $.generic is rw = False;
     has Bool $.visible is rw = False;
+    has Bool $.isAbstract is rw = False;
     has Str @.parents is rw;     # Names of parents classes
     has Str @.ancestors is rw;   # Parents plus parents of parents, etc...
     has Function @.methods is rw;

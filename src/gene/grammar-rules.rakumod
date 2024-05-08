@@ -74,7 +74,7 @@ grammar qtClasses is export {
     # Constructors :
 
     rule ctor {
-         "$*currentClass" '(' <params> ')' ';'
+         "$*currentClass" '(' <params> ')' <eq_something>? ';'
     }
 
 
@@ -83,7 +83,7 @@ grammar qtClasses is export {
 
     rule method {
         <prespecifier>? <typename>
-        <name> '(' <params> ')' <postspecifier>* ';'
+        <name> '(' <params> ')' <postspecifier>* <eq_something>? ';'
     }
 
     # A C++ method can't be simultaneously virtual and static
@@ -93,7 +93,11 @@ grammar qtClasses is export {
 
     rule postspecifier { 'override' | 'const' }
 
+    rule eq_something { '=' [ <zero> | <delete_or_default> ] }
 
+    rule zero { '0' }
+
+    rule delete_or_default { [ 'delete' | 'default' ] }
 
     ########################################################################
     # Enums :
