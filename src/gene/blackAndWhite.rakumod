@@ -300,6 +300,32 @@ sub computeBlackAndWhiteObjects(API :$api, Str :$blackList, Str :$whiteList,
     }
 
 
+    # For all methods :
+    #    - Blacklist all pure virtual method
+
+    for $api.qclasses.kv -> $k, $v {
+        for $v.methods -> $m {
+            if $m.isPureVirtual {
+                $m.blackListed = True;
+            }
+        }
+    }
+
+
+    # For all classes :
+    #    - Blacklist all ctors of an abstract class
+
+    for $api.qclasses.kv -> $k, $v {
+        next unless $v.isAbstract;
+        for $v.methods -> $m {
+            if $v.isAbstract && $m.name ~~ "ctor" {
+                $m.blackListed = True;
+            }
+        }
+    }
+
+
+
 
 
 
