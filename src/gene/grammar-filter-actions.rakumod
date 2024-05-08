@@ -239,11 +239,14 @@ class filterActions is export {
     method ctor($/)
     {
         # say "\tCTOR ", $*currentClass, " : ", $*subblocMode;
-        make $*currentClass ~ $<param_block>.made ~ ";\n";
+        my $txt = $*currentClass ~ $<param_block>.made;
+        $txt ~= $<method_end>.made if $<method_end>;
+        make $txt ~ ";\n";
     }
 
     method ctor_end($/)             # TODO
     {
+        make $<eq_something> ?? $<eq_something>.made !! "";
         self.success($/);
     }
 
@@ -259,6 +262,8 @@ class filterActions is export {
         $txt ~= $<typename>.made ~ " " ~ $<name>.made
                                     ~ $<param_block>.made;
         $txt ~= " " ~ $<mpostspecifiers>.made if $<mpostspecifiers>;
+#         say "YGYGYG method_end : ", ?$<method_end>;
+        $txt ~= $<method_end>.made if $<method_end>;
         make $txt  ~ ";\n"; 
     }
 
@@ -276,6 +281,8 @@ class filterActions is export {
 
     method method_end($/)
     {
+#    say "YGYGYG method_end ", ?$<eq_something>, " ", $<eq_something>.made;
+        make $<eq_something> ?? $<eq_something>.made !! "";
         self.success($/);
     }
 
@@ -352,7 +359,11 @@ method usualtypedef($/) {
 
 # token refmark
 # token ptrmark
-# rule eq_something
+
+    method eq_something($/)
+    {
+        make $/.Str;
+    }
 
 
 
