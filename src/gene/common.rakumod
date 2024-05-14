@@ -23,7 +23,7 @@ of an API text file is stored.
 
 =item %.qclasses
 
-All the "Qt class" objects, key = Qt class name
+All the "Qt class" objects (Qclass), key = Qt class name (Str)
 
 =item %.topTypedefs
 
@@ -751,12 +751,15 @@ sub cRawRetType(Function $f --> Str) is export
 #             Note: If the function needs a return buffer, the buffer address
 #                   is the first parameter and the object pointer is the 
 #                   second one.
+# $showCIdx : if true AND IF $showObjectPointer is true, add the caller
+#             index parameter immediately after the object pointer.
 # $showParenth : if true, add parentheses around the arguments
 # $startWithSep : if true and $showParenth is false, output a comma first
 sub cSignature(Function $f,
               Bool :$showObjectPointer = True,
               Bool :$showParenth = True,
-              Bool :$startWithSep = True            --> Str) is export
+              Bool :$startWithSep = True,
+              Bool :$showCIdx = False           --> Str) is export
 {
     my Str $out = "";
     my Str $sep = "";
@@ -767,10 +770,12 @@ sub cSignature(Function $f,
 
     # Add the object pointer if needed
     if $f.name !~~ "ctor" && $showObjectPointer {
+        my $txt = "void * obj";
+        $txt ~= ", int callerIdx" if $showCIdx;
         if $out eq "" {
-            $out = "void * obj";
+            $out = $txt;
         } else {
-            $out = "void * obj, $out";
+            $out = "$txt, $out";
         }
     }
 

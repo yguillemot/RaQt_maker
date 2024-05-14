@@ -30,6 +30,7 @@ use gene::addHeaderText;
 #       - $out : The main code
 #       - $outSignals : Code for the signals dictionnary
 #       - $outSlots : Code for the slots dictionnary
+#       - $upcaster : Code of an up_cast function if needed
 #
 sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
                     Bool $hasCtor, Bool $hasSubclassCtor, Bool $subclassable,
@@ -45,7 +46,8 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
     my Str $out;                    # Code of the classes
     my Str $outSignals = "";        # Signals dictionary
     my Str $outSlots = "";          # Slots dictionary
-    
+    my Str $upc = "";               # up_cast function code
+
     my @incl-files;     # List of file names which have to be included 
     
     # $k is the Qt class name
@@ -53,11 +55,46 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
     my $sclassname = $prefixSubclass ~ $k;      # Wrapper subclass name
     my Str $wsclassname = $prefixSubclassWrapper ~ $k; # Wrapper subclass name
     
-    
+    # $k is an abstract top class
+    # TODO: This condition is probably not sufficient to cover all the cases
+    #       where an explicit upcasting is needed.
+    #       Nevertheless, and until a new issue occurs, the explicit upcasting
+    #       will be limited to this case only.
+    my Bool $isAbstractTopClass = $v.isAbstract && $v.parents.elems == 0;
+
     # Look for a "#include" exception related to the class
     if %exceptions{$k}{'cpp-include'}:exists {
         # say "EXCEPTION cpp-include : $k";
         @incl-files.append: %exceptions{$k}{'cpp-include'}.trim.lines;
+    }
+
+    # Insert an explicit upcasting function if needed
+    if $isAbstractTopClass {
+
+        $upc ~= "static $k * up_cast(void * obj, int callerIndex,"
+                                              ~ " const char * methodName)\n";
+        $upc ~= '{' ~ "\n";
+        $upc ~= IND ~ "// methodName parameter is only used to help debugging\n";
+        $upc ~= IND ~ "// if an erroneous callerIndex is used.\n";
+        $upc ~= IND ~ "// This should never occur and this parameter\n";
+        $upc ~= IND ~ "// is going to be removed after some time.\n";
+        $upc ~= IND ~ "\n";
+        $upc ~= IND ~ 'switch (callerIndex) {' ~ "\n";
+        my $i = 0;
+        for $v.descendants.sort -> $d {
+            $upc ~= IND x 2 ~ 'case ' ~ $i++ ~ " :\n";
+            $upc ~= IND x 3 ~ "return dynamic_cast<$k *>(\n";
+            $upc ~= IND x 5 ~ "reinterpret_cast<$d *>(obj));\n";
+        }
+        $upc ~= IND x 2 ~ "default :\n";
+        $upc ~= IND x 3 ~ "std::cerr << \"up_cast(\\\"$k\\\") : \"\n";
+        $upc ~= IND x 3 ~ "          << \"Unsupported caller index \"\n";
+        $upc ~= IND x 3 ~ "          << callerIndex << \" from method \"\n";
+        $upc ~= IND x 3 ~ "          << methodName << \"\\n\";\n";
+        $upc ~= IND x 3 ~ "return nullptr;        // Force a crash\n";
+        $upc ~= IND ~ '}' ~ "\n";
+        $upc ~= "}\n";
+        $upc ~= "\n";
     }
 
 
@@ -173,12 +210,18 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
             my $rt = $m.returnType;
             my $retType = trim cRetType $m;
             $out ~= $retType ~ " " ~ $wclassname ~ $m.name ~ $number
-                ~ cSignature($m, showObjectPointer => !$m.isStatic) ~ "\n";
+                ~ cSignature($m, showObjectPointer => !$m.isStatic,
+                                      showCIdx => $isAbstractTopClass) ~ "\n";
             $out ~= "\{\n";
             
             # A static method doesn't need an object pointer
             if !$m.isStatic {
-                $out ~= IND ~ "$k * ptr = reinterpret_cast<$k *>(obj);\n";
+                $out ~= IND ~ "$k * ptr = ";
+                if $isAbstractTopClass {
+                    $out ~= "up_cast(obj, callerIdx, \"" ~ $m.name ~ "\");\n";
+                } else {
+                    $out ~= "reinterpret_cast<$k *>(obj);\n";
+                }
             }
 
             for $m.arguments -> $a {
@@ -288,7 +331,7 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
     $includes = [~] "#include " <<~>> @incl-files.Seq.values.sort <<~>> "\n"; 
     $includes ~= "\n";
     
-    return $includes, $out, $outSignals, $outSlots;
+    return $includes, $out, $outSignals, $outSlots, $upc;
 }
 
 

@@ -55,8 +55,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
 #     CLASS: for "QSize", %c<QSize> -> $k, $v {   # YGYGYG
 
         # Ignore classes we don't want to implement
-        next CLASS: if !$v.whiteListed || $v.blackListed;
-        next CLASS: if $v.name (elem) $specialClasses;
+        next CLASS if !$v.whiteListed || $v.blackListed;
+        next CLASS if $v.name (elem) $specialClasses;
 
         ### 1 - Gather data about current class
         
@@ -68,6 +68,8 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
         my Bool $hasCtor = False;
         my Bool $hasSubclassCtor = False;
         my Bool $subclassable = ?vmethods($api, $k).elems; # $k is subclassable
+
+        my Int $methodsCount = 0;   # Number of methods in class
 
         # Relation between $hasSubclassCtor and $subclassable ???????
         
@@ -92,43 +94,26 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
                 $hasCtor = True;
             } else {
                 $name = $m.name;
+                $methodsCount++;  # Count the methods to know if .cpp is needed
+                                  # ctor methods are not counted: is this OK ?
             }
             $name ~= ($m.number ?? "_" ~ $m.number !! "");
 
             if $m.name ~~ "ctor" && $v.isQObj && $subclassable {
                 $hasSubclassCtor = True;
             }
+
         }
 
-        
 
         # Get all the virtual methods usable from the current class.
         my %virtuals = vmethods($api, $k);
         %allVirtuals ,= %virtuals;
-
-        ### 2 - Generate hpp file (if any)
-        
-        if $subclassable {
-            my Str $include = "\n"
-                            ~ "#include \"$k.h\"" ~ "\n"
-                            ~ "#include \"QtWidgetsWrapper.hpp\"" ~ "\n"
-                            ~ "\n";
-            my (Str $hpp, %cb) = generate_hpp($k, $v, %exceptions, %virtuals);
-
-            my Str $fileName = $k ~ ".hpp";
-            spurt CPPDIR ~ $fileName, 
-                        addHeaderText(code => $include ~ $hpp,
-                                      commentChar => '//');
-            @files_hpp.push: $fileName;
-            %callbacks ,= %cb;
-
-            print " class.hpp";
-        }
        
        
         ### 3 - Generate cpp file
         
-        my Str ($incl, $cpp, $outSignals1, $outSlots1)
+        my Str ($incl, $cpp, $outSignals1, $outSlots1, $upcaster)
                 = generate_cpp($k, $v, %exceptions, %virtuals,
                                $hasCtor, $hasSubclassCtor, $subclassable
                               );
@@ -136,7 +121,7 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
         if $cpp {
             my Str $fileName = $k ~ ".cpp";
             spurt CPPDIR ~ $fileName,
-                    addHeaderText(code => $incl ~ $cpp, commentChar => '//');
+                    addHeaderText(code => $incl ~ $upcaster ~ $cpp, commentChar => '//');
             @files_cpp.push: $fileName;
             
             $outSignals ~= $outSignals1;
@@ -144,6 +129,28 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
             
             print " class.cpp";
         }
+
+
+        ### 2 - Generate hpp file (if any)
+
+        if $subclassable & $cpp { # Don't create .hpp file if no .cpp file
+                                  # to use it
+            my Str $include = "\n"
+                            ~ "#include \"$k.h\"" ~ "\n"
+                            ~ "#include \"QtWidgetsWrapper.hpp\"" ~ "\n"
+                            ~ "\n";
+            my (Str $hpp, %cb) = generate_hpp($k, $v, %exceptions, %virtuals);
+
+            my Str $fileName = $k ~ ".hpp";
+            spurt CPPDIR ~ $fileName,
+                        addHeaderText(code => $include ~ $hpp,
+                                      commentChar => '//');
+            @files_hpp.push: $fileName;
+            %callbacks ,= %cb;
+
+            print " class.hpp";
+        }
+
 
             
         ### 4 - Generate h file

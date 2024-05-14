@@ -33,6 +33,13 @@ sub generate_h(Str $k, Qclass $v, %exceptions,
     my $sclassname = $prefixSubclass ~ $k;      # Wrapper subclass name
     my Str $wsclassname = $prefixSubclassWrapper ~ $k; # Wrapper subclass name
 
+    # $k is an abstract top class
+    # TODO: This condition is probably not sufficient to cover all the cases
+    #       where an explicit upcasting is needed.
+    #       Nevertheless, and until a new issue occurs, the explicit upcasting
+    #       will be limited to this case only.
+    my Bool $isAbstractTopClass = $v.isAbstract && $v.parents.elems == 0;
+
     MLOOP: for $v.methods -> $m {
         next MLOOP if !$m.whiteListed || $m.blackListed;
         next MLOOP if $m.isSignal;
@@ -57,7 +64,8 @@ sub generate_h(Str $k, Qclass $v, %exceptions,
         $name ~= ($m.number ?? "_" ~ $m.number !! "");
         $out ~= "EXTERNC ";
         $out ~= $retType ~ " " ~ $wclassname ~ $name ~
-                cSignature($m, showObjectPointer => !$m.isStatic ) ~ ";\n";
+                cSignature($m, showObjectPointer => !$m.isStatic,
+                                     showCIdx => $isAbstractTopClass) ~ ";\n";
 
         if $m.name ~~ "ctor" && $v.isQObj && $subclassable {
             # Subclass ctor wrapper

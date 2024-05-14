@@ -55,12 +55,16 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
 # Return arguments string of the raku method declaration
 # $valueClasses is used to return a list of classes, if any, used to assign
 # default values to arguments
+# $invocant : if true, an argument is added for the invocant
 sub strRakuArgsDecl(Function $f, %qClasses,
                     $valueQClasses, $valueRClasses,
+                    Bool :$invocant = False,
                     Bool :$markers = False --> Str) is export
 {
     my $o = "(";
     my $sep = "";
+    $o ~= '$c: ' if $invocant;
+
     for $f.arguments -> $a {
         my $rtp = rType($a, :$markers);
         $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
@@ -281,11 +285,13 @@ multi sub toRaku(Str $val is copy, Str $cls, %qClasses,
 # $showParenth : if true, add parentheses around the signature
 # $startWithSep : if true and $showParenth is false, output a comma first
 # $showNames : if true, args names are added to the string
+# $showCIdx : if true, add argument "callerIndex" to identify the invocant
 sub strNativeWrapperArgsDecl(Function $f,
                              Bool :$showObjectPointer = True,
                              Bool :$showParenth = True,
                              Bool :$startWithSep = True,
-                             Bool :$showNames) is export
+                             Bool :$showNames,
+                             Bool :$showCIdx) is export
 {
     my $o = "";
     my $sep = "";
@@ -301,6 +307,13 @@ sub strNativeWrapperArgsDecl(Function $f,
     if $f.name !~~ "ctor" && !$f.isStatic && $showObjectPointer {
         $o ~= $sep ~ "Pointer";
         $o ~= ' $obj' if $showNames;
+        $sep = ", ";
+    }
+
+    # Add the caller index if needed
+    if $f.name !~~ "ctor" && !$f.isStatic && $showCIdx {
+        $o ~= $sep ~ "int32";
+        $o ~= ' $callerIndex' if $showNames;
         $sep = ", ";
     }
 
@@ -365,20 +378,22 @@ sub rakuCallbackCallElems(Function $f --> List) is export
 #  * A list of Str, one for each line of code needed to precompute arguments
 #    before calling a native wrapper
 #  * A Str containing the arguments list passed to the wrapper
-sub rakuWrapperCallElems(Function $f --> List) is export
+# If $showCIdx is true, a caller index is added to this list
+sub rakuWrapperCallElems(Function $f, :$showCIdx = False --> List) is export
 {
     my $o;
     my @po = ();
     my $sep;
+    my Str $cidx = $showCIdx ?? ', $ci' !! '';
     if retBufNeeded($f) {
-        $o = '($retBuffer, self.address';
+        $o = '($retBuffer, self.address' ~ $cidx;
         $sep = ", ";
         @po.push('my Pointer $retBuffer = QWStrBufferAlloc;' ~ "\n");
     } elsif $f.isStatic || $f.name ~~ "ctor" {
         $o = "(";
         $sep = "";
     } else {
-        $o = "(self.address";
+        $o = "(self.address" ~ $cidx;
         $sep = ", ";
     }
     my $c = 0;
@@ -395,6 +410,9 @@ sub rakuWrapperCallElems(Function $f --> List) is export
         $sep = ", ";
     }
     $o ~= ")";
+    if $showCIdx {
+        @po.push('my $ci = %callers{$c.^name};   # Caller index' ~ "\n");
+    }
     return (@po, $o);
 }
 

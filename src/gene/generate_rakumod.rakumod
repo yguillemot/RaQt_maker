@@ -106,11 +106,18 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
     # $k is the Qt class name
     my Str $wclassname = $prefixWrapper ~ $k;   # Wrapper class name
-    my Str $pclassname = $k;                    # Perl module class name
+    my Str $pclassname = $k;                    # Raku module class name
     my Str $wsclassname = $prefixSubclassWrapper ~ $k; # Wrapper subclass name
 
-    
-    
+
+    # $k is an abstract top class
+    # TODO: This condition is probably not sufficient to cover all the cases
+    #       where an explicit upcasting is needed.
+    #       Nevertheless, and until a new issue occurs, the explicit upcasting
+    #       will be limited to this case only.
+    my Bool $isAbstractTopClass = $v.isAbstract && $v.parents.elems == 0;
+
+
     my @rRefs;   # List of Qt roles used in the code
     my @qRefs;   # List of Qt classes used in the code
     my @qRefsHelper; # List of Qt classes used in signals for QtHelper.rakumod
@@ -170,7 +177,17 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     # Define enums if any
     $outm ~= writeEnumsCode($v);
 
-    
+    # Define a callers hash if needed
+    if $isAbstractTopClass {
+        $outm ~= IND ~ 'my constant %callers = {' ~ "\n";
+        my $i = 0;
+        for $v.descendants.sort -> $d {
+            $outm ~= IND x 2 ~ '"' ~ $d ~ '" => ' ~ $i++ ~ ",\n";
+        }
+        $outm ~= IND ~ '}' ~ "\n";
+        $outm ~= "\n";
+    }
+
     if $v.isQObj && !$noCtor {
         # Declare handlers for virtual methods if any
         if $v.validVirtuals.elems {    # Have virtual methods ?
@@ -436,7 +453,9 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my $wrapperName = $wclassname ~ $m.name
                         ~ ($m.number ?? "_" ~ $m.number !! "");
             $outn ~= "sub " ~ $wrapperName
-                        ~ strNativeWrapperArgsDecl($m) ~ "\n";
+                      ~ strNativeWrapperArgsDecl($m,
+                                       showCIdx => $isAbstractTopClass)
+                      ~ "\n";
             $outn ~= IND;
             if qRet($m) !~~ "void" && !retBufNeeded($m) {
                 $outn ~= "returns " ~ nType($m.returnType) ~ " ";
@@ -490,7 +509,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             my @valRClasses;
             my $q = @valQClasses;
             my $r = @valRClasses;
-            $outm ~= strRakuArgsDecl($m, %c, $q, $r, :markers)
+            $outm ~= strRakuArgsDecl($m, %c, $q, $r,
+                                invocant => $isAbstractTopClass, :markers)
                             ~ ($m.isSlot ?? " is QtSlot" !! "") ~ "\n";
             $outm ~= IND ~ "\{\n";
 
@@ -515,7 +535,8 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
             }
 
 
-            my ($pc, $o) = rakuWrapperCallElems($m);
+            my ($pc, $o) = rakuWrapperCallElems($m,
+                                         showCIdx => $isAbstractTopClass);
             my Bool $returnSomething = qRet($m) !~~ "void";
             $outm ~= [~] (IND x 2) <<~>> $pc;
 
