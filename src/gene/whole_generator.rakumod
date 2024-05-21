@@ -52,7 +52,6 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
     
     # Walk through all the Qt classes
     CLASS: for %c.sort>>.kv -> ($k, $v) {
-#     CLASS: for "QSize", %c<QSize> -> $k, $v {   # YGYGYG
 
         # Ignore classes we don't want to implement
         next CLASS if !$v.whiteListed || $v.blackListed;

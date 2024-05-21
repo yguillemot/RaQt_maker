@@ -13,6 +13,10 @@ our constant $uninstanciableClasses = <
 >.Set;
 
 
+# Markers identifying class names in a future raku module before replacing
+# them either with a class name or role name
+our constant CNOM = '[)';    # Class Name Open Marker
+our constant CNCM = '(]';    # Class Name Close Marker
 
 
 =begin pod

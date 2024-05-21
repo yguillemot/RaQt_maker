@@ -37,6 +37,7 @@ sub generate_basicTest(Str @qtClasses, Str @otherQtClasses --> Str) is export
     $out ~= "done-testing;\n";
     $out ~= "\n";
 
+    say "Generate the basic tests file : end";
     return $out;
 }
 

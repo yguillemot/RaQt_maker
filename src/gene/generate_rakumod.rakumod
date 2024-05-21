@@ -709,22 +709,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     # say "\n";
 #     say "Generate the .rakumod file : stop";
 #     say "";
-    
-# sub trouveDans (Str $text, Str $n) {
-#     if $text ~~ m/{CNOM}\w{CNCM}/ {
-#         say "TROUVE DANS $n";
-#     }
-# }
-#
-# trouveDans($outu, "outu");
-# trouveDans($outm, "outm");
-# trouveDans($outn, "outn");
-# trouveDans($outr, "outr");
-# trouveDans($outSignals, "outSignals");
-# trouveDans($outSlots, "outSlots");
-# trouveDans($outcbini, "outcbini");
 
-    say "<<< $k : begin fix dependencies";
     spurt "/tmp/BEFORE.txt", $outm if $k ~~ "QWidget";
 #     fixClassNames $outu, %dependencies;
     fixClassNames $outm, %dependencies;
@@ -734,19 +719,6 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 #     fixClassNames $outSlots, %dependencies;
 #     fixClassNames $outcbini, %dependencies;
     spurt "/tmp/AFTER.txt", $outm if $k ~~ "QWidget";
-    say "    $k : end fix dependencies >>>";
-
-say "#" x 80;
-say "rRefs :";
-say @rRefs;
-say '';
-say "qRefs :";
-say @qRefs;
-say "";
-say "dependencies : ";
-say %dependencies;
-say "#" x 80;
-
 
     return $outu, $outm, $outn, $outr, $outSignals, $outSlots, $outcbini;
 }

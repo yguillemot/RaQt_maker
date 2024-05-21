@@ -903,6 +903,13 @@
 	QGraphicsEllipseItem::spanAngle()
 	QGraphicsEllipseItem::startAngle()
 
+	QGraphicsLineItem::boundingRect()
+	QGraphicsLineItem::contains(const QPointF&)
+	QGraphicsLineItem::ctor(qreal, qreal, qreal, qreal, QGraphicsItem*)
+	QGraphicsLineItem::setLine(qreal, qreal, qreal, qreal)
+	QGraphicsLineItem::setPen(const QPen&)
+
+
 	QGraphicsItem::boundingRect()
 	QGraphicsItem::childrenBoundingRect()
 	QGraphicsItem::contains(const QPointF&)

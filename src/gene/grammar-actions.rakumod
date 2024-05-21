@@ -274,11 +274,7 @@ class qtClassesActions is export {
         make "0" if $<zero>;
     }
 
-#     method zero($/)   # YGYGYG
-#     {
-#         make "0";
-#     }
-
+# rule zero
 # rule delete_or_default
 
 # # rule postspecifier

@@ -69,7 +69,4 @@ our constant PREFIXROLE = "R";
 # Indentation quantum of generated files
 our constant IND = ' ' x 4;
 
-#########
-# Markers
-our constant CNOM = '[)';    # Class Name Open Marker
-our constant CNCM = '(]';    # Class Name Close Marker
+

@@ -70,16 +70,12 @@ sub strRakuArgsDecl(Function $f, %qClasses,
         $o ~= $sep ~ $rtp ~ " " ~ '$' ~ $a.fname;
         if $a.value { 
             my $valClass = "";
-            say "YGYGYG Ici !";
             $o ~= " = " ~ toRaku($a.value, $rtp, %qClasses,
                                             $valClass, :$markers);
-        print "VALCLASS = '", $valClass;
             if $valClass ~~ m/^ 'R' (\w+) / {
                 $valueRClasses.push: $0.Str;
-         say "'  ==>  '", $0.Str, "'";
             } else {
                 $valueQClasses.push: $valClass if $valClass;
-         say "'  ==>  '", $valClass, "'";
             }
         }
         $sep = ", ";
@@ -218,7 +214,6 @@ sub classeReturned(Function $f --> Str) is export
 multi sub toRaku(Str $val is copy, Str $cls, %qClasses, Str $valueClass is rw,
             Bool :$markers = False --> Str)
 {
-say "YGYGYG toRaku  in = ", $val, "      markers = ", $markers;
     $valueClass = "";
     given $val {
         when /'false'/      { $val ~~ s:g/'false'/False/; proceed }
@@ -259,7 +254,6 @@ say "YGYGYG toRaku  in = ", $val, "      markers = ", $markers;
     # Replace nullptr with some Raku equivalent
     $val ~~ s/nullptr/($cls)/;
 
-say "YGYGYG toRaku out = ", $val;
     return $val;
 }
 
@@ -448,9 +442,7 @@ multi sub precall_raku(Int $c, "CLASS", Str $argName,
 # A nullptr is not allowed
 multi sub precall_raku(Int $c, "CLASS", Str $argName,
                         Str $rakuTypeName, Str $const, "&" --> Str)
-    {
-      say "YGYGYG ZZZZ argName : ", $argName;
-        'my $a' ~ $c ~ ' = $' ~ $argName ~ '.address;' }
+    { 'my $a' ~ $c ~ ' = $' ~ $argName ~ '.address;' }
 
 # Conversion from Real to Num needed before native call
 multi sub precall_raku(Int $c, "NATIVE", Str $argName,
