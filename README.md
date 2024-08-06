@@ -404,7 +404,7 @@ Currently, the generated module is only working with Linux.
 AUTHOR
 ------
 
-Yves Guillemot \<<yc.guillemot@wanadoo.fr>\>
+Yves Guillemot <<yc.guillemot@wanadoo.fr>\>
 
 
 COPYRIGHT AND LICENSE

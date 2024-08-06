@@ -418,7 +418,7 @@ The building tools are available here:
 ## 10. AUTHOR
 
 Yves Guillemot
-\<<yc.guillemot@wanadoo.fr>\>
+<<yc.guillemot@wanadoo.fr>\>
 
 
 ## 11. COPYRIGHT AND LICENSE
