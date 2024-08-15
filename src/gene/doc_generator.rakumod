@@ -10,7 +10,8 @@ use gene::ToRakuConversions;
 # $api : The Qt API description (the output of the parser with the black and
 # white info marks added)
 # %exceptions : Exceptions if any
-sub doc_generator(API :$api, :%exceptions) is export
+# $list : If true, generate a list of methods for documenting the test coverage
+sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
 {
     my %c = $api.qclasses;
 
@@ -37,6 +38,7 @@ sub doc_generator(API :$api, :%exceptions) is export
     # Generate the core of the document
 
     $out = "\n";
+    my Str $outList = "";
 
     for %c.keys.sort -> $k {
         my $v = %c{$k};
@@ -113,57 +115,77 @@ sub doc_generator(API :$api, :%exceptions) is export
             }
 
             my $qualifiers = "";
+            my $lQualifiers = "";
             if $m.isSlot {
                 $qualifiers ~= "[slot] ";
+                $lQualifiers ~= "Sl";
             }
 
             if $m.isSignal {
                 if $m.isPrivateSignal {
-                    $qualifiers ~= "[private signal] "
+                    $qualifiers ~= "[private signal] ";
+                    $lQualifiers ~= "Ps";
                 } else {
-                    $qualifiers ~= "[signal] "
+                    $qualifiers ~= "[signal] ";
+                    $lQualifiers ~= "Si";
                 }
             }
 
             if $m.isVirtual {
                 $qualifiers ~= "[virtual] ";
+                $lQualifiers ~= "Vi";
             }
 
             if $m.isStatic {
                 $qualifiers ~= "[static] ";
+                $lQualifiers ~= "St";
             }
 
             if $m.isProtected {
                 $qualifiers ~= "[protected] ";
+                $lQualifiers ~= "Pr";
             }
 
             if $mth.from {
                 $qualifiers ~= "inherited from " ~ $mth.from;
             }
 
-            my $qmeth = qRet($m)  ~ " $methodName"
+            $outList ~= $k ~ LSEP ~ $lQualifiers ~ LSEP if $list;
+
+            my $qmeth = qRet($m) ~ " $methodName"
                         ~ qSignature($m, showDefault => True,
                                     showParenth => True, startWithSep => False);
+            my Str $lqmeth;
+            if $list {
+                $lqmeth = qRet($m)
+                        ~ qSignature($m, :!showNames,
+                                         :!showDefault,
+                                         :showParenth,
+                                         :!startWithSep);
+            }
 
             if $m.name ~~ "ctor" {
-                 $out ~= "#### Method " ~ $k ~ ".new"
-                                            ~ strRakuArgsCtorDecl($m, $k, %c);
+                 my Str $sig = strRakuArgsCtorDecl($m, $k, %c);
+                 $out ~= "#### Method " ~ $k ~ ".new" ~ $sig;
+                 $outList ~= "ctor" ~ LSEP ~ $sig if $list;
             } else {
                 my @valQClasses;
                 my @valRClasses;
-                $out ~= "#### Method "
-                    ~ $methodName ~ strRakuArgsDecl($m, %c,
-                                                @valQClasses, @valRClasses);
+                my Str $sig = strRakuArgsDecl($m, %c,
+                                              @valQClasses, @valRClasses);
+                $out ~= "#### Method " ~ $methodName ~ $sig;
+                $outList ~= $methodName ~ LSEP ~ $sig if $list;
             }
 
             $out ~= "\n\t" ~ $qualifiers if $qualifiers ne "";
             $out ~= "\n\tcalls Qt method " ~ $qmeth ~ "\n\n";
+            $outList ~= LSEP ~ $lqmeth ~ "\n" if $list;
         }
 
     }
 
     spurt DOCFILE, $out;
-    
+    spurt METHODS_LIST, $outList if $list;
     
     # If hoedown utility is available, build an html documentation file
     # from the markdown files

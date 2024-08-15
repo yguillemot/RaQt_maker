@@ -218,7 +218,7 @@ sub MAIN ( #| C++ filtered header to read
 
         # Generate the files
         whole_generator($api, %excpt, $keepMarks);
-        doc_generator(:$api, exceptions => %excpt);
+        doc_generator(:$api, exceptions => %excpt, :list);
         tool_generator(:$api, exceptions => %excpt, km => $keepMarks);
     }
     

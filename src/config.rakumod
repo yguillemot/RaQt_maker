@@ -31,6 +31,7 @@ our constant $oColorlessList = "ColorlessList.output";
 
 ###########################################
 # Names of the target files and directories
+our constant BASEDIR = "./";
 our constant TARGETDIR = "../module/";
 our constant CPPDIR = TARGETDIR ~ "src/";
 our constant LIBBASEDIR = TARGETDIR ~ "lib/Qt/";
@@ -54,6 +55,12 @@ our constant TESTSDIR = TARGETDIR ~ "t/";
 our constant EXAMPLESDIR = TARGETDIR ~ "examples/";
 
 our constant BINDIR = TARGETDIR ~ "bin/";
+
+our constant METHODS_LIST = BASEDIR ~ "methodsList.txt";
+
+############
+# Separators
+our constant LSEP = "§";        # Fields separator in methods list
 
 #######################
 # Prefixes and suffixes
