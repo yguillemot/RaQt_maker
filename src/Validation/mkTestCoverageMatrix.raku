@@ -12,9 +12,10 @@ class Method {
     has Bool $.virtual = False;
     has Bool $.static = False;
     has Bool $.protected = False;
+    has Bool $.override = False;
 
     has Str @.files;    # Test or example files where the method is used
-    has Str @.analogs;  # Keys of already tested methods with the same signature
+    has Str @.analogs;  # Keys of already tested methods with the same signaturePr
 
     submethod TWEAK
     {
@@ -26,6 +27,7 @@ class Method {
         $!virtual = ?($!qualifiers ~~ m/"Vi"/);
         $!static = ?($!qualifiers ~~ m/"St"/);
         $!protected = ?($!qualifiers ~~ m/"Pr"/);
+        $!override = ?($!qualifiers ~~ m/"Ov"/);
     }
 
     # Create an understandable qualifiers string
@@ -37,6 +39,7 @@ class Method {
         $q ~= " slot" if $.slot;
         $q ~= " signal" if $.signal;
         $q ~= " private signal" if $.privateSignal;
+        $q ~= " override" if $.override;
         $q ~= " ]";
         return $q;
     }
@@ -179,6 +182,16 @@ for @paths -> $p {
                     }
 
                     when "[ protected ]" {
+                    }
+
+                    when "[ override ]" {
+                    }
+
+                    when "[ protected override ]" {
+                    }
+
+
+                    when "[ slot override ]" {   # On passe vraiment ici ???
                     }
 
 
@@ -335,18 +348,18 @@ my $gUntested = 0;
 
 say "";
 say "Qualifiers               Total   Tested   Analog Untested";
-say "--------------------- -------- -------- -------- --------";
+say "------------------------- -------- -------- -------- --------";
 for %counts.keys.sort -> $k {
     my Counts $c = %counts{$k};
-    say sprintf "%-21s %8d %8d %8d %8d",
+    say sprintf "%-25s %8d %8d %8d %8d",
                 $k, $c.total, $c.tested, $c.analog, $c.untested;
     $gTotal += $c.total;
     $gTested += $c.tested;
     $gAnalog += $c.analog;
     $gUntested += $c.untested;
 }
-say "                      -------- -------- -------- --------";
-say sprintf "%21s %8d %8d %8d %8d",
+say "                          -------- -------- -------- --------";
+say sprintf "%25s %8d %8d %8d %8d",
             "Grand total :", $gTotal, $gTested, $gAnalog, $gUntested;
 say "";
 

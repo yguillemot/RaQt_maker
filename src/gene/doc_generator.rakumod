@@ -146,6 +146,12 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
                 $lQualifiers ~= "Pr";
             }
 
+
+            if $m.isOverride {
+                $qualifiers ~= "[override] ";
+                $lQualifiers ~= "Ov";
+            }
+
             if $mth.from {
                 $qualifiers ~= "inherited from " ~ $mth.from;
             }
