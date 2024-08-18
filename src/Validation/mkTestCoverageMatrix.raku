@@ -55,7 +55,8 @@ class Counts {
 }
 
 
-my Str $txt = slurp "../methodsList.txt";
+my Str $txt = slurp "JeuEssai.txt";
+# my Str $txt = slurp "../methodsList.txt";
 my %methods = ();
 my %signatures = ();
 my %counts = ();
@@ -303,6 +304,216 @@ for %methods.keys.sort -> $k {
 }
 
 
+
+
+############################################"""""
+
+# Output results in a printable string
+#   There is two arguments groups.
+#       The test group:
+#            tested and analog
+#       The qualifier group:
+#            signal, privateSignal, slot, virtual, override, protected and static
+#   In each group, the arguments are ANDed by default and the unspecified
+#   arguments are ignored (no filter is applied).
+#
+#   In each group, a special argument may be used to initialize the others:
+#   :untested
+#       - Forces :!tested and :!analog
+#       - ANDed the specified arguments.
+#   :!untested
+#       - Forces :tested and :analog. ORed the specified arguments.
+#       - ORed the specified arguments.
+#   :unqualified
+#       - Forces :!signal, :!privateSignal, :!slot, etc...
+#       - ANDed the specified arguments.
+#   :!unqualified
+#       - Forces :signal, :privateSignal, :slot, etc...
+#       - ORed the specified arguments.
+#
+# Examples:
+#
+#   - no argument
+#       Prints all methods (no filter)
+#
+#    - :virtual
+#       Prints methods "virtual", "virtual protected", "virtual slot"
+#
+#     - :virtual :!slot
+#       Prints methods "virtual", "virtual protected"
+#
+#     - :virtual :slot
+#       Prints methods "virtual slot"
+#
+#    - :unqualified
+#       Prints methods without any qualifier
+#
+#    - :unqualified :!virtual
+#       Prints methods without any qualifier
+#
+#    - :unqualified :virtual
+#       Prints methods "virtual"
+#
+#    - :!unqualified
+#       Prints nothing
+#
+sub getData(Bool :$untested,
+            Bool :$tested is copy, Bool :$analog is copy,
+            Bool :$unqualified,
+            Bool :$signal is copy; Bool :$privateSignal is copy, Bool :$slot is copy,
+            Bool :$virtual is copy, Bool :$override is copy, Bool :$protected is copy,
+            Bool :$static is copy
+            --> Str)
+{
+
+    sub ok(Method $v --> Bool)
+    {
+say "OK {$v.class}::{$v.name} <{$v.qualifiers}>";
+say "   signal  p=", $signal, " v=", $v.signal, " => ", ($signal.defined && (?$signal == $v.signal));
+say "   privateSignal  p=", $privateSignal, " v=", $v.privateSignal, " => ", ($privateSignal.defined && (?$privateSignal == $v.privateSignal));
+say "   slot  p=", $slot, " v=", $v.slot, " => ", ($slot.defined && (?$slot == $v.slot));
+say "   virtual  p=", $virtual, " v=", $v.virtual, " => ", ($virtual.defined && (?$virtual == $v.virtual));
+say "   override  p=", $override, " v=", $v.override, " => ", ($override.defined && (?$override == $v.override));
+say "   protected  p=", $protected, " v=", $v.protected, " => ", ($protected.defined && (?$protected == $v.protected));
+say "   static  p=", $static, " v=", $v.static, " => ", ($static.defined && (?$static == $v.static));
+say "   unqualified  p=", $unqualified;
+
+
+#         my Bool $qualifOK =     ?$allQualifiers
+#                             ||  ($signal.defined && (?$signal == $v.signal))
+#                             ||  ($privateSignal.defined && (?$privateSignal == $v.privateSignal))
+#                             ||  ($slot.defined && (?$slot == $v.slot))
+#                             ||  ($virtual.defined && (?$virtual == $v.virtual))
+#                             ||  ($override.defined && (?$override == $v.override))
+#                             ||  ($protected.defined && (?$protected == $v.protected))
+#                             ||  ($static.defined && (?$static == $v.static))
+#                             ||  (    ?$unqualified && !$v.slot && !$v.signal && !$v.privateSignal
+#                                   && !$v.virtual && !$v.override && !$v.protected
+#                                   && !$v.static);
+
+        my Bool $qualifOK = True;
+        my Bool $op = False;        # False ==> &&
+        if $unqualified.defined {
+            if $unqualified {
+                $signal = False unless $signal.defined;
+                $privateSignal = False unless $privateSignal.defined;
+                $slot = False unless $slot.defined;
+                $virtual = False unless $virtual.defined;
+                $override = False unless $override.defined;
+                $protected = False unless $protected.defined;
+                $static = False unless $static.defined;
+            } else {
+                $qualifOK = False;
+                $op = True,             # True ==> ||
+                $signal = True unless $signal.defined;
+                $privateSignal = True unless $privateSignal.defined;
+                $slot = True unless $slot.defined;
+                $virtual = True unless $virtual.defined;
+                $override = True unless $override.defined;
+                $protected = True unless $protected.defined;
+                $static = True unless $static.defined;
+            }
+        }
+
+        sub boolSet(Bool $in1, Bool $in2, Bool :$or = False --> Bool)
+        {
+            if $or {
+                return $in1 || $in2;
+            } else {
+                return $in1 && $in2;
+            }
+        }
+
+        if $signal.defined { $qualifOK = boolSet $qualifOK,  ?$signal == $v.signal, or => $op; }
+        if $privateSignal.defined { $qualifOK = boolSet $qualifOK,  ?$privateSignal == $v.privateSignal, or => $op; }
+        if $slot.defined { $qualifOK = boolSet $qualifOK,  ?$slot == $v.slot, or => $op; }
+        if $virtual.defined { $qualifOK = boolSet $qualifOK,  ?$virtual == $v.virtual, or => $op; }
+        if $override.defined { $qualifOK = boolSet $qualifOK,  ?$override == $v.override, or => $op; }
+        if $protected.defined { $qualifOK = boolSet $qualifOK,  ?$protected == $v.protected, or => $op; }
+        if $static.defined { $qualifOK = boolSet $qualifOK,  ?$static == $v.static, or => $op; }
+
+
+        my Bool $statusOK = True;
+        $op = False;        # False ==> &&
+        if $untested.defined {
+            if $untested {
+                $tested = False unless $tested.defined;
+                $analog = False unless $analog.defined;
+            } else {
+                $statusOK = False;
+                $op = True;        # True ==> ||
+                $tested = True unless $tested.defined;
+                $analog = True unless $analog.defined;
+            }
+        }
+        if $tested.defined { $statusOK = boolSet $statusOK,  ?$v.files == ?$tested, or => $op; }
+        if $analog.defined { $statusOK = boolSet $statusOK,  ?$v.analogs == ?$analog, or => $op; }
+
+say " qOK=$qualifOK sOK=$statusOK";
+        return $statusOK && $qualifOK;
+    }
+
+    my Str $out = "";
+
+    for %methods.keys.sort -> $k {
+        my $v = %methods{$k};
+
+        # Qualifiers string
+        my $q = $v.qualStr;
+
+        my Str $out0 = "";
+
+        my $currentMethod = "$k $q\n";
+        $out0 ~= $currentMethod if ok $v;
+
+        for $v.files -> $f {
+            $out0 ~= "\tTested in " ~ $f ~ "\n" if ok $v;
+        }
+        for $v.analogs -> $f {
+            $out0 ~= "\tAnalog to " ~ $f ~ "\n" if ok $v;
+        }
+
+        $out0 ~= "\n" if $out0.chars;
+        $out ~= $out0;
+    }
+
+    return $out;
+}
+
+################################################""""
+
+# # class Method {
+# #     has Str $.class;
+# #     has Str $.name;
+# #     has Str $.rSig;
+# #     has Str $.qSig;
+# #     has Str $.qualifiers;
+# #
+# #     has Bool $.signal = False;
+# #     has Bool $.privateSignal = False;
+# #     has Bool $.slot = False;
+# #     has Bool $.virtual = False;
+# #     has Bool $.static = False;
+# #     has Bool $.protected = False;
+# #     has Bool $.override = False;
+# #
+# #     has Str @.files;    # Test or example files where the method is used
+# #     has Str @.analogs;  # Keys of already tested methods with the same signaturePr
+# #
+# # }
+
+
+# my Method $m = Method.new: class => "MaClasse", name => "maMethode",
+#                            rSig => "raku signature", qSig => "Qt signature",
+#                            qualifiers => "ViOv";
+#
+# say "getData :";
+# say getData $m,
+
+
+#######################################################""""""
+
+
 # Output the results in a file "Synthesis.txt"
 $out = "";
 my Str $outu = "";
@@ -347,7 +558,7 @@ my $gAnalog = 0;
 my $gUntested = 0;
 
 say "";
-say "Qualifiers               Total   Tested   Analog Untested";
+say "Qualifiers                   Total   Tested   Analog Untested";
 say "------------------------- -------- -------- -------- --------";
 for %counts.keys.sort -> $k {
     my Counts $c = %counts{$k};
@@ -364,6 +575,49 @@ say sprintf "%25s %8d %8d %8d %8d",
 say "";
 
 
-# Show untested methods
+
+# # For testing getData :$out =
+# # Create exactly the same file as Synthesis.tx above
+# spurt "tmp.txt", getData;
+
+
+# Show by qualifiers untested and tested methods
+
+# $out = "UNTESTED\n--------\n\n";
+# $out ~= getData :override, :untested;
+# $out ~= "\nTESTED\n------\n\n";
+# $out ~= getData :override, :tested, :analog;
+# spurt "override.txt", $out;
+
+# $out = "UNTESTED\n--------\n\n";
+# $out ~= getData :protected, :!virtual, :untested;
+# $out ~= "\nTESTED\n------\n\n";
+# $out ~= getData :protected, :!virtual, :tested, :analog;
+# spurt "protected_novirtual.txt", $out;
+
+sub work(Str $fileName, *%_)
+{
+    $out = "UNTESTED\n--------\n\n";
+    $out ~= getData :untested, |%_;
+    $out ~= "\nTESTED\n------\n\n";
+    $out ~= getData :tested, :analog, |%_;
+    spurt $fileName, $out;
+}
+
+# work "protected_novirtual.txt", :protected, :noqualifier;
+
+# work "unqualified.txt", :unqualified;
+# work "override.txt", :override;
+# work "privateSignal.txt", :privateSignal;
+# work "protected.txt", :protected;
+# work "protected_override.txt", :protected, :override;
+# work "signal.txt", :signal;
+# work "slot.txt", :slot;
+# work "slot_override.txt", :slot, :override;
+# work "virtual.txt", :virtual;
+# work "virtual_protected.txt", :virtual, :protected;
+# work "virtual_slot.txt", :virtual, :slot;
+
+say getData :!unqualified :virtual;
 
 
