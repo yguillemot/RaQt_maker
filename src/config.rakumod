@@ -60,7 +60,7 @@ our constant METHODS_LIST = BASEDIR ~ "methodsList.txt";
 
 ############
 # Separators
-our constant LSEP = "§";        # Fields separator in methods list
+our constant LSEP = " § ";        # Fields separator in methods list
 
 #######################
 # Prefixes and suffixes

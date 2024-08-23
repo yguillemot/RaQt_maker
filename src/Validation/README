@@ -1,0 +1,41 @@
+
+
+Some scripts to try to find out which methods have been validated and which have not.
+
+One method is said validated when it has been used at least once in a test script or an example script.
+
+
+This four scripts are called without arguments and have the file names they read or write hardcoded inside source.
+
+
+mkMatrix.raku :
+Try to finds which methods have been used and where.
+This script is very imperfect and only see methods called directly.
+    Read ../WhiteList.output
+    Read all test and example scripts in ../../module
+    Write matrix.txt
+
+
+groups.raku :
+Try to group methods with the same qualifiers and signature
+    Read matrix.txt
+    Write GroupsOfMethods.txt
+
+
+qualifs.raku :
+Try also to found which groups of qualifiers are used with the defined methods
+    Read matrix.txt
+    Write QualifiedMethods.txt
+
+
+mkTestCoverageMatrix.raku
+Try to found which methods have been tested (i.e. used) and where.
+As the source of the Qt::QtWidgets module has been automatically generated, a method with the same qualifiers and signature as an other method may be considered as tested if this other method has been tested.
+    Read ./methodsList.txt (a file written by the documentation generator)
+    Write Sythesis.txt
+    Write various other specific files grouping results about methods with
+    the same qualifiers : signal.txt, virtual_protected.txt, etc... (see calls of
+    the sub "work" at the end of the script)
+
+
+

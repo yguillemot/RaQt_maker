@@ -118,38 +118,38 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
             my $lQualifiers = "";
             if $m.isSlot {
                 $qualifiers ~= "[slot] ";
-                $lQualifiers ~= "Sl";
+                $lQualifiers ~= "slot ";
             }
 
             if $m.isSignal {
                 if $m.isPrivateSignal {
                     $qualifiers ~= "[private signal] ";
-                    $lQualifiers ~= "Ps";
+                    $lQualifiers ~= "privateSignal ";
                 } else {
                     $qualifiers ~= "[signal] ";
-                    $lQualifiers ~= "Si";
+                    $lQualifiers ~= "signal ";
                 }
             }
 
             if $m.isVirtual {
                 $qualifiers ~= "[virtual] ";
-                $lQualifiers ~= "Vi";
+                $lQualifiers ~= "virtual ";
             }
 
             if $m.isStatic {
                 $qualifiers ~= "[static] ";
-                $lQualifiers ~= "St";
+                $lQualifiers ~= "static ";
             }
 
             if $m.isProtected {
                 $qualifiers ~= "[protected] ";
-                $lQualifiers ~= "Pr";
+                $lQualifiers ~= "protected ";
             }
 
 
             if $m.isOverride {
                 $qualifiers ~= "[override] ";
-                $lQualifiers ~= "Ov";
+                $lQualifiers ~= "override ";
             }
 
             if $mth.from {
