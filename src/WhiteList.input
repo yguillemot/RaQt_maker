@@ -38,7 +38,8 @@
 	QTextEdit::setPlainText(const QString&)
 	QTextEdit::setReadOnly(bool)
 	QTextEdit::textChanged()
-	
+	QTextEdit::append(const QString&)
+
     QLayout::addWidget(QWidget*)
     QBoxLayout::addLayout(QLayout*, int)
 	QLayout::setAlignment(QWidget*, Qt::Alignment)
@@ -89,7 +90,10 @@
     QWidget::mouseReleaseEvent(QMouseEvent*)
     QWidget::paintEvent(QPaintEvent*)
 	QWidget::closeEvent(QCloseEvent*)
-	
+
+	QWidget::setMouseTracking(bool)
+	QWidget::hasMouseTracking()
+
 	QWidget::setFocus()
 	QWidget::setFocus(Qt::FocusReason)
 	QWidget::setFocusPolicy(Qt::FocusPolicy)
