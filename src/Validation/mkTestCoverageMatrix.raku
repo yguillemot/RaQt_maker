@@ -13,12 +13,9 @@ class Method {
 
     submethod TWEAK
     {
-        print "K={$!class} N={$!name} Q={$!qSig}";
-
+#         print "K={$!class} N={$!name} Q={$!qSig}";
         @!qualifiersList = $!qualifiers.words;
-
-        say "q=\"", $!qualifiers, "\" QL=", @!qualifiersList;
-
+#         say "q=\"", $!qualifiers, "\" QL=", @!qualifiersList;
         my $qs = set @!qualifiersList;
     }
 
@@ -48,6 +45,26 @@ my Str $txt = slurp "../methodsList.txt";
 my %methods = ();
 my %signatures = ();
 my %counts = ();
+
+# Get known test if any
+# File structure:
+#       <class>::<method>;;<C++ signature>  <pathName/fileName>
+#       <class>::<method>;;<C++ signature>  <pathName/fileName>
+#       etc...
+my $knownTestsFile = "./knownTests.txt";
+my %knownTests;
+if $knownTestsFile.IO ~~ :f & :r {
+    my Str $t = slurp $knownTestsFile;
+    for $t.lines -> $l {
+        #             class::method;;qSig      fileName
+        #               (i.e. classId)
+        if $l ~~ m/^ \s*      (\S+)       \s+    (\S+)    \s* $/ {
+            %knownTests{~$0}.push: ~$1;
+        }
+    }
+} else {
+    say "\nWARNING : KNOWN TESTS FILE NOT FOUND\n";
+}
 
 # Populate %methods and %signatures hashes from file "methodsList.txt"
 for $txt.lines {
@@ -106,6 +123,12 @@ for @paths -> $p {
 
         METHOD: for %methods.kv -> $k, $v {
 
+            # Look for some known test
+            if %knownTests{$k}:exists {
+                # say "FOUND KNOWN TEST FOR $k";
+                $v.files.append: @(%knownTests{$k});
+            }
+
             # Class of the method must be in the packages list
             next METHOD if !$packages{$v.class};
 
@@ -115,6 +138,7 @@ for @paths -> $p {
                 }
             } else {
                 given $v.qualStr {
+
                     when "[ signal ]" {
                         # Look for
                         #  'connect something , "method" ,'
@@ -145,16 +169,19 @@ for @paths -> $p {
                         # Look for
                         #   connect <something> , <something> ,
                         #                   <something> , <method> ;
-                        if $txt ~~ m/\W "connect" <-[,]>+ ","
-                                    <-[,]>+ "," <-[,]>+ ","
-                                    \s* '"' "{$v.name}" '"' \s* ";"/
+                        # or (slot used as an ardinary method)
+                        #   .<method>
+                        if    $txt ~~ m/\W "connect" <-[,]>+ ","
+                                       <-[,]>+ "," <-[,]>+ ","
+                                       \s* '"' "{$v.name}" '"' \s* ";"/
+                           || $txt ~~ m/'.' "{$v.name}" \W/
                         {
                             $v.files.push: ~$f;
                         }
                     }
 
 
-                    when "[ virtual slot ]" | "[ slot virtual ]" {
+                    when "[ slot virtual ]" {
                     }
 
                     when "[ virtual ]" {
@@ -164,31 +191,28 @@ for @paths -> $p {
                         #   self.<class>::subClass
                         # and for
                         #   method <method>
-#                         print "VIRTUAL : ", $v.class, " :: ", $v.name;
-#                         if $txt ~~ m/\W "{$v.name}" \W/ { say " FOUND"; }
                         if    $txt ~~ m/\W "class" \s+ \w+ \s+
                                                 "is" \s+ "{$v.class}" \W/
                            && $txt ~~ m/\W "self.{$v.class}::subClass" \W/
                            && $txt ~~ m/\W "method" \s+ "{$v.name}" \W/
                         {
                             $v.files.push: ~$f;
-#                             say " OK";
                         }
-#                         else { say ""; }
                     }
 
                     when "[ protected ]" {
-                    }
-
-                    when "[ override ]" {
                     }
 
                     when "[ protected override ]" {
                     }
 
 
-                    when "[ slot override ]" {   # On passe vraiment ici ???
-                    }
+#                     when "[ slot override ]" {
+#                     }
+#
+#
+#                     when "[ slot static ]" {
+#                     }
 
 
                     when "[ virtual protected ]" {
@@ -215,11 +239,14 @@ for @paths -> $p {
                     }
 
                     when "[ static ]" {
+                        if    $txt ~~ m/\W "{$v.class}.{$v.name}"\W/ {
+                            $v.files.push: ~$f;
+                        }
                     }
 
-                    when "[ ]" {
-                        if    $txt ~~ m/\W "$k" \W/
-                        || $txt ~~ m/'.' "{$v.name}" \W/ {
+                    when "[ ]" | "[ override ]" {
+                        if    $txt ~~ m/\W "{$v.class}" '::' "{$v.name}" \W/
+                           || $txt ~~ m/'.' "{$v.name}" \W/ {
                                 $v.files.push: ~$f;
                         }
                     }
