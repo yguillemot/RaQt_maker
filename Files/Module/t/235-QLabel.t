@@ -30,10 +30,5 @@ ok $a.text ~~ "A Two\nlines text", "Text set to another value again";
 ok $w3 != $w1 && $w3 != $w2, "Label width depends on horizontal text length";
 ok $h3 > $h1, "Label height depends on number of lines";
 
-
-# say "hasHeightForWidth : ", $a.hasHeightForWidth;
-# say "heightForWidth(100) : ", $a.heightForWidth(100);
-
-
 done-testing;
 
