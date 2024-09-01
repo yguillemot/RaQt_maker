@@ -46,11 +46,14 @@
 	QLayout::setAlignment(QLayout*, Qt::Alignment)
 	QLayout::setContentsMargins(int, int, int, int)
 
-    # v0.0.6
+	# v0.0.6
+#     QLayout::getContentsMargins(int*, int*, int*, int*)
     QBoxLayout::setStretch(int, int)
 	QBoxLayout::setStretchFactor(QWidget*, int)
 	QBoxLayout::setStretchFactor(QLayout*, int)
 	QBoxLayout::stretch(int)
+	QBoxLayout::setSpacing(int)
+	QBoxLayout::spacing()
 
     QVBoxLayout::ctor()
     QHBoxLayout::ctor()
@@ -64,6 +67,7 @@
 	QWidget::ctor(QWidget*, Qt::WindowFlags)
     QWidget::setLayout(QLayout*)
     QWidget::setWindowTitle(const QString&)
+	QWidget::hide()
     QWidget::show()
     QWidget::setDisabled(bool)
     QWidget::setToolTip(const QString&)
@@ -82,6 +86,8 @@
 	QWidget::setMinimumWidth(int)
 	QWidget::update()
 	QWidget::update(int, int, int, int)
+	QWidget::repaint()
+	QWidget::repaint(int, int, int, int)
 
     QWidget::enterEvent(QEvent*)
     QWidget::leaveEvent(QEvent*)
@@ -94,9 +100,11 @@
 	QWidget::setMouseTracking(bool)
 	QWidget::hasMouseTracking()
 
-	QWidget::setFocus()
-	QWidget::setFocus(Qt::FocusReason)
-	QWidget::setFocusPolicy(Qt::FocusPolicy)
+# Provisionnal remove because untestable
+# 	QWidget::setFocus()
+# 	QWidget::setFocus(Qt::FocusReason)
+# 	QWidget::setFocusPolicy(Qt::FocusPolicy)
+
 	QWidget::activateWindow()
 	QWidget::isActiveWindow()
 	

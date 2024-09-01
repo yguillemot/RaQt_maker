@@ -24,6 +24,8 @@ ok $b.width == $x2 - $x1 + 1,   "width from ctor 2";
 ok $b.height == $y2 - $y1 + 1,  "height from ctor 2";
 # Width and height: "+1" for "historical reasons" (cf. Qt documentation)
 
+ok $b.bottomLeft.x == $x1,      "x from bottomLeft";
+ok $b.bottomLeft.y == $y2,      "y from bottomLeft";
 
 done-testing;
 

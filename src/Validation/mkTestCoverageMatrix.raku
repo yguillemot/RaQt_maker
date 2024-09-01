@@ -1,4 +1,9 @@
 
+constant METHODSLIST = "../methodsList.txt";
+constant KNOWNTESTSFILE = "./knownTests.txt";
+constant BASE = "../../module";
+constant PATHS = <examples t>;
+
 class Method {
     has Str $.class;
     has Str $.name;
@@ -41,7 +46,7 @@ class Counts {
 
 
 # my Str $txt = slurp "JeuEssai.txt";
-my Str $txt = slurp "../methodsList.txt";
+my Str $txt = slurp METHODSLIST;
 my %methods = ();
 my %signatures = ();
 my %counts = ();
@@ -51,7 +56,7 @@ my %counts = ();
 #       <class>::<method>;;<C++ signature>  <pathName/fileName>
 #       <class>::<method>;;<C++ signature>  <pathName/fileName>
 #       etc...
-my $knownTestsFile = "./knownTests.txt";
+my $knownTestsFile = KNOWNTESTSFILE;
 my %knownTests;
 if $knownTestsFile.IO ~~ :f & :r {
     my Str $t = slurp $knownTestsFile;
@@ -109,10 +114,8 @@ say "=" x 12;
 
 # Look for test or example scripts where methods are used
 # (set up the field @.files in the elements of %methods)
-my Str $base = "../../module";
-my Str @paths = <examples t>;
-for @paths -> $p {
-    my Str $path = "$base/$p";
+for PATHS -> $p {
+    my Str $path = "{BASE}/$p";
     for dir($path, test => { "$path/$_".IO ~~ :f & :r }) -> $f {
         say "$f";
         my Str $txt = slurp $f;
@@ -279,7 +282,7 @@ for %methods.keys.sort -> $k {
     $vcount++ if $v.files.elems;
     for $v.files {
         # say "\t$_";
-        $_ ~~ s/ "$base" '/' //;
+        $_ ~~ s/ "{BASE}" '/' //;
         $out ~= "\t$_\n";
     }
     $out ~= "\n";
@@ -299,7 +302,7 @@ for %signatures.keys.sort -> $k {
         $out ~= "\t$m\n";
         for %methods{$m} -> $w {
             for $w.files {
-                $_ ~~ s/ "$base" '/' //;
+                $_ ~~ s/ "{BASE}" '/' //;
                 $out ~= "\t\t$_\n";
             }
         }
@@ -475,7 +478,7 @@ sub printMethods(@methodIds --> Str)
 ################################################
 
 
-# Output the results in a file "Synthesis.txt"
+# Output the results in "Synthesis.txt" and "Untested.txt" files
 $out = "";
 my Str $outu = "";
 for %methods.keys.sort -> $k {
@@ -513,6 +516,9 @@ for %methods.keys.sort -> $k {
 spurt "Synthesis.txt", $out;
 spurt "Untested.txt", $outu;
 
+
+# Output statistics
+
 my $gTotal = 0;
 my $gTested = 0;
 my $gAnalog = 0;
@@ -534,6 +540,41 @@ say "                          -------- -------- -------- --------";
 say sprintf "%25s %8d %8d %8d %8d",
             "Grand total :", $gTotal, $gTested, $gAnalog, $gUntested;
 say "";
+
+
+
+
+
+# Output again the results of "Synthesis.txt" and "Untested.txt", but in CSV files
+$out = "";
+$outu = "";
+for %methods.keys.sort -> $k {
+    my $v = %methods{$k};
+
+    # Qualifiers string
+    my $q = $v.qualStr;
+
+    my Str $line = $v.class ~ '§' ~ $v.name ~ '§' ~ $q ~ '§' ~ $v.qSig;
+
+    if ?$v.files {
+        # Tested
+        $line ~= '§' ~ "Tested";
+    } elsif ?$v.analogs {
+        # Analog
+        $line ~= '§' ~ "Analog";
+    } else {
+        # Untested
+        $outu ~= $line ~ "\n";
+        $line ~= '§';
+    }
+    $out ~= $line ~ "\n";
+}
+spurt "Synthesis.csv", $out;
+spurt "Untested.csv", $outu;
+
+
+
+
 
 
 # For testing getQualifiedMethods, getQualifiedMethods and printMethods

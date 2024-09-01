@@ -1,11 +1,11 @@
 
 use Test;
+use Qt::QtWidgets;
 use Qt::QtWidgets::QApplication;
-use Qt::QtWidgets::QWidget;
 use Qt::QtWidgets::QFont;
+use Qt::QtWidgets::QWidget;
 
 my $app = QApplication.new;
-
 
 my $a = QWidget.new; 
 
@@ -42,13 +42,11 @@ ok $a.height == 50, "Widget height set to a first value";
 $a.setFixedHeight(250);
 ok $a.height == 250, "Widget height set to another value";
 
-
 $a.setFixedWidth(50);
 ok $a.width == 50, "Widget width set to a first value";
 
 $a.setFixedWidth(250);
 ok $a.width == 250, "Widget width set to another value";
-
 
 done-testing;
 
