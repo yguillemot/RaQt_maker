@@ -4,7 +4,6 @@ use Qt::QtWidgets::QApplication;
 use Qt::QtWidgets::QBrush;
 use Qt::QtWidgets::QColor;
 use Qt::QtWidgets::QEvent;
-use Qt::QtWidgets::QHBoxLayout;
 use Qt::QtWidgets::QLabel;
 use Qt::QtWidgets::QMouseEvent;
 use Qt::QtWidgets::QPaintEvent;
@@ -74,15 +73,6 @@ class TestField is QLabel {
     }
 }
 
-# Used to create margins around the test field
-class Margin is QLabel {
-    submethod TWEAK {
-        # Initialize parent
-        self.QLabel::subClass;
-        self.setFixedSize(50, 50);
-    }
-}
-
 
 # Objects creation
 my $qApp = QApplication.new;
@@ -95,20 +85,19 @@ $testField.output = $textEdit;
 
 # Layout
 
-my $testLayout = QHBoxLayout.new;
-$testLayout.addWidget(Margin.new);
+my $testLayout = QVBoxLayout.new;
+$testLayout.setContentsMargins(55, 55, 55, 55);
 $testLayout.addWidget($testField);
-$testLayout.addWidget(Margin.new);
+$testLayout.setAlignment($testField, Qt::AlignCenter);
+
 
 my $layout = QVBoxLayout.new;
-$layout.addWidget(Margin.new);
 $layout.addLayout($testLayout);
-$layout.addWidget(Margin.new);
 $layout.addWidget($textEdit);
 
 $window.setLayout($layout);
 
-# Set up a first title and show the main window
+# Set up a title and show the main window
 $window.setWindowTitle("Show mouse events");
 $window.show;
 
