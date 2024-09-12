@@ -204,7 +204,9 @@
 	QPainter::drawText(int, int, const QString&)
 	QPainter::setFont(const QFont&)
     QPainter::drawRect(const QRect&)
-	
+	QPainter::boundingRect(const QRect&, int, const QString&)
+	QPainter::boundingRect(int, int, int, int, int, const QString&)
+
 	QBrush::ctor()
 	QBrush::ctor(Qt::BrushStyle)
 	QBrush::ctor(const QColor&, Qt::BrushStyle)
