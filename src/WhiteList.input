@@ -879,8 +879,8 @@
 	QGraphicsScene::backgroundBrush()
 
 	QGraphicsScene::isSortCacheEnabled()
-	QGraphicsScene::itemAt(const QPointF&, const QTransform&)
-	QGraphicsScene::itemAt(qreal, qreal, const QTransform&)
+	# QGraphicsScene::itemAt(const QPointF&, const QTransform&)
+	# QGraphicsScene::itemAt(qreal, qreal, const QTransform&)
 	QGraphicsScene::itemIndexMethod()
 	QGraphicsScene::itemsBoundingRect()
 	QGraphicsScene::keyPressEvent(QKeyEvent*)
