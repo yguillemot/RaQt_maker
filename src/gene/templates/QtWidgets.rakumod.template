@@ -22,7 +22,8 @@ class QtSigsloty is QtBase is export {
     multi trait_mod:<is> (Routine $meth, :$QtSignal) is export
     {
         my Str $signature = methPosArgs2Str($meth.signature);
-        my Str $class = $meth.signature.params[0].type.raku;
+        my Str $class = $meth.signature.params[0].type.^name;
+        $class ~~ s:g/<[\(\)]>**1//; # Can't use .type.raku if .type is a stub
         my Bool $hasSimpleSig = $signature (elem) $simpleSignatures;
 
         # Look for an already registered signal
@@ -80,7 +81,8 @@ class QtSigsloty is QtBase is export {
     multi trait_mod:<is> (Routine $meth, :$QtPrivateSignal) is export
     {
         my Str $signature = methPosArgs2Str($meth.signature);
-        my Str $class = $meth.signature.params[0].type.raku;
+        my Str $class = $meth.signature.params[0].type.^name;
+        $class ~~ s:g/<[\(\)]>**1//; # Can't use .type.raku if .type is a stub
         my Bool $hasSimpleSig = $signature (elem) $simpleSignatures;
 
         # Private signals should ALWAYS be plain Qt
