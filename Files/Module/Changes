@@ -1,8 +1,46 @@
 v0.0.6  2024/??/??
+
+    * Add
+
+        QAbstractGraphicsShapeItem
+        QContextMenuEvent
+        QGraphicsEllipseItem
+        QGraphicsItem
+        QGraphicsLayoutItem
+        QGraphicsLineItem
+        QGraphicsObject
+        QGraphicsPathItem
+        QGraphicsPixmapItem
+        QGraphicsProxyWidget
+        QGraphicsRectItem
+        QGraphicsScene
+        QGraphicsSceneEvent
+        QGraphicsSceneMouseEvent
+        QGraphicsSimpleTextItem
+        QGraphicsTextItem
+        QGraphicsView
+        QGraphicsWidget
+        QKeyEvent
+        QLineF
+        QMainWindow
+        QMatrix
+        QMenuBar
+        QPainterPath
+        QPixmap
+        QRectF
+        QSizeF
+        QSizePolicy
+        QStatusBar
+       QTimerEvent
+        QToolBar
+        QToolButton
+#         QTransform
+
     * Add QGridLayout class
     * Add a new example
     * Fix the deprecated use of method Str in class Distribution::Resource
-    
+    * Fix the definition of a QtSignal in a forward declared class
+
 v0.0.5  2021/28/08
     * Fix a bug in event handlers
     * Add QSlider, QDial, QCheckBox and QRadioButton classes

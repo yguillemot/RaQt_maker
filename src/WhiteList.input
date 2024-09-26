@@ -110,7 +110,8 @@
 	
 	QWidget::height()
 	QWidget::width()
-	
+	QWidget::sizeHint()
+
 	# For test
 	 QWidget::render(QPaintDevice*, const QPoint&, const QRegion&, RenderFlags)
 	# QWidget::grab(const QRect&)
@@ -362,6 +363,13 @@
 	QAction::setDisabled(bool)
 	QAction::setEnabled(bool)
 	QAction::text()
+	QAction::setToolTip(const QString&)                  # NEW
+	QAction::setCheckable(bool)							 # NEW
+	QAction::setChecked(bool)                            # NEW
+
+	QActionGroup::ctor(QObject*)                         # NEW
+#	QActionGroup::addAction(const QString&)              # NEW
+	QActionGroup::addAction(QAction*)					 # NEW
 
 	QMenu::ctor(QWidget*)
 	QMenu::ctor(const QString&, QWidget*)
@@ -369,6 +377,8 @@
     QMenu::exec(const QPoint&, QAction*)
 	QMenu::addAction(const QString&)
 	# QMenu::addAction(const QString&, const QObject*, const char*, const QKeySequence&)
+	QMenu::addSeparator()             				# NEW
+	QMenu::addSection(const QString&)               # NEW
 
 	QLabel::ctor(QWidget*, Qt::WindowFlags)
 	QLabel::ctor(const QString&, QWidget*, Qt::WindowFlags)
@@ -735,6 +745,7 @@
 # #	QMenuBar::actionGeometry(QAction*)
 # #	QMenuBar::activeAction()
 	QMenuBar::addAction(const QString&)
+
 
 ## PB ICI ################################################################
 # 	QMenuBar::addAction(const QString&, const QObject*, const char*)
