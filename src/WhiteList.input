@@ -110,7 +110,8 @@
 	
 	QWidget::height()
 	QWidget::width()
-	QWidget::sizeHint()
+
+	# QWidget::sizeHint()  # WARNING : tests failed if this one is generated
 
 	# For test
 	 QWidget::render(QPaintDevice*, const QPoint&, const QRegion&, RenderFlags)
