@@ -410,7 +410,7 @@ Yves Guillemot <<yc.guillemot@wanadoo.fr>\>
 COPYRIGHT AND LICENSE
 ---------------------
 
-Copyright (C) 2021 Yves Guillemot
+Copyright (C) 2021-2024 Yves Guillemot
 
 This software is free: you can redistribute and/or modify it under
 the GNU General Public License as published by the Free Software
