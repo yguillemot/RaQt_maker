@@ -88,9 +88,11 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
 
         # Gather methods
         my @mlist;
+        my Bool $hasCtor = False;
         MLOOP0: for $v.methods -> $m {
             next MLOOP0 if !$m.whiteListed || $m.blackListed;
             @mlist.push(KnownMethods.new(meth => $m, from => Str));
+            $hasCtor = True if $m.name ~~ "ctor";
         }
         for $v.ancestors -> $a {
             MLOOP1: for %c{$a}.methods -> $m {
@@ -99,6 +101,12 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
             }
         }
 
+        # Output a warning if the class doesn't have a constructor
+        if ! $hasCtor {
+            $out ~= "WARNING: This class has no constructor."
+                  ~ " So it can't be used to create an object explicitely.\n"
+                  ~ "\n";
+        }
 
         # Loop on methods
         MLOOP: for @mlist.sort: { .meth.name } -> $mth {

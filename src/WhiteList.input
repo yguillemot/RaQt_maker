@@ -842,6 +842,11 @@
 	QMatrix::shear(qreal, qreal)
 	QMatrix::translate(qreal, qreal)
 
+	QAbstractGraphicsShapeItem::brush()
+	QAbstractGraphicsShapeItem::pen()
+	QAbstractGraphicsShapeItem::setBrush(const QBrush&)
+	QAbstractGraphicsShapeItem::setPen(const QPen&)
+
 # 	QGraphicsView::alignment()
 	QGraphicsView::backgroundBrush()
 # 	QGraphicsView::cacheMode()
@@ -913,6 +918,15 @@
 	QGraphicsTextItem::setFont(const QFont&)
 	QGraphicsTextItem::font()
 
+	QGraphicsSimpleTextItem::boundingRect()
+	QGraphicsSimpleTextItem::ctor(QGraphicsItem*)
+	QGraphicsSimpleTextItem::ctor(const QString&, QGraphicsItem*)
+	QGraphicsSimpleTextItem::font()
+	QGraphicsSimpleTextItem::setFont(const QFont&)
+	QGraphicsSimpleTextItem::setText(const QString&)
+	QGraphicsSimpleTextItem::text()
+
+
 	# QGraphicsItem is a virtual class !!!
  	# QGraphicsItem::ctor(QGraphicsItem*)
 
@@ -929,11 +943,23 @@
 	QGraphicsEllipseItem::spanAngle()
 	QGraphicsEllipseItem::startAngle()
 
+	QGraphicsRectItem::boundingRect()
+	QGraphicsRectItem::contains(const QPointF&)
+	QGraphicsRectItem::ctor(QGraphicsItem*)
+	QGraphicsRectItem::ctor(const QRectF&, QGraphicsItem*)
+	QGraphicsRectItem::ctor(qreal, qreal, qreal, qreal, QGraphicsItem*)
+	QGraphicsRectItem::rect()
+	QGraphicsRectItem::setRect(const QRectF&)
+	QGraphicsRectItem::setRect(qreal, qreal, qreal, qreal)
+
 	QGraphicsLineItem::boundingRect()
 	QGraphicsLineItem::contains(const QPointF&)
 	QGraphicsLineItem::ctor(qreal, qreal, qreal, qreal, QGraphicsItem*)
 	QGraphicsLineItem::setLine(qreal, qreal, qreal, qreal)
 	QGraphicsLineItem::setPen(const QPen&)
+
+
+
 
 
 	QGraphicsItem::boundingRect()
