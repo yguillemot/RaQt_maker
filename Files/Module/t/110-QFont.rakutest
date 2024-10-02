@@ -1,8 +1,11 @@
 
 use Test;
+plan 10;
+
 use Qt::QtWidgets::QApplication;
 use Qt::QtWidgets::QFont;
 
+my $app = QApplication.new;
 
 my $font1 = QFont.new;
 $font1.setPointSize(20);

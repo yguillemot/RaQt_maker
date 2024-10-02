@@ -1,5 +1,7 @@
 
 use Test;
+plan 14;
+
 use Qt::QtWidgets::QApplication;
 use Qt::QtWidgets::QSize;
 
@@ -43,5 +45,5 @@ ok      $d.width == 254
                     "Expanded to";
 
                     
-done-testing;
+
  

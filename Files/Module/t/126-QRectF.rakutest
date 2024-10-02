@@ -1,7 +1,13 @@
 
 use Test;
+plan 10;
+
 use Qt::QtWidgets::QRectF;
 use Qt::QtWidgets::QPointF;
+
+use Qt::QtWidgets::QApplication;
+my $app = QApplication.new;
+
 
 constant ε = 1e-10;
 
@@ -28,5 +34,5 @@ ok $y2 - $y1 - ε < $b.height < $y2 - $y1 + ε,  "height from ctor 2";
 ok $b.bottomLeft.x == $x1,      "x from bottomLeft";
 ok $b.bottomLeft.y == $y2,      "y from bottomLeft";
 
-done-testing;
+
 

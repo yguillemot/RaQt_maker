@@ -4,6 +4,9 @@ plan 6;
 
 use Qt::QtWidgets::QPoint;
 
+use Qt::QtWidgets::QApplication;
+my $app = QApplication.new;
+
 my $a = QPoint.new(100, 200);
 my $b = QPoint.new($a.x, $a.y);    # clone
 my $c = QPoint.new($a.address);

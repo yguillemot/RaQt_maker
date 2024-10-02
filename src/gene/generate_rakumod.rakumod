@@ -155,7 +155,10 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         $haveParents = True;
     }
     
-    if !$haveParents && !$noCtor {
+    if $subclassable {
+        $outm ~= "\n{IND}is QtObject";
+        @qRefs.push: "QtObject";
+    } elsif !$haveParents && !$noCtor {
         $outm ~= "\n{IND}is QtBase";
         @qRefs.push: "QtBase";
     }
@@ -260,7 +263,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                 #   Qt signature : qSignature($ctor, showDefault => True)
 
                     
-                if $v.isQObj {
+                if $v.isQObj || $subclassable {
                     # Declaration of the native subclass wrapper
                     $outn ~= "sub " ~ $wsclassname ~ $suffixCtor ~ $ctorNum
                                     ~ strNativeWrapperArgsDecl($ctor) ~ "\n";
@@ -347,7 +350,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
         $outm ~= IND ~ "}\n";  
         $outm ~= "\n";
         
-        if $v.isQObj {
+        if $v.isQObj || $subclassable {
             # Default Subroutine subclass ctor
             $outm ~= IND ~ 'multi sub subClassCtor(|capture) {' ~ "\n";
             $outm ~= IND x 2 ~ 'note "QtWidgets subclass ", ::?CLASS.^name,' ~ "\n";

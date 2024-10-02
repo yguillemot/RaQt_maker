@@ -66,7 +66,14 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
         # my Str $wsclassname = $prefixSubclassWrapper ~ $k; # Wrapper subclass name
         my Bool $hasCtor = False;
         my Bool $hasSubclassCtor = False;
-        my Bool $subclassable = ?vmethods($api, $k).elems; # $k is subclassable
+
+        # Formerly, only classes having or inheriting virtual methods
+        # were subclassable :
+        #    # $k is subclassable :
+        #        my Bool $subclassable = ?vmethods($api, $k).elems;
+        # But there is no reason that any class can't be subclassed excepted
+        # clazsses without any method (i.e. Qt, which only gathers enums).
+        my Bool $subclassable = ?$v.methods.elems;
 
         my Int $methodsCount = 0;   # Number of methods in class
 
@@ -98,7 +105,9 @@ sub whole_generator(API $api, %exceptions, $km = False) is export
             }
             $name ~= ($m.number ?? "_" ~ $m.number !! "");
 
-            if $m.name ~~ "ctor" && $v.isQObj && $subclassable {
+            # See comment about $subclassable above
+            #     if $m.name ~~ "ctor" && $v.isQObj && $subclassable {
+            if $m.name ~~ "ctor" && $subclassable {
                 $hasSubclassCtor = True;
             }
 

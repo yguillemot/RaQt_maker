@@ -1,8 +1,12 @@
 
 use Test;
+plan 10;
+
 use Qt::QtWidgets::QRect;
 use Qt::QtWidgets::QPoint;
 
+use Qt::QtWidgets::QApplication;
+my $app = QApplication.new;
 
 my ($x, $y, $w, $h) = 10, 22, 33, 55;
 my $a = QRect.new($x, $y, $w, $h);
@@ -27,5 +31,4 @@ ok $b.height == $y2 - $y1 + 1,  "height from ctor 2";
 ok $b.bottomLeft.x == $x1,      "x from bottomLeft";
 ok $b.bottomLeft.y == $y2,      "y from bottomLeft";
 
-done-testing;
 
