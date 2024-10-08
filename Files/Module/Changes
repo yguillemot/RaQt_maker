@@ -1,43 +1,8 @@
 v0.0.6  2024/??/??
 
-    * Add
-
-        QAbstractGraphicsShapeItem
-        QContextMenuEvent
-        QGraphicsEllipseItem
-        QGraphicsItem
-        QGraphicsLayoutItem
-        QGraphicsLineItem
-        QGraphicsObject
-        QGraphicsPathItem
-        QGraphicsPixmapItem
-        QGraphicsProxyWidget
-        QGraphicsRectItem
-        QGraphicsScene
-        QGraphicsSceneEvent
-        QGraphicsSceneMouseEvent
-        QGraphicsSimpleTextItem
-        QGraphicsTextItem
-        QGraphicsView
-        QGraphicsWidget
-        QKeyEvent
-        QLineF
-        QMainWindow
-        QMatrix
-        QMenuBar
-        QPainterPath
-        QPixmap
-        QRectF
-        QSizeF
-        QSizePolicy
-        QStatusBar
-       QTimerEvent
-        QToolBar
-        QToolButton
-#         QTransform
-
+    * Add new Qt classes (QGridLayout, QMainWindow, some QGraphics classes ...)
     * Add QGridLayout class
-    * Add a new example
+    * Add some new examples
     * Fix the deprecated use of method Str in class Distribution::Resource
     * Fix the definition of a QtSignal in a forward declared class
 

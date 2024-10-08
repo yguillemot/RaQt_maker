@@ -16,15 +16,18 @@ A Raku module and native wrapper providing an interface to the Qt5 GUI.
     - 4.5 Signals and slots  
     - 4.6 Connect  
     - 4.7 Disconnect  
-    - 4.8 Emit a QtSignal  
-    - 4.9 Subclassing a Qt object  
+    - 4.8 Emit a QtSignal__
+    - 4.9 Subclassing a Qt object__
 - 5\. EXAMPLES  
     - 5.1 clock_fixedSize.raku  
     - 5.2 clock_resizable.raku  
-    - 5.3 2deg_eqn_solver.raku  
+    - 5.3 2deg_eqn_solver.raku__
     - 5.4 sketch_board.raku  
     - 5.5 editor.raku  
     - 5.6 sliders.raku  
+    - 5.7 QMainWindow examples__
+    - 5.8 show_mouse_events.raku__
+    - 5.9 moving_objects.raku__
 - 6\. TOOL  
 - 7\. PREREQUISITES  
 - 8\. INSTALLATION  
@@ -294,6 +297,8 @@ my $label = MyLabel.new(txt => "text on the label");
 
 ## 5. EXAMPLES
 
+They are available in the **examples** directory of the distribution.
+
 ### 5.1 clock_fixedSize.raku
 
 A very simple clock displaying the current time.
@@ -330,6 +335,29 @@ A tiny text editor build with QTextEdit
 A demonstration of QSlider, QDial, QCheckBox and QRadioButton widgets.
 
 `raku examples/sliders.raku`
+
+### 5.7 QMainWindow examples
+
+editor_mv.raku and sketch_board_mw.raku are modifications of the previous
+editor and sketch_board examples which show how to use main window menus
+and status bar.
+
+`raku examples/editor_mw.raku`
+
+`raku examples/sketch_board_mw.raku`
+
+### 5.8 show_mouse_events.raku
+
+A small example which shows how to read mouse events.
+
+`raku examples/show_mouse_events.raku`
+
+### 5.9 moving_objects.raku
+
+An example showing how to create QGraphics objects and move them on
+a QGraphicsScene.
+
+`raku examples/moving_objects.raku`
 
 
 ## 6. TOOL
@@ -423,7 +451,7 @@ Yves Guillemot
 
 ## 11. COPYRIGHT AND LICENSE
 
-Copyright (C) 2021 Yves Guillemot
+Copyright (C) 2021-2024 Yves Guillemot
 
 This software is free: you can redistribute and/or modify it under
 the GNU General Public License as published by the Free Software
