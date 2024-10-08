@@ -124,6 +124,8 @@
 	QWidget::mapToGlobal(const QPoint&)
 	QWidget::mapToParent(const QPoint&)
 
+	QWidget::contentsRect()
+
     QPoint::ctor()
     QPoint::ctor(int, int)
     QPoint::x()
@@ -874,6 +876,14 @@
 	QGraphicsView::keyReleaseEvent(QKeyEvent*)
 	QGraphicsView::mapFromScene(const QPointF&)
 
+    QGraphicsView::fitInView(const QRectF&, Qt::AspectRatioMode)
+	QGraphicsView::fitInView(qreal, qreal, qreal, qreal, Qt::AspectRatioMode)
+	QGraphicsView::scene()
+	QGraphicsView::sceneRect()
+	QGraphicsView::setScene(QGraphicsScene*)
+	QGraphicsView::setSceneRect(const QRectF&)
+	QGraphicsView::setSceneRect(qreal, qreal, qreal, qreal)
+	QGraphicsView::sizeHint()
 
 	QGraphicsScene::ctor(QObject*)
 	QGraphicsScene::ctor(qreal, qreal, qreal, qreal, QObject*)
@@ -909,6 +919,7 @@
 	QGraphicsScene::height()
 	QGraphicsScene::width()
 	QGraphicsScene::sceneRect()
+
 
 	QGraphicsTextItem::ctor(QGraphicsItem*)
 	QGraphicsTextItem::ctor(const QString&, QGraphicsItem*)
@@ -963,6 +974,7 @@
 
 
 	QGraphicsItem::boundingRect()
+	QGraphicsItem::sceneBoundingRect()
 	QGraphicsItem::childrenBoundingRect()
 	QGraphicsItem::contains(const QPointF&)
 	QGraphicsItem::ctor(QGraphicsItem*)
@@ -980,3 +992,6 @@
 	QGraphicsItem::x()
 	QGraphicsItem::y()
 	QGraphicsItem::zValue()
+
+	QGraphicsItem::setParentItem(QGraphicsItem*)
+	# QGraphicsItem::scene()
