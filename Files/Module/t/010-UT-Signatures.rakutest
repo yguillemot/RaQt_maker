@@ -26,7 +26,7 @@ Slot additional arguments have default values
 method sgn3(Int $a, Str $b) is QtSignal { ... }
 method slt3(Int $x, Str $y, Bool $z = True) is QtSlot {  }
 connect($src, "sgn3", $dst, "slt3") should work : $z has a default value
-    The defaulted value must be imitted in the C++ Qt connect call :
+    The defaulted value must be omitted in the C++ Qt connect call :
         QObject::connect(src, SIGNAL(sgn3(int, QString)),
                          dst, SLOT(slt3(int, QString)));
 

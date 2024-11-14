@@ -182,7 +182,6 @@ The names of signal and slot are passed to connect in strings.
 The signal and slot must have compatible signatures.
 
 > TODO: explanations needed
-    
 
 Example:
 
@@ -291,8 +290,6 @@ class MyLabel is QLabel
 # Instantiation of the label in the main program :
 my $label = MyLabel.new(txt => "text on the label");
 ```
-
-
 
 
 ## 5. EXAMPLES
@@ -417,14 +414,18 @@ installed by **zef** along with the **Qt::QtWidgets** module.
  * Qt5 development package
  * C++ compiler
  
-This module has been tested with **Qt 5.9.4** and **gcc 5.5.0**
-and with **Qt 5.15.2** and **gcc 10.3.0**.  
+This module has been tested with **Qt 5.15.7** and **gcc 12.3.0**.
 Many other versions should be usable as well.
 
 
 ## 8. INSTALLATION
 
 `zef install Qt::QtWidgets`
+
+Warning: Given the many classes and methods provided, the
+installation may need several minutes.
+
+Please, be patient.
 
 
 ## 9. SOURCE CODE
