@@ -24,10 +24,11 @@ A Raku module and native wrapper providing an interface to the Qt5 GUI.
     - 5.3 2deg_eqn_solver.raku__
     - 5.4 sketch_board.raku  
     - 5.5 editor.raku  
-    - 5.6 sliders.raku  
-    - 5.7 QMainWindow examples__
-    - 5.8 show_mouse_events.raku__
-    - 5.9 moving_objects.raku__
+    - 5.6 sliders.raku
+    - 5.7 sudoku_grid.raku
+    - 5.8 QMainWindow examples__
+    - 5.9 show_mouse_events.raku__
+    - 5.10 moving_objects.raku__
 - 6\. TOOL  
 - 7\. PREREQUISITES  
 - 8\. INSTALLATION  
@@ -333,7 +334,13 @@ A demonstration of QSlider, QDial, QCheckBox and QRadioButton widgets.
 
 `raku examples/sliders.raku`
 
-### 5.7 QMainWindow examples
+### 5.7 sudoku_grids.raku
+
+A QGrid layout usage example.
+
+`raku examples/sudoku_grid.raku`
+
+### 5.8 QMainWindow examples
 
 editor_mv.raku and sketch_board_mw.raku are modifications of the previous
 editor and sketch_board examples which show how to use main window menus
@@ -343,13 +350,13 @@ and status bar.
 
 `raku examples/sketch_board_mw.raku`
 
-### 5.8 show_mouse_events.raku
+### 5.9 show_mouse_events.raku
 
 A small example which shows how to read mouse events.
 
 `raku examples/show_mouse_events.raku`
 
-### 5.9 moving_objects.raku
+### 5.10 moving_objects.raku
 
 An example showing how to create QGraphics objects and move them on
 a QGraphicsScene.
