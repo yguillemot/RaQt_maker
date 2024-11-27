@@ -211,6 +211,7 @@ sub MAIN ( #| C++ filtered header to read
         # Create the needed subdirectories
         mkdir CPPDIR;
         mkdir LIBDIR;
+        mkdir RESDIR;
         mkdir TESTSDIR;
         mkdir EXAMPLESDIR;
         mkdir BINDIR;
@@ -271,6 +272,9 @@ sub MAIN ( #| C++ filtered header to read
     for @examples -> $ex {
         copy $ex, EXAMPLESDIR ~ $ex.basename;
     }
+
+    # Create a fake (empty) provisional wrapper library file to please zef
+    spurt "{RESDIR}/lib{WRAPPERLIBNAME}.so", "";
     
     say "";
 

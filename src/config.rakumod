@@ -8,7 +8,7 @@ our constant GENEVERSION = "0.0.6";
 # Version of the produced code
 our constant MODNAME = "Qt::QtWidgets";
 our constant MODVERSION = "0.0.6";
-our constant MODAUTH = "cpan:YGUILLEMO";
+our constant MODAUTH = "zef:yguillemot";
 our constant MODAPI = "2";
 
 # Source repository
@@ -45,6 +45,8 @@ our constant $hppFile = "QtWidgetsWrapper.hpp";
 our constant $cppFile = "QtWidgetsWrapper.cpp";
 
 our constant WRAPPERLIBNAME = "RakuQtWidgets";
+
+our constant RESDIR = TARGETDIR ~ "resources/";
 
 our constant DOCDIR = TARGETDIR ~ "doc/Qt/QtWidgets/";
 our constant TITLEFILE = DOCDIR ~ "Title.md";

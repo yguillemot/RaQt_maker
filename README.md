@@ -205,11 +205,12 @@ but RaQt_maker will generate a working code from it.
 
 A repertory **module** should be generated in the top RaQt_maker directory.
 
-It should contain six already populated subdirectories:  
+It should contain seven already populated subdirectories:
 - bin  
 - doc  
 - examples  
 - lib  
+- resources__
 - src  
 - t  
 
