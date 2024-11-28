@@ -1,5 +1,5 @@
 
-# A tiny graphic editor
+# A tiny graphic editor inside a QMainWindow widget
 
 
 use Qt::QtWidgets;

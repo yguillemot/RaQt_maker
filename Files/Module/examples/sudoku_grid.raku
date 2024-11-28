@@ -97,7 +97,7 @@ class Cell is QWidget
         @cells[$!lig; $!col] = self;    # Copy reference in grid
     }
     
-    
+    # Called each time the cell needs to be drawn
     method paintEvent(QPaintEvent $ev)
     {
 

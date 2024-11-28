@@ -31,7 +31,7 @@ between the Qt version used to generate the module and the Qt version
 used when the module runs.
 
 The generator available in this repository should parse
-any Qt version prior to Qt 5.12.0.
+any Qt version prior to Qt 5.15.7.
 The produced module should work with any other Qt5 version being compatible
 with the selected classes/methods.
 
@@ -274,6 +274,7 @@ generated in the previous steps.
 
 `raku examples/sketch_board.raku`
 
+etc...
 
 
 ###  Part II: How to add new Qt classes/methods to RaQt 

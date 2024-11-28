@@ -1,5 +1,5 @@
-v0.0.6  2021/??/??
-    * Add QGridLayout class in the white list
+v0.0.6  2024/11/28
+    * Add new Qt classes (QGridLayout, QMainWindow, some QGraphics classes ...)
     * Add QBoxLayout stretch methods in the white list
     * Add sudoku example (related to QGridLayout)
     * Callbacks for overriden methods can now return some value

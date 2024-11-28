@@ -1,5 +1,5 @@
-v0.0.6  2024/??/??
-
+v0.0.6  2024/11/28
+    * Move to zef ecosystem
     * Add new Qt classes (QGridLayout, QMainWindow, some QGraphics classes ...)
     * Add QGridLayout class
     * Add some new examples
