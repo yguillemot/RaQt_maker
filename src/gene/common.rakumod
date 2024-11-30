@@ -931,7 +931,7 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
                 }
         }
     } else {
-        # Class $from not found : shoud not occured ???
+        # Class $from not found : shoud not occur ???
     }
 
     # Is type an enum ?
@@ -950,7 +950,7 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
             }
         }
     } else {
-        # Class $from not found : shoud not occured ???
+        # Class $from not found : shoud not occur ???
     }
 
     # Is type a composite (i.e. "QXXX<YYY>") ?
