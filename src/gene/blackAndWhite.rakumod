@@ -342,7 +342,7 @@ sub computeBlackAndWhiteObjects(API :$api, Str :$blackList, Str :$whiteList,
     LOOP: loop {
         say "Cycle : ", ++$cycle;
 
-        # Look for classes needed to be whitelisted
+        # Look for classes needing to be whitelisted
         my @selected = ();   # Where to remember these classes
         CBCL: for $api.qclasses.kv -> $k, $v {
             next CBCL unless $v.whiteListed;
