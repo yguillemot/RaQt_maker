@@ -5,9 +5,9 @@ use gene::natives;
 # Following Qt classes need a special processing and must not be
 # automatically implemented in a standard way.
 # If needed, their code may be directly defined in the template files.
-our constant $specialClasses = <
-    QObject QString
->.Set;
+our constant $specialClasses = (
+    'QObject', 'QString',
+).Set;
 our constant $uninstanciableClasses = <
     Qt
 >.Set;
@@ -90,6 +90,18 @@ role FinalType {
     method sayFinalType
     {   say "\t", $.ftot, " ", $.fclass, " : ", $.fbase, " ", $.fpostop, " ", $.fname;
     }
+
+    method showData(Str $indent --> Str)
+    {
+        my $out = "";
+        $out ~= $indent ~ "FT.ftot: " ~ $!ftot ~ "\n";
+        $out ~= $indent ~ "FT.fclass: " ~ $!fclass ~ "\n";
+        $out ~= $indent ~ "FT.fbase: " ~ $!fbase ~ "\n";
+        $out ~= $indent ~ "FT.fpostop: " ~ $!fpostop ~ "\n";
+        $out ~= $indent ~ "FT.fname: " ~ $!fname ~ "\n";
+        $out ~= $!subtype.showData($indent ~ "\t") if $!subtype;
+        return $out;
+    }
 }
 
 class SubType does FinalType { }
@@ -105,6 +117,17 @@ class Argument does FinalType {
     method say
     { say $.const, " ", $.base, " ", $.postop, " ", $.name;
       self.sayFinalType;
+    }
+
+    method showData(Str $indent --> Str)
+    {
+        my $out = "";
+        $out ~= $indent ~ "Arg.base: " ~ $!base ~ "\n";
+        $out ~= $indent ~ "Arg.postop: " ~ $!postop ~ "\n";
+        $out ~= $indent ~ "Arg.name: " ~ $!name ~ "\n";
+        $out ~= $indent ~ "Arg.value: " ~ $!value.gist ~ "\n";
+        $out ~= $indent ~ "Arg.const: " ~ $!const ~ "\n";
+        return $out;
     }
 }
 
@@ -152,6 +175,15 @@ class Ltype {
         $out ~= " " ~ $.postop if $.postop;
         return $out;
     }
+
+    method showData(Str $indent --> Str)
+    {
+        my $out = "";
+        $out ~= $indent ~ "LT.base: " ~ $!base ~ "\n";
+        $out ~= $indent ~ "LT.postop: " ~ $!postop ~ "\n";
+        $out ~= $indent ~ "LT.const: " ~ $!const ~ "\n";
+        return $out;
+    }
 }
 
 # #| Global type (Gather in the same object Raku, Native, C and Qt type)
@@ -194,10 +226,10 @@ class Typedef {
     has Str $.srcClass is default(""); # Where the typedef is defined
     has Ltype $.fType is rw;           # Final type where typedef points
     has Str $.fClass is rw is default("");   # Where $.ftype is defined
-    
+
     # "CLASS", "ENUM", "NATIVE", "COMPOSITE" or "UNKNOWN"
     has Str $.typeOfType is rw is default("???");
-    
+
     # SubType is only defined when typeOfType is "COMPOSITE"
     has Ltype $.subType is rw is default(Ltype);
     has Str $.subType-tot is rw is default(Str);
@@ -217,7 +249,13 @@ class Typedef {
 
 ##############################################################################
 
-class Rtype is Ltype does FinalType { }
+class Rtype is Ltype does FinalType {
+
+    method showData(Str $indent --> Str)
+    {
+        self.Ltype::showData($indent) ~ self.FinalType::showData($indent)
+    }
+}
 
 
 =begin pod
@@ -238,7 +276,17 @@ sub qPostop($arg --> Str) is export { $arg.postop }
 #| Return Qt type "const" attribute in a string
 sub qConst($arg --> Str) is export { $arg.const }
 
-sub cType($arg --> Str) is export
+sub issue(Str $nofail_msg, Str $die_msg, Bool $nofail  --> Str)
+    is hidden-from-backtrace
+{
+    if $nofail {
+        $nofail_msg
+    } else {
+        die $die_msg;
+    }
+}
+
+sub cType($arg, Bool :$nofail --> Str) is export
 {
     given $arg.ftot {
         when "CLASS" { "void" }
@@ -254,20 +302,29 @@ sub cType($arg --> Str) is export
                 when "QFlags" {
                     given $arg.subtype.ftot {
                         when "ENUM" { "int" }
-                        default { die "Subtype ", $arg.subtype.ftot, 
-                                                            " unsupported" }
+                        default {
+                            issue($arg.subtype.ftot ~ ":UNSUPPORTED",
+                                  "Subtype {$arg.subtype.ftot} unsupported",
+                                  $nofail);
+                        }
                     }
                 }
-                default { die "Composite ", $arg.fbase, " unsupported" }
+                default {
+                    issue($arg.fbase ~ ":UNSUPPORTED",
+                          "Composite {$arg.fbase} unsupported",
+                          $nofail);
+                }
             }
         }
         when "UNKNOWN" {
-            die "Looking for the C type of the unknown type ", $arg.base;
+            issue($arg.fbase ~ ":UNSUPPORTED",
+                  "Looking for the C type of the unknown type " ~ $arg.base,
+                  $nofail);
         }
     }
 }
 
-sub cPostop($arg --> Str) is export
+sub cPostop($arg, Bool :$nofail --> Str) is export
 {
     given $arg.ftot {
         when "CLASS" { "*" }
@@ -283,20 +340,29 @@ sub cPostop($arg --> Str) is export
                 when "QFlags" {
                     given $arg.subtype.ftot {
                         when "ENUM" { "" }
-                        default { die "Subtype ", $arg.subtype.ftot,
-                                                        " unsupported]" }
+                        default {
+                            issue("[$arg.subtype.ftot" ~ " unsupported]",
+                                  "Subtype {$arg.subtype.ftot} unsupported]",
+                                  $nofail);
+                        }
                     }
                 }
-                default { die "Composite ", $arg.fbase, " unsupported]" }
+                default {
+                    issue("[Composite {$arg.fbase} unsupported]",
+                          "[Composite {$arg.fbase} unsupported]",
+                          $nofail);
+                }
             }
         }
         when "UNKNOWN" {
-            die "Looking for the C postop of the unknown type ", $arg.base;
+            issue("UNKNOWN",
+                  "Looking for the C postop of the unknown type " ~ $arg.base,
+                  $nofail);
         }
     }
 }
 
-sub nType($arg --> Str) is export
+sub nType($arg, Bool :$nofail --> Str) is export
 {
     given $arg.ftot {
         when "CLASS" { "Pointer" }
@@ -312,25 +378,31 @@ sub nType($arg --> Str) is export
                 when "QFlags" {
                     given $arg.subtype.ftot {
                         when "ENUM" { "int32" }
-                        default { die "Subtype ", $arg.subtype.ftot,
-                                                        " unsupported]" }
+                        default {
+                            issue($arg.subtype.ftot ~ ":UNSUPPORTED",
+                                   "Subtype ", $arg.subtype.ftot, " unsupported",
+                                   $nofail);
+                        }
                     }
                 }
                 default { "[Composite " ~ $arg.fbase ~ " unsupported]" }
             }
         }
         when "UNKNOWN" {
-            die "Looking for the native type of the unknown type ", $arg.base;
+            issue("UNKNOWN",
+                  "Looking for the native type of the unknown type " ~ $arg.base,
+                  $nofail);
         }
     }
 }
 
 # When $useRole is True, the role prefix is added to the name of classes
-# When $noEnum is True, the rnum types are replaced with "Int" 
+# When $noEnum is True, the rnum types are replaced with "Int"
 sub rType($arg,
           Bool :$markers = False,
           Bool :$forceRole = False,
-          Bool :$noEnum = False
+          Bool :$noEnum = False,
+          Bool :$nofail
           --> Str) is export
 {
     my Str ($prefix, $postfix) = $forceRole ?? ("R", "")
@@ -357,15 +429,20 @@ sub rType($arg,
                                       #                  ~ $arg.subtype.fbase
                                       "Int"    # Avoid conversion problems
                                     }
-                        default { die "Subtype ", $arg.subtype.ftot,
-                                                        " unsupported]" }
+                        default {
+                            issue("[Subtype {$arg.subtype.ftot} unsupported]",
+                                  "Subtype {$arg.subtype.ftot} unsupported",
+                                  $nofail);
+                        }
                     }
                 }
                 default { "[Composite " ~ $arg.fbase ~ " unsupported]" }
             }
         }
         when "UNKNOWN" {
-            die "Looking for the Raku type of the unknown type ", $arg.base;
+            issue("UNKNOWN",
+                  "Looking for the Raku type of the unknown type {$arg.base}",
+                  $nofail);
         }
     }
 }
@@ -434,7 +511,7 @@ class Function does Validation {
     has Bool $.isSlot is default(False);
     has Bool $.isSignal is default(False);
         # isSlot and isSignal are mutually exclusive
-        
+
     has Bool $.isPrivateSignal is rw is default(False);
         # Only significant if $.isSignal is True
 
@@ -473,23 +550,23 @@ class Function does Validation {
             $.returnType.fbase = $ltype.base;
             $.returnType.fpostop = $ltype.postop;
             $.returnType.fname = "retVal";        # Should never be used
-            
+
             if $tot ~~ "COMPOSITE" {
-            
+
                 if !$subtype {
-                    note "While processing method ", $.name; 
+                    note "While processing method ", $.name;
                     note "Return type : class : $cl, type : ", $ltype.str;
                     die "Type is COMPOSITE but subtype is undefined";
                 }
-                
+
                 my ($stot, $scl, $sltype) = $subtype;
-                
+
                 if $stot ~~ "COMPOSITE" {
-                    note "While processing method ", $.name; 
+                    note "While processing method ", $.name;
                     note "Return type : class : $cl, type : ", $ltype.str;
                     die "More than one level of COMPOSITE type is not allowed";
                 }
-                
+
                 $.returnType.subtype = SubType.new;
                 $.returnType.subtype.ftot = $stot;
                 $.returnType.subtype.fclass = $scl;
@@ -511,23 +588,23 @@ class Function does Validation {
             # TODO: We should know if it is "" or "???" and simplify next line
             $a.fname = ($a.name ne "" && $a.name ne "???") ??
                                                 $a.name !! "arg$count";
-                                                
+
             if $tot ~~ "COMPOSITE" {
-            
+
                 if !$subtype {
-                    note "While processing method ", $.name, ", arg ", $a.name; 
+                    note "While processing method ", $.name, ", arg ", $a.name;
                     note "class : $cl, type : ", $ltype.str;
                     die "Type is COMPOSITE but subtype is undefined";
                 }
-                
+
                 my ($stot, $scl, $sltype) = $subtype;
-                
+
                 if $stot ~~ "COMPOSITE" {
-                    note "While processing method ", $.name, ", arg ", $a.name; 
+                    note "While processing method ", $.name, ", arg ", $a.name;
                     note "Return type : class : $cl, type : ", $ltype.str;
                     die "More than one level of COMPOSITE type is not allowed";
                 }
-                
+
                 $a.subtype = SubType.new;
                 $a.subtype.ftot = $stot;
                 $a.subtype.fclass = $scl;
@@ -742,7 +819,7 @@ sub cRetType(Function $f --> Str) is export
 }
 
 
-#| Return the C return type a method would have without bufferisation 
+#| Return the C return type a method would have without bufferisation
 sub cRawRetType(Function $f --> Str) is export
 {
     trim(cType($f.returnType) ~ " " ~ cPostop($f.returnType))
@@ -753,7 +830,7 @@ sub cRawRetType(Function $f --> Str) is export
 # $showObjectPointer : if true the signature starts with the object pointer
 #                      when needed (i.e. when the method is not a ctor)
 #             Note: If the function needs a return buffer, the buffer address
-#                   is the first parameter and the object pointer is the 
+#                   is the first parameter and the object pointer is the
 #                   second one.
 # $showCIdx : if true AND IF $showObjectPointer is true, add the caller
 #             index parameter immediately after the object pointer.
@@ -856,7 +933,7 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
 {
     # Always look for special first to correctly discovered special Qt class
     # which should not be processed like classes (i.e. QString)
-   
+
     # Is type special ?
     my $nt = specialType($type.base);
     if $nt {
@@ -957,18 +1034,18 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
     if $type.base ~~ /^ (\w+) '<' (\w+) '>' $/ {
         my $template = ~$0;
         my $arg = ~$1;
-        
+
         # say " COMPOSITE : ", $type.base, " template=$template, arg=$arg";
         # say "   from=$from";
-        
-        my @argft = finalTypeOf(:$api, :$from, 
+
+        my @argft = finalTypeOf(:$api, :$from,
                               type => Ltype.new(base => $arg, postop => ''));
-                              
+
         # say @argft[0], " ", @argft[1], '::', @argft[2];
-        
+
         return ("COMPOSITE", $from, Ltype.new(base => $template), @argft);
     }
-     
+
     # Found nothing
     return ("UNKNOWN", $from, $type);
 }

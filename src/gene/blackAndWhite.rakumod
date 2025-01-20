@@ -80,6 +80,7 @@ sub computeBlackAndWhiteObjects(API :$api, Str :$blackList, Str :$whiteList,
 
         for $qclass.parents -> $cl {
             if $api.qclasses{$cl}:!exists {
+ say "YG UNKNOWN 1: '$cl'";
                 $qclass.blackListed = True;
                 last;
             }
@@ -93,12 +94,14 @@ sub computeBlackAndWhiteObjects(API :$api, Str :$blackList, Str :$whiteList,
             my @types = ();
             if $m.name ne "ctor" {
                 if $m.returnType.ftot ~~ "UNKNOWN" {
+ say "YG UNKNOWN 2: '", $m.returnType.base, "'";
                     $m.blackListed = True;
                     next MLOOP;
                 }
             }
             for $m.arguments -> $a {
                 if $a.ftot ~~ "UNKNOWN" {
+ say "YG UNKNOWN 3: '", $a.base, "'";
                     $m.blackListed = True;
                     next MLOOP;
                 }
