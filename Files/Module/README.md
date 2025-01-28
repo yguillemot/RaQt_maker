@@ -363,6 +363,11 @@ a QGraphicsScene.
 
 `raku examples/moving_objects.raku`
 
+### 5.11 show_dialog.raku
+
+An example of a popup dialog to enter some data
+
+`raku examples/show_dialog.raku`
 
 ## 6. TOOL
 

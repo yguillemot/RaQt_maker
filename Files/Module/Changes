@@ -1,5 +1,5 @@
 v0.0.7  2025/01/29
-    * Fix a bug rising with some C++ virtual methods
+    * Fix a bug rising when some Qt C++ virtual methods are used
     * Add QDialog class
     * Add a QDialog example
 
