@@ -6,6 +6,7 @@ use gene::common;
 use gene::parser;
 use gene::natives;
 use gene::blackAndWhite;
+use gene::virtual;
 use gene::output;
 use gene::exceptions;
 use gene::rmDirContent;
@@ -186,6 +187,10 @@ sub MAIN ( #| C++ filtered header to read
         say "--generate not specified on the command line => No code generation";
     } else {
         # Process generation
+
+        # Enforce inheritance of the virtual specifier
+        say "Propagate the \"virtual\" specifier";
+        propagateVirtual($api);
 
         # Read the exceptions
         say "Reading exceptions...";

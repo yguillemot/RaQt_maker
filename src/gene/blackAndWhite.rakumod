@@ -406,7 +406,6 @@ sub computeBlackAndWhiteObjects(API :$api, Str :$blackList, Str :$whiteList,
             last LOOP;
         }
     }
-    
 
 }
 
@@ -442,4 +441,6 @@ sub markEnums(API $api) is export
         }
     }
 }
+
+
 

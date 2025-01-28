@@ -3,11 +3,11 @@
 # Module info
 
 # Version of the generator
-our constant GENEVERSION = "0.0.6";
+our constant GENEVERSION = "0.0.7";
 
 # Version of the produced code
 our constant MODNAME = "Qt::QtWidgets";
-our constant MODVERSION = "0.0.6";
+our constant MODVERSION = "0.0.7";
 our constant MODAUTH = "zef:yguillemot";
 our constant MODAPI = "2";
 

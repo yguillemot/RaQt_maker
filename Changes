@@ -1,3 +1,8 @@
+v0.0.7  2025/01/29
+    * Propagate the C++ virtual modifier to overriding methods (fix a bug).
+    * Add QDialog class in the white list
+    * Add a QDialog example
+
 v0.0.6  2024/11/28
     * Add new Qt classes (QGridLayout, QMainWindow, some QGraphics classes ...)
     * Add QBoxLayout stretch methods in the white list
