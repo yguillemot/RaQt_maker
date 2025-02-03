@@ -437,23 +437,12 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
 
     for $v.methods -> $m {
 
-    #YGYGYG
-    say "YGYGYG $k::", $m.name, ($m.isVirtual ?? " virtual " !! " "), qRet($m);
-
         next if $m.blackListed || !$m.whiteListed;
         next if $m.isSignal || $m.name ~~ "ctor";
 
         next if $m.isVirtual && qRet($m) eq "void" && !$m.isSlot;
                                             # !$m.isSlot since v0.0.5
                                             # qRet($m) eq "void" since v0.0.7
-
-#         next if $m.isVirtual && !$m.isSlot;     # !$m.isSlot since v0.0.5
-
-#         say "YGYGYG cond = ", ?($m.isVirtual && !($m.isSlot || qRet($m) !eq "void"));
-#         next if $m.isVirtual && (!$m.isSlot || qRet($m) !eq "void"); # NEWYGYGYG
-            # !$m.isSlot since v0.0.5
-            # qRet($m) eq "void" since v0.0.7
-
         say "Generate method ", $m.name;
 
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, :!showNames);
