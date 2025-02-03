@@ -192,6 +192,14 @@ sub MAIN ( #| C++ filtered header to read
         say "Propagate the \"virtual\" specifier";
         propagateVirtual($api);
 
+        ##########################################################################
+        # Creation of the api2.lst file
+        # (like api.lst, but with inherited virtual specifiers)
+        say "Creation of the api2.lst file";
+        dump_api($api, "api2.lst");
+        say "";
+        say "";
+
         # Read the exceptions
         say "Reading exceptions...";
         my %excpt = read_exceptions("gene/Exceptions");

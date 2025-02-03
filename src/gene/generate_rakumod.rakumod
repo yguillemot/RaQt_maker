@@ -290,7 +290,7 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
                     $outm ~= "\n";
 
         # TODO???: Move this code after the loop rather than to use "next"
-                    # Only defined once the validation method and its wrapper
+                    # Defined the validation method and its wrapper only once
                     next CTORLOOP if $cbv_already_declared;
                     $cbv_already_declared = True;
 
@@ -315,9 +315,9 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     
         # Add the submethod "new" creating a Raku object from an existent
         # Qt one.
-        # The $obr named argument is here to allow working in the case
-        # the Qt object has been created on the stack and a copy on the
-        # heap of this object has been done in the native wrapper,
+        # The $obr (Owned By Raku) named argument is here to allow working
+        # in the case the Qt object has been created on the stack and a copy
+        # on the heap of this object has been done in the native wrapper,
         # creating an object owned by Raku from an object owned by Qt.
         #
         # Note : Pointer type must be "NativeCall::Types::Pointer".
@@ -436,11 +436,25 @@ sub generate_rakumod(Str $k, Qclass $v, %c, %exceptions,
     # Generate methods and slots
 
     for $v.methods -> $m {
+
+    #YGYGYG
+    say "YGYGYG $k::", $m.name, ($m.isVirtual ?? " virtual " !! " "), qRet($m);
+
         next if $m.blackListed || !$m.whiteListed;
         next if $m.isSignal || $m.name ~~ "ctor";
-        next if $m.isVirtual && !$m.isSlot;     # !$m.isSlot since v0.0.5
-        
-#         say "Generate method ", $m.name;
+
+        next if $m.isVirtual && qRet($m) eq "void" && !$m.isSlot;
+                                            # !$m.isSlot since v0.0.5
+                                            # qRet($m) eq "void" since v0.0.7
+
+#         next if $m.isVirtual && !$m.isSlot;     # !$m.isSlot since v0.0.5
+
+#         say "YGYGYG cond = ", ?($m.isVirtual && !($m.isSlot || qRet($m) !eq "void"));
+#         next if $m.isVirtual && (!$m.isSlot || qRet($m) !eq "void"); # NEWYGYGYG
+            # !$m.isSlot since v0.0.5
+            # qRet($m) eq "void" since v0.0.7
+
+        say "Generate method ", $m.name;
 
         my $exk = $k ~ '::' ~ $m.name ~ qSignature($m, :!showNames);
         if %exceptions{$exk}{'rakumod'}:exists {

@@ -106,8 +106,9 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
         my Bool $overriding = %virtuals{$m.name}:exists;
         # TODO : Maybe the signature of the method should be tested
 
-        next MLOOP if $overriding && !$m.isSlot;
+        next MLOOP if $overriding && !$m.isSlot && qRet($m) eq "void";
                                             # v0.0.5: added exception for slots
+                                            # v0.0.7: added qRet($m) eq "void"
 
         next MLOOP if $m.isProtected;
         # Probably an overriding method whose virtual parent is not in the
