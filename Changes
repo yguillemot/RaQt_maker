@@ -1,3 +1,6 @@
+v0.0.8  2025/??/??
+    * TODO: Working on lists...
+
 v0.0.7  2025/02/04
     * Propagate the C++ virtual modifier to overriding methods (fix a bug).
     * Add QDialog class in the white list
