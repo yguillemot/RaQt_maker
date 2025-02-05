@@ -20,7 +20,7 @@ method build($workdir) {
     my $makefiledir = "$workdir/src";
     my $destdir = "$workdir/resources";
 
-    shell("cd $makefiledir && qmake RakuQtWidgets.pro && make");
+    shell("cd $makefiledir && qmake RakuQtWidgets.pro && make -j {Kernel.cpu-cores}");
     shell("cp $makefiledir/libRakuQtWidgets.so.1.0.0 $destdir/libRakuQtWidgets.so");
 
 }

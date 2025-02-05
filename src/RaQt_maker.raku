@@ -47,6 +47,10 @@ sub MAIN ( #| C++ filtered header to read
 
     my API $api = parser($fileName);
 
+#      $api.qclasses<QList> = Qclass.new(name => "Titi");
+#
+#     say "YGYGYG : ", $api.qclasses<QList>;
+
     # Look for abstract classes
     for $api.qclasses.kv -> $k, $v {
         my Bool $pure =  False;
@@ -116,7 +120,7 @@ sub MAIN ( #| C++ filtered header to read
     ##########################################################################
     # Creation of the api.lst file
     say "Creation of the api.lst file";
-    dump_api($api, "api.lst");
+    dump_api($api, "api.lst") :very :verbose;
     say "";
     say "";
 

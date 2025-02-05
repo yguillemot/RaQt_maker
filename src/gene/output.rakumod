@@ -2,13 +2,15 @@ use gene::common;
 
 ###############################################################################
 # Dump the whole API $api in the file $output_file
-sub dump_api(API $api, Str $output_file) is export
+sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
 {
     # Plural form suffix
     sub s($n) { $n > 1 ?? "s" !! "" }
     sub ren($n) { $n > 1 ?? "ren" !! "" }
 
     my $out = "";
+
+    { print "DUMP_API: "; print "VERY " if $very; say "VERBOSE"; } if $verbose;
 
     my $nbt = $api.topTypedefs.keys.elems;
     if $nbt {
@@ -90,18 +92,30 @@ sub dump_api(API $api, Str $output_file) is export
             }
         }
 
-        sub show(@methods, $category --> Str) {
+        sub show(@methods, $category, Bool :$very, Bool :$verbose --> Str) {
             my $out = "";
             my $n = @methods.elems;
             if $n {
                 $out ~= "\t$n $category&s($n) :\n";
                 for @methods -> $m {
-                    $out ~= "\t\t";
+                    $out ~= "~~~~~~~ ";
+                    # $out ~= "\t\t";
                     $out ~= $m.returnType.str ~ " " unless $m.name eq "ctor";
                     $out ~= $m.name;
                     $out ~= " [virtual]" if $m.isVirtual;
                     $out ~= "\n";
                     $out ~= "\t\t\t" ~ qSignature($m, showDefault => True) ~ "\n";
+                    if $verbose {
+  say "METHOD : ", $m;
+                        $out ~= show_verbose(0, $m.returnType)
+                                                        unless $m.name eq "ctor";
+                        { $out ~= dumpArg($m.returnType)
+                                    unless $m.name eq "ctor"; } if $very;
+                        for (1..*) Z $m.arguments -> ($n, $a) {
+                            $out ~= show_verbose($n, $a);
+                            $out ~= dumpArg($a) if $very;
+                        }
+                    }
                 }
             }
             return $out;
@@ -111,7 +125,7 @@ sub dump_api(API $api, Str $output_file) is export
         $out ~= show(@slots, "slot");
         $out ~= show(@signals, "signal");
         $out ~= show(@virtuals, "virtual method");
-        $out ~= show(@meths, "method");
+        $out ~= show(@meths, "method") :$very :$verbose;
         $out ~= show(@statics, "static method");
         $out ~= show(@prots, "protected method");
 
@@ -426,7 +440,7 @@ sub show_types_2(API $api) is export
             }
 
             for (1..*) Z $m.arguments -> ($n, $a) {
-                show(1, $a);
+                show($n, $a);
             }
         }
 
@@ -448,4 +462,24 @@ sub show_types_2(API $api) is export
 }
 
 
+    sub show_verbose($n, $data --> Str)
+    {
+        my $out = "";
+        $out ~= "\t$n : " ~
+                $data.ftot.gist ~ "\t" ~ $data.base.gist ~ $data.postop ~ " : " ~
+                $data.fclass.gist ~ ":: " ~ $data.fbase.gist ~ $data.fpostop ~
+                " (" ~ $data.fname.gist ~ ")\n";
+        $out ~= "\t\tQType = " ~ qType($data) ~ " " ~ qPostop($data) ~ "\n";
+        $out ~= "\t\tCType = " ~ cType($data, :nofail) ~ " "
+                               ~ cPostop($data, :nofail) ~ "\n";
+        $out ~= "\t\tNType = " ~ nType($data, :nofail) ~ "\n";
+        $out ~= "\t\tRType = " ~ rType($data, :nofail) ~ "\n";
+        return $out;
+    }
 
+    # $x is Argument or is Rtype
+    sub dumpArg($x --> Str)
+    {
+#          "DUMPARG !\n";
+        $x.showData("\t\t");
+    }

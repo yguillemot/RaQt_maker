@@ -40,8 +40,21 @@ sub parser(Str $fileName --> API) is export
     say '';
     say "Parsing done";
     
+    #YGYGYG Pourquoi utiliser %c ???
+    # SI C'EST JUSTE POUR SIMPLIFIER L'ECRITURE, IL VAUDRAIT
+    # MIEUX UTILISER ":=" PLUTOT QUE "="
     my %c = $match.made.qclasses;
 
+
+    # Add special classes if needed    !!!YGYGYG ESSAI DOUTEUX
+    for $specialClasses.keys -> $sc {
+        next if $match.made.qclasses{$sc}:exists;
+        $match.made.qclasses{$sc} = Qclass.new: name => $sc;
+    }
+#     %c{"QList"} = Qclass.new(name => "Toto");
+#
+#     say "YGYGYG!!! ", $match.made.qclasses{"QList"};
+#     say "YGYGYG??? ", %c{"QList"};
 
     # Add a number to disambiguate methods sharing the same name
     for %c.kv -> $k, $v {

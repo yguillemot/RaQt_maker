@@ -572,6 +572,20 @@ class qtClassesActions is export {
 # token extended_value
 # token empty_list
 
+# rule containertypename
+# rule key
+
+    method simplecontainer($/)
+    {
+        make $/.Str;
+    }
+
+    method associativecontainer($/)
+    {
+        make $/.Str;
+    }
+
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Arithmetic associated with the values of enums
 

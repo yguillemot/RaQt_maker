@@ -159,7 +159,10 @@ grammar qtClasses is export {
 
 
 
-    rule completetypename { <simpletypename> || <complextypename> }
+    rule completetypename { || <simpletypename>
+                            || <containertypename>
+                            || <complextypename>
+                          }
     token qualifiedname { [<name> ['::' <name>]*] || [<name>? ['::' <name>]+] }
     rule complextypename {
         || [<name> <angleblock> '::' <name>]
@@ -216,6 +219,28 @@ grammar qtClasses is export {
     token extended_value { <[a..zA..Z_0..9\.\(\)|\<\>\&\:\=\+\-\?\*\\\'\ \~]>+ }
 
     token empty_list { '{' '}' }
+
+    rule containertypename {
+        || [ <simplecontainer> '<' <name> <typePostop>? '>' ]
+        || [ <associativecontainer> '<' <key> ',' <name> <typePostop>? '>' ]
+    }
+
+    rule key { <name> }
+
+    token simplecontainer { || 'QList'
+                            || 'QLinkedList'
+                            || 'QVector'
+                            || 'QStack'
+                            || 'QQueue'
+                            || 'QSet'
+                          }
+
+    token associativecontainer { || 'QMap'
+                                 || 'QMultiMap'
+                                 || 'QHash'
+                                 || 'QMultiHash'
+                               }
+
     
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # Arithmetic associated with the enum value
