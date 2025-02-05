@@ -87,17 +87,25 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
         }
 
         # Gather methods
-        my @mlist;
+        my %mlist;
         my Bool $hasCtor = False;
         MLOOP0: for $v.methods -> $m {
             next MLOOP0 if !$m.whiteListed || $m.blackListed;
-            @mlist.push(KnownMethods.new(meth => $m, from => Str));
+            my $key = $m.name ~ rSignature($m);
+            # Duplicates are automatically removed
+            %mlist{$key} = KnownMethods.new(meth => $m, from => Str);
             $hasCtor = True if $m.name ~~ "ctor";
         }
         for $v.ancestors -> $a {
             MLOOP1: for %c{$a}.methods -> $m {
                 next MLOOP1 if !$m.whiteListed || $m.blackListed;
-                @mlist.push(KnownMethods.new(meth => $m, from => $a));
+
+                # If a method is already in @mlist, the method is overrided
+                #   ==> Don't insert it
+                my $key = $m.name ~ rSignature($m);
+                if %mlist{$key}:!exists {
+                    %mlist{$key} = KnownMethods.new(meth => $m, from => $a);
+                }
             }
         }
 
@@ -109,7 +117,7 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
         }
 
         # Loop on methods
-        MLOOP: for @mlist.sort: { .meth.name } -> $mth {
+        MLOOP: for %mlist.values.sort: { .meth.name } -> $mth {
 
             my $m = $mth.meth;
             my $methodName = $m.name;
@@ -192,7 +200,11 @@ sub doc_generator(API :$api, :%exceptions, Bool :$list = False) is export
             }
 
             $out ~= "\n\t" ~ $qualifiers if $qualifiers ne "";
-            $out ~= "\n\tcalls Qt method " ~ $qmeth ~ "\n\n";
+            if $m.isVirtual {
+                $out ~= "\n\tcalled as Qt method " ~ $qmeth ~ "\n\n";
+            } else {
+                $out ~= "\n\tcalls Qt method " ~ $qmeth ~ "\n\n";
+            }
             $outList ~= LSEP ~ $lqmeth ~ "\n" if $list;
         }
 

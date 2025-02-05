@@ -365,6 +365,12 @@ sub rType($arg,
             }
         }
         when "UNKNOWN" {
+
+            # TODO: Error when calling rSignature() in propagateVirtual()
+            # Here is a provisional hack to fix the issue before I find
+            # a clean  way to get rid of that WId type.
+            if $arg.base eq "WId" { return "?XXX?" }
+
             die "Looking for the Raku type of the unknown type ", $arg.base;
         }
     }
@@ -439,7 +445,7 @@ class Function does Validation {
         # Only significant if $.isSignal is True
 
     has Bool $.isStatic is default(False);
-    has Bool $.isVirtual is default(False);
+    has Bool $.isVirtual is rw is default(False);
         # isStatic and isVirtual are mutually exclusive
 
     has Bool $.isPureVirtual is default(False);
@@ -545,8 +551,8 @@ class Function does Validation {
 
 # Return all the available signatures that a function may have
 # when its arguments having default values are removed.
-# Signatures are returned through a list of minimalist Function
-# where only arguments are defines.
+# Signatures are returned through a list of minimalist Functions
+# where only arguments are defined.
 sub availableSignatures(Function $f --> List) is export
 {
     my @a = $f.arguments;
@@ -814,6 +820,10 @@ sub rSignature(Function $f,
                Bool :$forceRole = False,
                Bool :$noEnum = False --> Str) is export
 {
+
+    # say "------------\nrSignature :";
+    # $f.say;
+
     my Str $out = "";
     my $sep = "";
     for $f.arguments -> $a {

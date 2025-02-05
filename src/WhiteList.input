@@ -437,8 +437,6 @@
 	QFileDialog::getOpenFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)
 	QFileDialog::getSaveFileName(QWidget*, const QString&, const QString&, const QString&, QString*, Options)	
 	
-    QDialog::exec()
-	
 	QMessageBox::ctor(QWidget*)
 	QMessageBox::setInformativeText(const QString&)
 	QMessageBox::setStandardButtons(StandardButtons)
@@ -995,3 +993,59 @@
 
 	QGraphicsItem::setParentItem(QGraphicsItem*)
 	# QGraphicsItem::scene()
+
+
+# Version 0.0.7
+
+	QDialog::accept()
+	QDialog::accepted()
+	QDialog::adjustPosition(QWidget*)
+	QDialog::closeEvent(QCloseEvent*)
+
+	QDialog::ctor(QWidget*, Qt::WindowFlags)
+	QDialog::done(int)
+
+	QDialog::exec()
+	QDialog::extension()
+	QDialog::finished(int)
+	QDialog::isSizeGripEnabled()
+	QDialog::keyPressEvent(QKeyEvent*)
+	QDialog::minimumSizeHint()
+	QDialog::open()
+	QDialog::orientation()
+	QDialog::reject()
+	QDialog::rejected()
+	QDialog::resizeEvent(QResizeEvent*)
+	QDialog::result()
+	QDialog::setExtension(QWidget*)
+	QDialog::setModal(bool)
+	QDialog::setOrientation(Qt::Orientation)
+	QDialog::setResult(int)
+	QDialog::setSizeGripEnabled(bool)
+	QDialog::setVisible(bool)
+
+
+QDialogButtonBox
+
+	QDialogButtonBox::accepted()
+	QDialogButtonBox::addButton(QAbstractButton*, ButtonRole)
+	QDialogButtonBox::addButton(const QString&, ButtonRole)
+	QDialogButtonBox::addButton(StandardButton)
+	QDialogButtonBox::button(StandardButton)
+	QDialogButtonBox::buttonRole(QAbstractButton*)
+	QDialogButtonBox::centerButtons()
+
+	QDialogButtonBox::clear()
+	QDialogButtonBox::clicked(QAbstractButton*)
+	QDialogButtonBox::ctor(QWidget*)
+	QDialogButtonBox::ctor(Qt::Orientation, QWidget*)
+	QDialogButtonBox::ctor(StandardButtons, QWidget*)
+	QDialogButtonBox::ctor(StandardButtons, Qt::Orientation, QWidget*)
+
+	QDialogButtonBox::orientation()
+	QDialogButtonBox::rejected()
+	QDialogButtonBox::removeButton(QAbstractButton*)
+	QDialogButtonBox::setCenterButtons(bool)
+	QDialogButtonBox::setOrientation(Qt::Orientation)
+	QDialogButtonBox::setStandardButtons(StandardButtons)
+	QDialogButtonBox::standardButton(QAbstractButton*)

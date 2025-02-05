@@ -98,7 +98,9 @@ sub dump_api(API $api, Str $output_file) is export
                 for @methods -> $m {
                     $out ~= "\t\t";
                     $out ~= $m.returnType.str ~ " " unless $m.name eq "ctor";
-                    $out ~= $m.name ~ "\n";
+                    $out ~= $m.name;
+                    $out ~= " [virtual]" if $m.isVirtual;
+                    $out ~= "\n";
                     $out ~= "\t\t\t" ~ qSignature($m, showDefault => True) ~ "\n";
                 }
             }
