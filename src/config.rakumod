@@ -58,6 +58,8 @@ our constant EXAMPLESDIR = TARGETDIR ~ "examples/";
 
 our constant BINDIR = TARGETDIR ~ "bin/";
 
+our constant WORKFLOWSDIR = TARGETDIR ~ ".github/workflows/";
+
 our constant METHODS_LIST = BASEDIR ~ "methodsList.txt";
 
 ############

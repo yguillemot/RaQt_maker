@@ -1,3 +1,6 @@
+[![Actions Status](https://github.com/yguillemot/RAQt_CI_Test/actions/workflows/linux.yml/badge.svg)](https://github.com/yguillemot/RAQt_CI_Test/actions)
+
+
 Qt::QtWidgets
 =============
 

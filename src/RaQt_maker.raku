@@ -233,6 +233,7 @@ sub MAIN ( #| C++ filtered header to read
         mkdir EXAMPLESDIR;
         mkdir BINDIR;
         mkdir DOCDIR;
+        mkdir WORKFLOWSDIR;
 
         # Generate the files
         whole_generator($api, %excpt, $keepMarks);
@@ -292,6 +293,12 @@ sub MAIN ( #| C++ filtered header to read
 
     # Create a fake (empty) provisional wrapper library file to please zef
     spurt "{RESDIR}/lib{WRAPPERLIBNAME}.so", "";
+
+    # Copy the workflows files in the target directory
+    my @workflows = dir "../Files/Module/workflows";
+    for @workflows -> $wf {
+        copy $wf, WORKFLOWSDIR ~ $wf.basename;
+    }
     
     say "";
 
