@@ -3,7 +3,7 @@
 
 # use Grammar::Tracer;
 # no precompilation;     # Work around 'Internal "Cannot invoke this object"
-                         # error #42' when using Grammar::Tracer
+#                        # error #42' when using Grammar::Tracer
 
 
 
@@ -239,6 +239,7 @@ grammar qtClasses is export {
                                  || 'QMultiMap'
                                  || 'QHash'
                                  || 'QMultiHash'
+                                 || 'QPair'
                                }
 
     

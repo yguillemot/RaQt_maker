@@ -106,7 +106,6 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
                     $out ~= "\n";
                     $out ~= "\t\t\t" ~ qSignature($m, showDefault => True) ~ "\n";
                     if $verbose {
-  say "METHOD : ", $m;
                         $out ~= show_verbose(0, $m.returnType)
                                                         unless $m.name eq "ctor";
                         { $out ~= dumpArg($m.returnType)
@@ -121,13 +120,13 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
             return $out;
         }
 
-        $out ~= show(@ctors, "ctor");
-        $out ~= show(@slots, "slot");
-        $out ~= show(@signals, "signal");
+        $out ~= show(@ctors, "ctor") :$very :$verbose;
+        $out ~= show(@slots, "slot") :$very :$verbose;
+        $out ~= show(@signals, "signal") :$very :$verbose;
         $out ~= show(@virtuals, "virtual method");
         $out ~= show(@meths, "method") :$very :$verbose;
-        $out ~= show(@statics, "static method");
-        $out ~= show(@prots, "protected method");
+        $out ~= show(@statics, "static method") :$very :$verbose;
+        $out ~= show(@prots, "protected method") :$very :$verbose;
 
         $out ~= "\n";
     }
@@ -331,6 +330,68 @@ sub outputFinal(
 ###############################################################################
 # Dump types used by methods
 
+# If $white, only process whitelisted classes and methods
+sub dump_all_types(API $api, Bool :$white = False) is export
+{
+
+    my Str $out;
+
+    QCLASS: for $api.qclasses.kv -> $k, $v {
+        next QCLASS if ($v.blackListed || !$v.whiteListed) && $white;
+
+        METHOD: for $v.methods -> $m {
+            next METHOD if ($m.blackListed || !$m.whiteListed) && $white;
+
+            if $m.name !~~ "ctor" {
+               $out ~= process($m.returnType) ~ "\n";
+            }
+
+            for $m.arguments -> $a {
+               $out ~= process($a) ~ "\n";
+            }
+        }
+
+    }
+
+    spurt "RAW_TYPES.txt", $out;
+
+    # $t is Rtype or Argument
+    sub process($t --> Str)
+    {
+        given $t.ftot {
+            when "CLASS" {
+                "CLASS " ~ simpleDescr($t);
+            }
+            when "ENUM" {
+                "ENUM " ~ simpleDescr($t);
+            }
+            when "NATIVE" {
+                "NATIVE " ~ simpleDescr($t);
+            }
+            when "SPECIAL" {
+                "SPECIAL " ~ simpleDescr($t);
+            }
+            when "UNKNOWN" {
+                "UNKNOWN " ~ simpleDescr($t);
+            }
+            when "COMPOSITE" {
+                "COMPOSITE " ~ simpleDescr($t);
+            }
+            default {
+                "UNEXPECTED " ~ simpleDescr($t);
+            }
+        }
+    }
+
+    # $t is Rtype or Argument
+    sub simpleDescr($t --> Str)
+    {
+                 ($t.base // '?') ~ ($t.postop // '?') ~
+       ' --> ' ~ ($t.fbase // '?') ~ ($t.fpostop // '?')
+    }
+
+}
+
 sub show_types(API $api) is export
 {
 
@@ -466,8 +527,8 @@ sub show_types_2(API $api) is export
     {
         my $out = "";
         $out ~= "\t$n : " ~
-                $data.ftot.gist ~ "\t" ~ $data.base.gist ~ $data.postop ~ " : " ~
-                $data.fclass.gist ~ ":: " ~ $data.fbase.gist ~ $data.fpostop ~
+                $data.ftot.gist ~ "\t" ~ $data.base.gist ~ $data.postop.gist ~ " : " ~
+                $data.fclass.gist ~ ":: " ~ $data.fbase.gist ~ $data.fpostop.gist ~
                 " (" ~ $data.fname.gist ~ ")\n";
         $out ~= "\t\tQType = " ~ qType($data) ~ " " ~ qPostop($data) ~ "\n";
         $out ~= "\t\tCType = " ~ cType($data, :nofail) ~ " "

@@ -185,6 +185,10 @@ sub MAIN ( #| C++ filtered header to read
         say "";
     }
 
+    say "-~" x 20 ~ "-";
+    dump_all_types($api);
+   say "-~" x 20 ~ "-";
+
 
     if !$okToGenerate {
         say "";

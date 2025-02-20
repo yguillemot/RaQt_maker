@@ -94,11 +94,11 @@ role FinalType {
     method showData(Str $indent --> Str)
     {
         my $out = "";
-        $out ~= $indent ~ "FT.ftot: " ~ $!ftot ~ "\n";
-        $out ~= $indent ~ "FT.fclass: " ~ $!fclass ~ "\n";
-        $out ~= $indent ~ "FT.fbase: " ~ $!fbase ~ "\n";
-        $out ~= $indent ~ "FT.fpostop: " ~ $!fpostop ~ "\n";
-        $out ~= $indent ~ "FT.fname: " ~ $!fname ~ "\n";
+        $out ~= $indent ~ "FT.ftot: " ~ ($!ftot // "") ~ "\n";
+        $out ~= $indent ~ "FT.fclass: " ~ ($!fclass // "") ~ "\n";
+        $out ~= $indent ~ "FT.fbase: " ~ ($!fbase // "") ~ "\n";
+        $out ~= $indent ~ "FT.fpostop: " ~ ($!fpostop // "") ~ "\n";
+        $out ~= $indent ~ "FT.fname: " ~ ($!fname // "") ~ "\n";
         $out ~= $!subtype.showData($indent ~ "\t") if $!subtype;
         return $out;
     }
@@ -318,7 +318,12 @@ sub cType($arg, Bool :$nofail --> Str) is export
         }
         when "UNKNOWN" {
             issue($arg.fbase ~ ":UNSUPPORTED",
-                  "Looking for the C type of the unknown type " ~ $arg.base,
+                  "Looking for the C type of the unknown final base type " ~ $arg.base,
+                  $nofail);
+        }
+        default {
+            issue("arg.ftot = '" ~ ($arg.ftot // "") ~ "' :UNEXPECTED",
+                  "Looking for the C type of the unexpected final type of type '" ~ ($arg.ftot // "undefined") ~ "'",
                   $nofail);
         }
     }
@@ -359,12 +364,17 @@ sub cPostop($arg, Bool :$nofail --> Str) is export
                   "Looking for the C postop of the unknown type " ~ $arg.base,
                   $nofail);
         }
+        default {
+            issue($arg.fbase.raku ~ ":UNEXPECTED",
+                  "Looking for the C type of the unexpected type " ~ $arg.base,
+                  $nofail);
+        }
     }
 }
 
 sub nType($arg, Bool :$nofail --> Str) is export
 {
-    given $arg.ftot {
+    given $arg.ftot // "UNDEFINED" {
         when "CLASS" { "Pointer" }
         when "ENUM" { "int32" }
         when "NATIVE" {                 # ???????
@@ -393,6 +403,11 @@ sub nType($arg, Bool :$nofail --> Str) is export
                   "Looking for the native type of the unknown type " ~ $arg.base,
                   $nofail);
         }
+        when "UNDEFINED" {
+            issue("UNDEFINED",
+                  "Looking for the native type of the unknown type " ~ $arg.base,
+                  $nofail);
+        }
     }
 }
 
@@ -408,7 +423,7 @@ sub rType($arg,
     my Str ($prefix, $postfix) = $forceRole ?? ("R", "")
                                             !! $markers ?? (CNOM, CNCM)
                                                         !! ("","");
-    given $arg.ftot {
+    given $arg.ftot // "UNDEFINED" {
         when "CLASS" { $prefix ~ $arg.base ~ $postfix }
         when "ENUM" {
             $noEnum
@@ -422,8 +437,8 @@ sub rType($arg,
         }
         when "SPECIAL" { nativeType_r($arg.fbase) }
         when "COMPOSITE" {
-            given $arg.fbase {
-                when "QFlags" {
+           given $arg.fbase {
+                 when "QFlags" {
                     given $arg.subtype.ftot {
                         when "ENUM" { # $arg.subtype.fclass ~ '::'
                                       #                  ~ $arg.subtype.fbase
@@ -440,13 +455,22 @@ sub rType($arg,
             }
         }
         when "UNKNOWN" {
-
-            # TODO: Error when calling rSignature() in propagateVirtual()
-            # Here is a provisional hack to fix the issue before I find
-            # a clean  way to get rid of that WId type.
-            if $arg.base eq "WId" { return "?XXX?" }
+#             # TODO: Error when calling rSignature() in propagateVirtual()
+#             # Here is a provisional hack to fix the issue before I find
+#             # a clean  way to get rid of that WId type.
+#             if $arg.base eq "WId" { return "?XXX?" }
 
             issue("UNKNOWN",
+                  "Looking for the Raku type of the unknown type {$arg.base}",
+                  $nofail);
+        }
+        when "UNDEFINED" {
+#             # TODO: Error when calling rSignature() in propagateVirtual()
+#             # Here is a provisional hack to fix the issue before I find
+#             # a clean  way to get rid of that WId type.
+#             if $arg.base eq "WId" { return "?XXX?" }
+
+            issue("UNDEFINED",
                   "Looking for the Raku type of the unknown type {$arg.base}",
                   $nofail);
         }
@@ -545,6 +569,16 @@ class Function does Validation {
 
     method setupFinalTypes(API $api, Str $class)
     {
+
+        if $!name ~~ "collidingItems" {
+            say 'YGYG {';
+            say "YGYG method name = ", $!name;
+            say "YGYG return base : ", $.returnType.base;
+            say "YGYG return postop : ", $.returnType.postop;
+            say "YGYG qsign : ", qSignature(self);
+            say 'YGYG }';
+        }
+
         if $.returnType.base {
             my ($tot, $cl, $ltype, $subtype)
                 = finalTypeOf(api => $api,
@@ -742,7 +776,7 @@ sub qSignature(Function $f,
         $out ~= $sep;
         $out ~= $a.const ~ " " if $a.const !~~ "";
         $out ~= $a.base ~ $a.postop;
-        $out ~= " " ~ $a.fname if $showNames;
+        $out ~= " " ~ $a.fname if $showNames && $a.fname;
         $out ~= " = " ~ $a.value if $showDefault && $a.value;
         $sep = ", ";
     }

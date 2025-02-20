@@ -242,6 +242,18 @@ class qtClassesActions is export {
             self.abort;
         }
 
+#         if $<name>.made ~~ "collidingItems" {
+#             say 'YGYG {{';
+#             say "\tname : ", $<name>.made;
+#             say "SOURCE : " ~ $/;
+#             say "TYPENAME : " ~ $<typename>;
+#             say "TYPENAME.made : " ~ $<typename>.made.raku;
+#             say "R base : ", $<typename>.made.base;
+#             say " R postop : ",  $<typename>.made.postop;
+#             say "R const : ", $<typename>.made.const;
+#             say 'YGYG }}';
+#         }
+
         make Function.new(
                 name => $<name>.made,
                 isSlot => $slot,
@@ -519,8 +531,15 @@ class qtClassesActions is export {
 
     method completetypename($/)
     {
-        make ($<simpletypename>
-                    ?? $<simpletypename>.made !! $<complextypename>.made);
+       make ($<simpletypename>
+                   ?? $<simpletypename>.made !! $<complextypename>.made);
+#         if $<simpletypename> {
+#             $<simpletypename>.made
+#         } elsif $<complextypename> {
+#             $<complextypename>.made
+#         } else {
+#             $<containertypename>.made
+#         }
     }
 
 
@@ -573,6 +592,15 @@ class qtClassesActions is export {
 # token empty_list
 
 # rule containertypename
+#     method containertypename($/)
+#     {
+#         if $<simplecontainer> {
+#         } else {
+#             # Associative container
+#
+#         }
+#     }
+
 # rule key
 
     method simplecontainer($/)

@@ -994,7 +994,6 @@
 	QGraphicsItem::setParentItem(QGraphicsItem*)
 	# QGraphicsItem::scene()
 
-
 # Version 0.0.7
 
 	QDialog::accept()
@@ -1049,3 +1048,7 @@ QDialogButtonBox
 	QDialogButtonBox::setOrientation(Qt::Orientation)
 	QDialogButtonBox::setStandardButtons(StandardButtons)
 	QDialogButtonBox::standardButton(QAbstractButton*)
+
+
+# Version 0.0.8
+#		QGraphicsItem::collidingItems(Qt::ItemSelectionMode)
