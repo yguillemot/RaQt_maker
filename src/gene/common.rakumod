@@ -94,12 +94,16 @@ role FinalType {
     method showData(Str $indent --> Str)
     {
         my $out = "";
-        $out ~= $indent ~ "FT.ftot: " ~ ($!ftot // "") ~ "\n";
-        $out ~= $indent ~ "FT.fclass: " ~ ($!fclass // "") ~ "\n";
-        $out ~= $indent ~ "FT.fbase: " ~ ($!fbase // "") ~ "\n";
-        $out ~= $indent ~ "FT.fpostop: " ~ ($!fpostop // "") ~ "\n";
-        $out ~= $indent ~ "FT.fname: " ~ ($!fname // "") ~ "\n";
-        $out ~= $!subtype.showData($indent ~ "\t") if $!subtype;
+        $out ~= $indent ~ "FT.ftot: " ~ ($!ftot // "UD") ~ "\n";
+        $out ~= $indent ~ "FT.fclass: " ~ ($!fclass // "UD") ~ "\n";
+        $out ~= $indent ~ "FT.fbase: " ~ ($!fbase // "UD") ~ "\n";
+        $out ~= $indent ~ "FT.fpostop: " ~ ($!fpostop // "UD") ~ "\n";
+        $out ~= $indent ~ "FT.fname: " ~ ($!fname // "UD") ~ "\n";
+        if $!subtype {
+            $out ~= $!subtype.showData($indent ~ "\t")
+        } else {
+            $out ~= $indent ~ "FT.subtype: " ~ ($!subtype // "UD") ~ "\n";
+        }
         return $out;
     }
 }
@@ -122,11 +126,12 @@ class Argument does FinalType {
     method showData(Str $indent --> Str)
     {
         my $out = "";
-        $out ~= $indent ~ "Arg.base: " ~ $!base ~ "\n";
-        $out ~= $indent ~ "Arg.postop: " ~ $!postop ~ "\n";
-        $out ~= $indent ~ "Arg.name: " ~ $!name ~ "\n";
-        $out ~= $indent ~ "Arg.value: " ~ $!value.gist ~ "\n";
-        $out ~= $indent ~ "Arg.const: " ~ $!const ~ "\n";
+        $out ~= $indent ~ "Arg.base: " ~ ($!base // 'UD') ~ "\n";
+        $out ~= $indent ~ "Arg.postop: " ~ ($!postop // 'UD') ~ "\n";
+        $out ~= $indent ~ "Arg.name: " ~ ($!name // 'UD') ~ "\n";
+        $out ~= $indent ~ "Arg.value: " ~ ($!value // 'UD') ~ "\n";
+        $out ~= $indent ~ "Arg.const: " ~ ($!const // 'UD') ~ "\n";
+        $out ~= self.FinalType::showData($indent);
         return $out;
     }
 }

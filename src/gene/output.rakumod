@@ -105,6 +105,7 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
                     $out ~= " [virtual]" if $m.isVirtual;
                     $out ~= "\n";
                     $out ~= "\t\t\t" ~ qSignature($m, showDefault => True) ~ "\n";
+                    $out ~= "\t\tNumber = " ~ ($m.number // "UD") ~ "\n";
                     if $verbose {
                         $out ~= show_verbose(0, $m.returnType)
                                                         unless $m.name eq "ctor";
