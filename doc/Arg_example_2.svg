@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="Arg_example_2.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs2">
+    <rect
+       x="337.14285"
+       y="298.57142"
+       width="82.857146"
+       height="175.7143"
+       id="rect21" />
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-4" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-1"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-29" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-53"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-1"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-8" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-53-9-9"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-5-2-5" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-4"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-52" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-1-5"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-8-4" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-1-5-0"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-8-4-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-4-1"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-52-9" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.78493057"
+     inkscape:cx="229.95664"
+     inkscape:cy="491.12624"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1697"
+     inkscape:window-height="894"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <g
+       id="g35"
+       transform="matrix(0.53853194,0,0,0.53864878,109.71797,40.919581)"
+       style="stroke-width:1.8567">
+      <g
+         id="g112">
+        <rect
+           style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.557009;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+           id="rect1-7"
+           width="43.982948"
+           height="46.332134"
+           x="-95.61824"
+           y="34.526691"
+           transform="rotate(-90)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="36.663689"
+           y="57.134651"
+           id="text7"><tspan
+             sodipodi:role="line"
+             id="tspan23"
+             x="36.663689"
+             y="57.134651">role FinalType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan24"
+             x="36.663689"
+             y="62.224937" /><tspan
+             sodipodi:role="line"
+             id="tspan25"
+             x="36.663689"
+             y="67.315224">$.ftot = &quot;NATIVE&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan26"
+             x="36.663689"
+             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan27"
+             x="36.663689"
+             y="77.495804">$.fbase = &quot;void&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan28"
+             x="36.663689"
+             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan29"
+             x="36.663689"
+             y="87.676376">$.fname = &quot;retVal&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan30"
+             x="36.663689"
+             y="92.766663">$.subtype = Nil</tspan></text>
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text21"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.3911px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect21);display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:1.13386;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke" />
+    <g
+       id="g34"
+       transform="matrix(0.53853194,0,0,0.53864878,114.70654,167.55423)"
+       style="stroke-width:1.8567">
+      <rect
+         style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.557009;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-9-2"
+         width="9.5051785"
+         height="38.183125"
+         x="-140.62393"
+         y="71.322914"
+         transform="rotate(-90)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+         x="73.459908"
+         y="136.6181"
+         id="text7-4-0"><tspan
+           sodipodi:role="line"
+           id="tspan31"
+           x="73.459908"
+           y="136.6181"
+           style="stroke-width:0">class SubType</tspan><tspan
+           sodipodi:role="line"
+           id="tspan32"
+           x="73.459908"
+           y="141.70839"
+           style="stroke-width:0" /><tspan
+           sodipodi:role="line"
+           id="tspan33"
+           x="73.459908"
+           y="146.79868"
+           style="stroke-width:0" /><tspan
+           sodipodi:role="line"
+           id="tspan34"
+           x="73.459908"
+           y="151.88896"
+           style="stroke-width:0" /></text>
+    </g>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6);paint-order:markers fill stroke"
+       d="m 162.05436,237.88096 -0.002,-4.2106"
+       id="path2-3-3"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g113"
+       transform="translate(-3.3707865,28.314606)">
+      <rect
+         style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-9-6"
+         width="16.493141"
+         height="24.46163"
+         x="-98.99575"
+         y="131.27386"
+         transform="rotate(-90)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+         x="132.43907"
+         y="85.455574"
+         id="text7-4-8"
+         transform="scale(0.99989154,1.0001085)"><tspan
+           sodipodi:role="line"
+           id="tspan35"
+           x="132.43907"
+           y="85.455574">class Ltype</tspan><tspan
+           sodipodi:role="line"
+           id="tspan36"
+           x="132.43907"
+           y="88.197151" /><tspan
+           sodipodi:role="line"
+           id="tspan37"
+           x="132.43907"
+           y="90.938721">$.base = &quot;void&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan38"
+           x="132.43907"
+           y="93.680298">$.postop = &quot;&quot;;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan39"
+           x="132.43907"
+           y="96.421875">$.const = &quot;&quot;;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan40"
+           x="132.43907"
+           y="99.163452" /></text>
+    </g>
+    <g
+       id="g30-78-5"
+       transform="matrix(0.53853194,0,0,0.53864878,16.486368,55.36276)"
+       style="display:inline;stroke-width:1.8567">
+      <g
+         id="g84"
+         transform="translate(135.77292,-46.504898)"
+         style="stroke-width:1.8567">
+        <rect
+           style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.557009;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+           id="rect1-7-9-6-97"
+           width="8.7065821"
+           height="31.501389"
+           x="-139.82533"
+           y="71.322914"
+           transform="rotate(-90)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="73.459908"
+           y="136.6181"
+           id="text7-4-8-7"><tspan
+             sodipodi:role="line"
+             id="tspan82"
+             x="73.459908"
+             y="136.6181"
+             style="stroke-width:0">class Rtype</tspan><tspan
+             sodipodi:role="line"
+             id="tspan83"
+             x="73.459908"
+             y="141.70839"
+             style="stroke-width:0" /><tspan
+             sodipodi:role="line"
+             id="tspan84"
+             x="73.459908"
+             y="146.79868"
+             style="stroke-width:0" /></text>
+      </g>
+    </g>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-9);paint-order:markers fill stroke"
+       d="m 137.59185,105.88251 0.11476,3.25068"
+       id="path2-3-3-8"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-1);paint-order:markers fill stroke"
+       d="m 137.87363,100.5039 -0.0965,-6.487967"
+       id="path2-3-3-3"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g116"
+       transform="translate(-3.3707865,28.314606)">
+      <g
+         id="g22">
+        <rect
+           style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+           id="rect1-7-9-6-6-1"
+           width="59.210667"
+           height="36.485001"
+           x="-100.90055"
+           y="28.144318"
+           transform="rotate(-90)" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="29.874117"
+           y="44.503315"
+           id="text7-4-8-75-0"
+           transform="scale(0.99989154,1.0001085)"><tspan
+             sodipodi:role="line"
+             id="tspan1"
+             x="29.874117"
+             y="44.503315">class Function</tspan><tspan
+             sodipodi:role="line"
+             id="tspan2"
+             x="29.874117"
+             y="47.244888" /><tspan
+             sodipodi:role="line"
+             id="tspan3"
+             x="29.874117"
+             y="49.986465">$.name = &quot;addWidget&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan4"
+             x="29.874117"
+             y="52.728039" /><tspan
+             sodipodi:role="line"
+             id="tspan5"
+             x="29.874117"
+             y="55.469616">$.isSlot = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan6"
+             x="29.874117"
+             y="58.211189">$.isSignal = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan7"
+             x="29.874117"
+             y="60.952766">$.isPrivateSignal = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan8"
+             x="29.874117"
+             y="63.69434">$.isStatic = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan9"
+             x="29.874117"
+             y="66.435913">$.isVirtual = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan10"
+             x="29.874117"
+             y="69.17749">$.isPureVirtual = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan11"
+             x="29.874117"
+             y="71.919067">$.isProtected = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan12"
+             x="29.874117"
+             y="74.660637">$.isConst = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan13"
+             x="29.874117"
+             y="77.402214">$.isOverride = False</tspan><tspan
+             sodipodi:role="line"
+             id="tspan14"
+             x="29.874117"
+             y="80.143791" /><tspan
+             sodipodi:role="line"
+             id="tspan15"
+             x="29.874117"
+             y="82.885361">$.returnType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan16"
+             x="29.874117"
+             y="85.626938" /><tspan
+             sodipodi:role="line"
+             id="tspan17"
+             x="29.874117"
+             y="88.368515">@.arguments[0]</tspan><tspan
+             sodipodi:role="line"
+             id="tspan18"
+             x="29.874117"
+             y="91.110092">@.arguments[1]</tspan><tspan
+             sodipodi:role="line"
+             id="tspan19"
+             x="29.874117"
+             y="93.851662">@.arguments[2]</tspan><tspan
+             sodipodi:role="line"
+             id="tspan20"
+             x="29.874117"
+             y="96.593239" /><tspan
+             sodipodi:role="line"
+             id="tspan21"
+             x="29.874117"
+             y="99.334816">$.number = Nil</tspan><tspan
+             sodipodi:role="line"
+             id="tspan22"
+             x="29.874117"
+             y="102.07639" /></text>
+      </g>
+    </g>
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36);paint-order:markers fill stroke"
+       d="m 46.335252,115.62432 c 0,0 33.191705,-0.42006 44.467309,3.51471 7.907963,2.7596 12.228209,6.59073 14.444569,10.51577 2.35296,4.16694 2.37407,12.72246 2.37407,12.72246"
+       id="path58-3"
+       sodipodi:nodetypes="cssc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-53);paint-order:markers fill stroke"
+       d="m 122.88635,240.81095 28.51274,-0.24027"
+       id="path58-3-6"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g100"
+       transform="translate(0.33707865,3.0337072)">
+      <rect
+         style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-91"
+         width="23.691362"
+         height="36.570923"
+         x="-228.83617"
+         y="151.68048"
+         transform="rotate(-90)" />
+      <g
+         id="g31-2"
+         style="stroke-width:1.8567"
+         transform="matrix(0.53853194,0,0,0.53864878,133.08676,177.33152)">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="36.663689"
+           y="57.134651"
+           id="text7-7"><tspan
+             sodipodi:role="line"
+             id="tspan92"
+             x="36.663689"
+             y="57.134651">role FinalType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan93"
+             x="36.663689"
+             y="62.224937" /><tspan
+             sodipodi:role="line"
+             id="tspan94"
+             x="36.663689"
+             y="67.315224">Str $.ftot = &quot;ENUM&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan95"
+             x="36.663689"
+             y="72.40551">Str $.fclass = &quot;Qt&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan96"
+             x="36.663689"
+             y="77.495804">Str $.fbase = &quot;AlignmentFlag&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan97"
+             x="36.663689"
+             y="82.58609">Str $.fpostop = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan98"
+             x="36.663689"
+             y="87.676376">Str $.fname = &quot;subType&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan99"
+             x="36.663689"
+             y="92.766663">SubType $.subtype = Nil</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g56"
+       transform="translate(1.0112359,28.314606)">
+      <rect
+         style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-97"
+         width="23.691362"
+         height="25.393854"
+         x="-138.82564"
+         y="131.25703"
+         transform="rotate(-90)" />
+      <g
+         id="g31-3"
+         style="stroke-width:1.8567"
+         transform="matrix(0.53853194,0,0,0.53864878,112.66331,87.320993)">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="36.663689"
+           y="57.134651"
+           id="text7-6"><tspan
+             sodipodi:role="line"
+             id="tspan49"
+             x="36.663689"
+             y="57.134651">role FinalType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan50"
+             x="36.663689"
+             y="62.224937" /><tspan
+             sodipodi:role="line"
+             id="tspan51"
+             x="36.663689"
+             y="67.315224">$.ftot = &quot;CLASS&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan52"
+             x="36.663689"
+             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan53"
+             x="36.663689"
+             y="77.495804">$.fbase = &quot;QWidget&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan54"
+             x="36.663689"
+             y="82.58609">$.fpostop = &quot;*&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan55"
+             x="36.663689"
+             y="87.676376">$.fname = &quot;arg1&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan56"
+             x="36.663689"
+             y="92.766663">$.subtype = Nil</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g30-8"
+       transform="matrix(0.53853194,0,0,0.53864878,58.418708,73.666545)"
+       style="display:inline;stroke-width:1.8567">
+      <rect
+         style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.557009;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-9-45"
+         width="39.439365"
+         height="46.007153"
+         x="-170.55812"
+         y="71.322906"
+         transform="rotate(-90)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+         x="73.459908"
+         y="136.6181"
+         id="text7-4-03"><tspan
+           sodipodi:role="line"
+           id="tspan41"
+           x="73.459908"
+           y="136.6181">class Argument</tspan><tspan
+           sodipodi:role="line"
+           id="tspan42"
+           x="73.459908"
+           y="141.70839" /><tspan
+           sodipodi:role="line"
+           id="tspan43"
+           x="73.459908"
+           y="146.79868">$.base = &quot;QWidget&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan44"
+           x="73.459908"
+           y="151.88896">$.postop = &quot;*&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan45"
+           x="73.459908"
+           y="156.97925">$.name = &quot;???&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan46"
+           x="73.459908"
+           y="162.06953">$.value = Nil</tspan><tspan
+           sodipodi:role="line"
+           id="tspan47"
+           x="73.459908"
+           y="167.15982">$.const = &quot;&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan48"
+           x="73.459908"
+           y="172.25011" /></text>
+    </g>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-1);paint-order:markers fill stroke"
+       d="m 121.77271,156.00699 8.57482,-0.16566"
+       id="path2-3-1"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-53-9-9);paint-order:markers fill stroke"
+       d="m 43.519082,110.34962 c 0,0 34.03667,0.7022 45.458046,-0.28796 8.121716,-0.7041 10.669066,-4.81832 18.415782,-5.78738 6.286,-0.78634 18.60477,-0.79843 18.60477,-0.79843"
+       id="path118"
+       sodipodi:nodetypes="cssc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-4);paint-order:markers fill stroke"
+       d="m 46.215412,118.63085 c 0,0 14.355564,0.0491 18.524483,0.41013 4.794941,0.41528 17.16416,2.85423 19.356164,10.65787 3.429153,12.20793 2.75132,47.68933 2.75132,47.68933"
+       id="path58-3-0"
+       sodipodi:nodetypes="cssc" />
+    <g
+       id="g72"
+       transform="translate(-12.64045,12.808988)">
+      <rect
+         style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-97-8"
+         width="23.691362"
+         height="25.697906"
+         x="-189.50229"
+         y="131.61389"
+         transform="rotate(-90)" />
+      <g
+         id="g31-3-6"
+         style="stroke-width:1.8567"
+         transform="matrix(0.53853194,0,0,0.53864878,113.02017,137.99764)">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="36.663689"
+           y="57.134651"
+           id="text7-6-8"><tspan
+             sodipodi:role="line"
+             id="tspan65"
+             x="36.663689"
+             y="57.134651">role FinalType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan66"
+             x="36.663689"
+             y="62.224937" /><tspan
+             sodipodi:role="line"
+             id="tspan67"
+             x="36.663689"
+             y="67.315224">$.ftot = &quot;NATIVE&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan68"
+             x="36.663689"
+             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan69"
+             x="36.663689"
+             y="77.495804">$.fbase = &quot;int32&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan70"
+             x="36.663689"
+             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan71"
+             x="36.663689"
+             y="87.676376">$.fname = &quot;stretch&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan72"
+             x="36.663689"
+             y="92.766663">$.subtype = Nil</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g99"
+       transform="translate(8.2026485,3.0337072)">
+      <rect
+         style="fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-97-8-6"
+         width="23.691362"
+         height="27.723886"
+         x="-239.87477"
+         y="101.67553"
+         transform="rotate(-90)" />
+      <g
+         id="g31-3-6-1"
+         style="stroke-width:1.8567"
+         transform="matrix(0.53853194,0,0,0.53864878,83.081809,188.37013)">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07223px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+           x="36.663689"
+           y="57.134651"
+           id="text7-6-8-8"><tspan
+             sodipodi:role="line"
+             id="tspan81"
+             x="36.663689"
+             y="57.134651">role FinalType</tspan><tspan
+             sodipodi:role="line"
+             id="tspan85"
+             x="36.663689"
+             y="62.224937" /><tspan
+             sodipodi:role="line"
+             id="tspan86"
+             x="36.663689"
+             y="67.315224">$.ftot = &quot;COMPOSITE&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan87"
+             x="36.663689"
+             y="72.40551">$.fclass = &quot;Qt&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan88"
+             x="36.663689"
+             y="77.495804">$.fbase = &quot;QFlags&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan89"
+             x="36.663689"
+             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan90"
+             x="36.663689"
+             y="87.676376">$.fname = &quot;alignment&quot;</tspan><tspan
+             sodipodi:role="line"
+             id="tspan91"
+             x="36.663689"
+             y="92.766663">$.subtype</tspan></text>
+      </g>
+    </g>
+    <g
+       id="g114-9"
+       style="display:inline"
+       transform="translate(-12.57881,53.406197)">
+      <rect
+         style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-9-45-8-2"
+         width="21.243965"
+         height="33.633522"
+         x="-187.89951"
+         y="76.623444"
+         transform="rotate(-90)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+         x="78.456955"
+         y="169.59937"
+         id="text7-4-03-9-2"
+         transform="scale(0.99989152,1.0001085)"><tspan
+           sodipodi:role="line"
+           id="tspan73"
+           x="78.456955"
+           y="169.59937">class Argument</tspan><tspan
+           sodipodi:role="line"
+           id="tspan74"
+           x="78.456955"
+           y="172.34094" /><tspan
+           sodipodi:role="line"
+           id="tspan75"
+           x="78.456955"
+           y="175.08252">$.base = &quot;Qt::Alignment&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan76"
+           x="78.456955"
+           y="177.8241">$.postop = &quot;&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan77"
+           x="78.456955"
+           y="180.56566">$.name = &quot;alignment&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan78"
+           x="78.456955"
+           y="183.30724">$.value = &quot;Qt::Alignment()&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan79"
+           x="78.456955"
+           y="186.04881">$.const = &quot;&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan80"
+           x="78.456955"
+           y="188.79039" /></text>
+    </g>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-1-5-0);paint-order:markers fill stroke"
+       d="m 97.892944,231.77522 10.064516,-0.16566"
+       id="path2-3-1-8-3"
+       sodipodi:nodetypes="cc" />
+    <g
+       id="g114"
+       transform="translate(4.3820224,12.808988)">
+      <rect
+         style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;paint-order:markers fill stroke"
+         id="rect1-7-9-45-8"
+         width="21.243965"
+         height="25.887129"
+         x="-187.89951"
+         y="76.623444"
+         transform="rotate(-90)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;paint-order:markers fill stroke"
+         x="78.456955"
+         y="169.59937"
+         id="text7-4-03-9"
+         transform="scale(0.99989152,1.0001085)"><tspan
+           sodipodi:role="line"
+           id="tspan57"
+           x="78.456955"
+           y="169.59937">class Argument</tspan><tspan
+           sodipodi:role="line"
+           id="tspan58"
+           x="78.456955"
+           y="172.34094" /><tspan
+           sodipodi:role="line"
+           id="tspan59"
+           x="78.456955"
+           y="175.08252">$.base = &quot;int&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan60"
+           x="78.456955"
+           y="177.8241">$.postop = &quot;&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan61"
+           x="78.456955"
+           y="180.56566">$.name = &quot;stretch&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan62"
+           x="78.456955"
+           y="183.30724">$.value = &quot;0&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan63"
+           x="78.456955"
+           y="186.04881">$.const = &quot;&quot;</tspan><tspan
+           sodipodi:role="line"
+           id="tspan64"
+           x="78.456955"
+           y="188.79039" /></text>
+    </g>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-1-5);paint-order:markers fill stroke"
+       d="m 106.9882,191.17802 10.06451,-0.16566"
+       id="path2-3-1-8"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-4-1);paint-order:markers fill stroke"
+       d="m 46.341054,121.71956 c 0,0 9.707727,-0.0701 13.876646,0.29097 4.794941,0.41527 6.61394,3.19481 8.210067,11.7135 2.335264,12.46352 1.659022,84.3766 1.659022,84.3766"
+       id="path58-3-0-4"
+       sodipodi:nodetypes="cssc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;vector-effect:non-scaling-stroke;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke-width:0.264583;stroke-dasharray:none;-inkscape-stroke:hairline;paint-order:markers fill stroke"
+       x="25.666956"
+       y="39.975933"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan100">From class QBoxLayout, method addWidget:</tspan><tspan
+         sodipodi:role="line"
+         id="tspan101">void addWidget(QWidget* arg1, int stretch = 0, Qt::Alignment alignment = Qt::Alignment())</tspan></text>
+  </g>
+</svg>
