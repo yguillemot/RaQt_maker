@@ -16,12 +16,31 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
     if $nbt {
         $out ~= "$nbt top typedef&s($nbt) :\n";
         for $api.topTypedefs.sort>>.kv -> ($tname, $typedef) {
-            $out ~= "\t$tname : " ~ $typedef.type.str ~ "\n";
+            $out ~= show_typedef($tname, $typedef);
         }
         $out ~= "\n";
     }
 
+
+    sub show_typedef($tname, $typedef, Bool :$very, Bool :$verbose --> Str) {
+        my $out;
+
+        $out ~= "------- $tname : " ~ $typedef.type.str ~ "\n";
+        $out ~= "\t\tsrcClass = " ~ $typedef.srcClass ~ "\n";
+        $out ~= "\t\tfType = " ~ ($typedef.fType.base // "UD") ~ "\n";
+        $out ~= "\t\tfClass = " ~ ($typedef.fClass // "UD") ~ "\n";
+        $out ~= "\t\ttypeOfType = " ~ ($typedef.typeOfType // "UD") ~ "\n";
+        if $typedef.subType {
+            $out ~= "\t\t\tsubType = " ~ ($typedef.subType.base // "UD") ~ "\n";
+            $out ~= "\t\t\tsubType-tot = " ~ ($typedef.subType-tot // "UD") ~ "\n";
+            $out ~= "\t\t\tsubType-class = " ~ ($typedef.subType-class // "UD") ~  "\n";
+        }
+
+        return $out;
+    }
+
     for $api.qclasses.sort>>.kv -> ($name, $qclass) {
+        $out ~= "=" x 70 ~ "\n";
         $out ~= "class $name";
         $out ~= " is QObj" if $qclass.isQObj;
         $out ~= " :\n";
@@ -63,7 +82,7 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
         if $nb {
             $out ~= "\t$nb typedef&s($nb) :\n";
             for $qclass.typedefs.sort>>.kv -> ($tname, $typedef) {
-                $out ~= "\t\t$tname : " ~ $typedef.type.str ~ "\n";
+                $out ~= show_typedef($tname, $typedef);
             }
         }
 
