@@ -1,0 +1,11 @@
+# Classes and methods listed here will be implemented if possible
+
+
+	Boubou::ctor(int)
+	Boubou::punch(int)
+	
+	QTestClass::ctor(void*)
+	QTestClass::toto(Chose, IntValuesFlags)
+	QTestClass::titi(int&, int*)
+	QTestClass::denree()
+	QTestClass::gloupf(QString, XMap*)

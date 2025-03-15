@@ -1,0 +1,22 @@
+
+
+
+
+
+	QGraphicsScene::ctor(QObject*)
+	QGraphicsScene::ctor(qreal, qreal, qreal, qreal, QObject*)
+
+	QGraphicsScene::advance()
+
+	QGraphicsScene::itemIndexMethod()
+	QGraphicsScene::itemsBoundingRect()
+	QGraphicsScene::keyPressEvent(QKeyEvent*)
+	QGraphicsScene::keyReleaseEvent(QKeyEvent*)
+	QGraphicsScene::minimumRenderSize()
+	QGraphicsScene::mouseGrabberItem()
+
+	QGraphicsScene::height()
+	QGraphicsScene::width()
+	QGraphicsScene::sceneRect()
+
+

@@ -1,0 +1,152 @@
+
+
+typedef long int ptrdiff_t;
+typedef long unsigned int size_t;
+typedef decltype(nullptr) nullptr_t;
+typedef signed char qint8;
+typedef unsigned char quint8;
+typedef short qint16;
+typedef unsigned short quint16;
+typedef int qint32;
+typedef unsigned int quint32;
+typedef long long qint64;
+typedef unsigned long long quint64;
+typedef qint64 qlonglong;
+typedef quint64 qulonglong;
+typedef unsigned char uchar;
+typedef unsigned short ushort;
+typedef unsigned int uint;
+typedef unsigned long ulong;
+typedef double qreal;
+typedef QIntegerForSize<8>::Signed qregisterint;
+typedef QIntegerForSize<8>::Unsigned qregisteruint;
+typedef QIntegerForSizeof<void*>::Unsigned quintptr;
+typedef QIntegerForSizeof<void*>::Signed qptrdiff;
+typedef qptrdiff qintptr;
+typedef int QNoImplicitBoolCast;
+
+
+
+
+
+typedef __uint8_t uint8_t;
+typedef __uint16_t uint16_t;
+typedef __uint32_t uint32_t;
+typedef __uint64_t uint64_t;
+typedef __int_least8_t int_least8_t;
+typedef __int_least16_t int_least16_t;
+typedef __int_least32_t int_least32_t;
+typedef __int_least64_t int_least64_t;
+typedef __uint_least8_t uint_least8_t;
+typedef __uint_least16_t uint_least16_t;
+typedef __uint_least32_t uint_least32_t;
+typedef __uint_least64_t uint_least64_t;
+typedef signed char int_fast8_t;
+typedef long int int_fast16_t;
+typedef long int int_fast32_t;
+typedef long int int_fast64_t;
+typedef unsigned char uint_fast8_t;
+typedef unsigned long int uint_fast16_t;
+typedef unsigned long int uint_fast32_t;
+typedef unsigned long int uint_fast64_t;
+typedef long int intptr_t;
+typedef unsigned long int uintptr_t;
+typedef __intmax_t intmax_t;
+typedef __uintmax_t uintmax_t;
+typedef QBasicAtomicInteger<int> QBasicAtomicInt;
+
+
+
+class Qt
+{
+public:
+enum GlobalColor {
+        color0,
+        color1,
+        black,
+        white,
+        darkGray,
+        gray,
+        lightGray,
+        red,
+        green,
+        blue,
+        cyan,
+        magenta,
+        yellow,
+        darkRed,
+        darkGreen,
+        darkBlue,
+        darkCyan,
+        darkMagenta,
+        darkYellow,
+        transparent
+    };
+
+enum KeyboardModifier {
+        NoModifier = 0x00000000,
+        ShiftModifier = 0x02000000,
+        ControlModifier = 0x04000000,
+        AltModifier = 0x08000000,
+        MetaModifier = 0x10000000,
+        KeypadModifier = 0x20000000,
+        GroupSwitchModifier = 0x40000000,
+
+        KeyboardModifierMask = 0xfe000000
+    };
+
+typedef QFlags<KeyboardModifier> KeyboardModifiers;
+    enum Modifier {
+        META = Qt::MetaModifier,
+        SHIFT = Qt::ShiftModifier,
+        CTRL = Qt::ControlModifier,
+        ALT = Qt::AltModifier,
+        MODIFIER_MASK = KeyboardModifierMask,
+        UNICODE_ACCEL = 0x00000000
+    };
+
+};
+
+
+class Boubou
+{
+public:
+    Boubou(int vinit);
+    int punch(int u);
+};
+
+
+typedef  Boubou  Truc;
+typedef Truc *  Machin ;
+typedef  Machin Chose;
+
+typedef QMap<QString, long int *> XMap;
+
+
+class QTestClass
+{
+
+public:
+
+    enum IntValues {
+            Un = 0x1,
+            Deux = 0x2,
+            Trois = 0x4,
+            Quatre = 0x8,
+    };
+
+    typedef QFlags<IntValues> IntValuesFlags;
+
+    QTestClass(void *parent = nullptr);
+
+    void * toto(Chose p, IntValuesFlags y);
+
+    IntValuesFlags titi (int & x, int * y);
+
+    void denree();
+
+    QList<Boubou *> gloupf(QString mot, XMap * map);
+
+};
+
+
