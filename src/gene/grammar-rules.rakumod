@@ -157,10 +157,8 @@ grammar qtClasses is export {
                             <tpostspecifier>? <.ws> <typePostop>* <.ws>
     }
 
-
-
     rule completetypename { || <simpletypename>
-                            || <containertypename>
+#                             || <containertypename>
                             || <complextypename>
                           }
     token qualifiedname { [<name> ['::' <name>]*] || [<name>? ['::' <name>]+] }
@@ -196,7 +194,6 @@ grammar qtClasses is export {
 
     token typePostop { '&'+ | '*'+ }
 
-
     rule value {
             <expression> || <empty_list>
     }
@@ -212,7 +209,7 @@ grammar qtClasses is export {
         || [ '-'? <floatingValue> ] 
         || [ '-'? <decnumber> ]
     }
-    rule functioncall { <completetypename>? <parenthblock> }
+    rule functioncall { <completetypename>? <opaqueparenthblock> }
 
     rule expression { <leftop>? <value_elem> [ <op> <expression> ]? }
 
@@ -220,27 +217,27 @@ grammar qtClasses is export {
 
     token empty_list { '{' '}' }
 
-    rule containertypename {
-        || [ <simplecontainer> '<' <name> <typePostop>? '>' ]
-        || [ <associativecontainer> '<' <key> ',' <name> <typePostop>? '>' ]
-    }
+#     rule containertypename {
+#         || [ <simplecontainer> '<' <name> <typePostop>? '>' ]
+#         || [ <associativecontainer> '<' <key> ',' <name> <typePostop>? '>' ]
+#     }
 
-    rule key { <name> }
+#     rule key { <name> }
 
-    token simplecontainer { || 'QList'
-                            || 'QLinkedList'
-                            || 'QVector'
-                            || 'QStack'
-                            || 'QQueue'
-                            || 'QSet'
-                          }
-
-    token associativecontainer { || 'QMap'
-                                 || 'QMultiMap'
-                                 || 'QHash'
-                                 || 'QMultiHash'
-                                 || 'QPair'
-                               }
+#     token simplecontainer { || 'QList'
+#                             || 'QLinkedList'
+#                             || 'QVector'
+#                             || 'QStack'
+#                             || 'QQueue'
+#                             || 'QSet'
+#                           }
+#
+#     token associativecontainer { || 'QMap'
+#                                  || 'QMultiMap'
+#                                  || 'QHash'
+#                                  || 'QMultiHash'
+#                                  || 'QPair'
+#                                }
 
     
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -313,24 +310,60 @@ grammar qtClasses is export {
     ###############################
 
     # Parenthesized block with possible nested parenthesized blocks
-    token parenthblock { '(' <parenthblockcore> ')' }
+    token opaqueparenthblock { '(' <opaqueparenthblockcore> ')' }
 
-    token parenthblockcore { || <b_pblock> || <noparenth> }
+    token opaqueparenthblockcore { || <b_pblock> || <noparenth> }
 
     token b_pblock { <a_pblock>+ <noparenth>? }
 
-    token a_pblock {  <noparenth>? <parenthblock>  }
+    token a_pblock {  <noparenth>? <opaqueparenthblock>  }
+
+
+
+    rule parenthblock { '(' <pcore> ')' }
+    rule pcore { <pelem> ',' <pcore> || <pelem> }
+    rule pelem { <noparenth> }
+
+
 
     ###############################
 
     # Angle brackets block with possible other nested blocks
-    token angleblock { '<' <angleblockcore> '>' }
+#     token angleblock { '<' <angleblockcore> '>' }
+#
+#     token angleblockcore { <b_ablock> || <noangle> }
+#
+#     token b_ablock { <a_ablock>+ <noangle>? }
+#
+#     token a_ablock {  <noangle>? <angleblock>  }
 
-    token angleblockcore { <b_ablock> || <noangle> }
+    rule angleblock { '<' <abstart> <abcore> <abend> '>' }
 
-    token b_ablock { <a_ablock>+ <noangle>? }
+    token abstart { <?> }
+    token abend { <?> }
 
-    token a_ablock {  <noangle>? <angleblock>  }
+    rule abcore {    <abelem> ',' <abcore>
+                  || <abelem> }
+
+    rule abelem { <functiontype> || <typename> || <simpleIntegerValue> }
+                # Doesn't work if <functiontype> is not in the first position
+
+    rule functiontype {
+        <typename> '(' <unnamedParams> ')'
+#         <typename> <parenthblock>
+#         <typename> '(int)'
+    }
+
+    rule unnamedParams {
+        <first_uparam>? <next_uparam>*
+        # <dots_param>?
+    }
+
+    rule first_uparam { <unnamedParam> }
+
+    rule next_uparam { ',' <unnamedParam> }
+
+    #                     # <parenthblock> added to get rid of std::function
 
     ###############################
 

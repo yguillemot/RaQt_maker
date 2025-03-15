@@ -208,7 +208,6 @@ class qtClassesActions is export {
         self.success($/);
     }
 
-
     method method($/)
     {
         my $protected = index($*subblocMode, "protected") !~~ Nil;
@@ -516,7 +515,7 @@ class qtClassesActions is export {
 
     method typename($/)
     {
-        # say "\t\t\tTYPENAME >", ~$/, "<";
+#         say "\t\t\tTYPENAME >", ~$/, "<";
         my $postop = $<typePostop> ?? [~] $<typePostop>>>.made !! "";
         my $type = $<completetypename>.made ?? $<completetypename>.made !! "";
         my $tspec = $<tspecifier>.made ?? $<tspecifier>.made !! "";
@@ -603,15 +602,15 @@ class qtClassesActions is export {
 
 # rule key
 
-    method simplecontainer($/)
-    {
-        make $/.Str;
-    }
-
-    method associativecontainer($/)
-    {
-        make $/.Str;
-    }
+#     method simplecontainer($/)
+#     {
+#         make $/.Str;
+#     }
+#
+#     method associativecontainer($/)
+#     {
+#         make $/.Str;
+#     }
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -802,15 +801,46 @@ class qtClassesActions is export {
 # token b_bblock
 # token a_bblock
 
-# Idem braced : parenth
+# token opaqueparenthblock
+# token opaqueparenthblockcore
+# token b_pblock
+# token a_pblock
+
+# token parenthblock
+# token pcore
+# token pelem
+
+# # token angleblock
+# # token angleblockcore
+# # token b_ablock
+# # token a_ablock
 
     method angleblock($/) {
+#         say "ANGLEBLOCK " ~$/;
         make trim $/.Str;
     }
 
-# token angleblockcore
-# token b_ablock
-# token a_ablock
+# token abstart
+# token abend
+#     method abcore($/) {
+#         say "ABCORE " ~$/;
+#     }
+#     method abelem($/) {
+#         say "ABELEM " ~$/;
+#     }
+#
+#     method functiontype($/) {
+#         say "FUNCTIONTYPE " ~$/;
+#     }
+#     method unnamedParams($/) {
+#         say "UNNAMEDPARAMS " ~$/;
+#     }
+#     method first_uparam($/) {
+#         say "FIRST_UPARAM " ~$/;
+#     }
+#     method next_uparam($/) {
+#         say "NEXT_UPARAM " ~$/;
+#     }
 
     method squareblock($/) {
         make trim $/.Str;
