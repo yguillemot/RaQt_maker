@@ -19,7 +19,7 @@ our constant REPOSITORY = "https://github.com/yguillemot/RaQt_maker";
 # Names of the files defining which classes and methods to generate
 
 # Input files
-our constant $iWhiteList = "WhiteList.input";
+our constant $diWhiteList = "WhiteList.input";    # Default name
 our constant $iBlackList = "BlackList.input";
 
 # Output files

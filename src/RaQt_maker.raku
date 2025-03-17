@@ -20,8 +20,10 @@ use gene::installTemplate;
 # Choice of classes, methods and enums is driven by black and white lists.
 # The black list always has precedence over the white list.
 
-sub MAIN ( #| C++ filtered header to read
+sub MAIN ( #| C++ filtered header (API description) to read
            Str $fileName,
+           #| White list input
+           Str $iWhiteList = $diWhiteList,
            #| Only whitelisted methods will be generated
            Bool :$strict,
            #| Validate the generation process
