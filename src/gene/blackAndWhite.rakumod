@@ -435,9 +435,10 @@ sub markEnums(API $api) is export
             $api.qclasses{$c}.whiteListed = True;
             # say "   W : ", $c, "::", $api.qclasses{$c}.enums{$e}.name;
         } elsif $arg.ftot ~~ "COMPOSITE"
-                    && $arg.subtype.ftot ~~ "ENUM" {
-            my $c = $arg.subtype.fclass;
-            my $e = $arg.subtype.fbase;
+                    && $arg.subtypes[0].ftot ~~ "ENUM" {
+            # Currently, composite enums are only QFlags with one argument
+            my $c = $arg.subtypes[0].fclass;
+            my $e = $arg.subtypes[0].fbase;
             $api.qclasses{$c}.enums{$e}.whiteListed = True;
             $api.qclasses{$c}.whiteListed = True;                        
             # say "   W : ", $c, "::", $api.qclasses{$c}.enums{$e}.name;

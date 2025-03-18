@@ -71,9 +71,9 @@ itself has been achieved :
 
  The name of the argument (in the case it was unnamed)
 
-=head3 Str $.subtype
+=head3 Str @.subtypes
 
- The subtype involved if $.ftot is "COMPOSITE"
+ The subtypes involved if $.ftot is "COMPOSITE".
 
 =end pod
 
@@ -85,7 +85,7 @@ role FinalType {
     has Str $.fbase is rw;
     has Str $.fpostop is rw;
     has Str $.fname is rw;
-    has SubType $.subtype is rw = (SubType);
+    has SubType @.subtypes is rw;
 
     method sayFinalType
     {   say "\t", $.ftot, " ", $.fclass, " : ", $.fbase, " ", $.fpostop, " ", $.fname;
@@ -99,10 +99,10 @@ role FinalType {
         $out ~= $indent ~ "FT.fbase: " ~ ($!fbase // "UD") ~ "\n";
         $out ~= $indent ~ "FT.fpostop: " ~ ($!fpostop // "UD") ~ "\n";
         $out ~= $indent ~ "FT.fname: " ~ ($!fname // "UD") ~ "\n";
-        if $!subtype {
-            $out ~= $!subtype.showData($indent ~ "\t")
+        if @!subtypes {
+            $out ~= $_.showData($indent ~ "\t") for @!subtypes;
         } else {
-            $out ~= $indent ~ "FT.subtype: " ~ ($!subtype // "UD") ~ "\n";
+            $out ~= $indent ~ "FT.subtypes: UD\n";
         }
         return $out;
     }
@@ -235,10 +235,10 @@ class Typedef {
     # "CLASS", "ENUM", "NATIVE", "COMPOSITE" or "UNKNOWN"
     has Str $.typeOfType is rw is default("???");
 
-    # SubType is only defined when typeOfType is "COMPOSITE"
-    has Ltype $.subType is rw is default(Ltype);
-    has Str $.subType-tot is rw is default(Str);
-    has Str $.subType-class is rw is default(Str);
+    # SubTypes are only defined when typeOfType is "COMPOSITE"
+    has Ltype @.subTypes is rw;
+    has Str @.subTypes-tot is rw;
+    has Str @.subTypes-class is rw;
 
     method lookForFinalType(API $api)
     {
@@ -246,11 +246,14 @@ class Typedef {
         my $subtype;
         ($.typeOfType, $.fClass, $.fType, $subtype) = @r;
         if $subtype {
-            ($.subType-tot, $.subType-class, $.subType) = $subtype;
+            my ($sttot, $stclass, $st) = @$subtype;
+            @.subTypes-tot = @$sttot;
+            @.subTypes-class = @$stclass;
+            @.subTypes = @$st;
         }
     }
 }
-
+#===================== STILL TO BE DONE AFTER ========================
 
 ##############################################################################
 
@@ -304,12 +307,12 @@ sub cType($arg, Bool :$nofail --> Str) is export
         when "SPECIAL" { nativeType_c($arg.fbase) }
         when "COMPOSITE" {
             given $arg.fbase {
-                when "QFlags" {
-                    given $arg.subtype.ftot {
+                when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
                         when "ENUM" { "int" }
                         default {
-                            issue($arg.subtype.ftot ~ ":UNSUPPORTED",
-                                  "Subtype {$arg.subtype.ftot} unsupported",
+                            issue($arg.subtypes[0].ftot ~ ":UNSUPPORTED",
+                                  "Subtype {$arg.subtypes[0].ftot} unsupported",
                                   $nofail);
                         }
                     }
@@ -347,12 +350,12 @@ sub cPostop($arg, Bool :$nofail --> Str) is export
         when "SPECIAL" { nativeType_cp($arg.fbase) }
         when "COMPOSITE" {
             given $arg.fbase {
-                when "QFlags" {
-                    given $arg.subtype.ftot {
+                when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
                         when "ENUM" { "" }
                         default {
-                            issue("[$arg.subtype.ftot" ~ " unsupported]",
-                                  "Subtype {$arg.subtype.ftot} unsupported]",
+                            issue("[$arg.subtypes[0].ftot" ~ " unsupported]",
+                                  "Subtype {$arg.subtypes[0].ftot} unsupported]",
                                   $nofail);
                         }
                     }
@@ -390,12 +393,12 @@ sub nType($arg, Bool :$nofail --> Str) is export
         when "SPECIAL" { nativeType_n($arg.fbase) }
         when "COMPOSITE" {
             given $arg.fbase {
-                when "QFlags" {
-                    given $arg.subtype.ftot {
+                when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
                         when "ENUM" { "int32" }
                         default {
-                            issue($arg.subtype.ftot ~ ":UNSUPPORTED",
-                                   "Subtype ", $arg.subtype.ftot, " unsupported",
+                            issue($arg.subtypes[0].ftot ~ ":UNSUPPORTED",
+                                   "Subtype ", $arg.subtypes[0].ftot, " unsupported",
                                    $nofail);
                         }
                     }
@@ -443,15 +446,15 @@ sub rType($arg,
         when "SPECIAL" { nativeType_r($arg.fbase) }
         when "COMPOSITE" {
            given $arg.fbase {
-                 when "QFlags" {
-                    given $arg.subtype.ftot {
-                        when "ENUM" { # $arg.subtype.fclass ~ '::'
-                                      #                  ~ $arg.subtype.fbase
+                 when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
+                        when "ENUM" { # $arg.subtypes[0].fclass ~ '::'
+                                      #                  ~ $arg.subtypes[0].fbase
                                       "Int"    # Avoid conversion problems
                                     }
                         default {
-                            issue("[Subtype {$arg.subtype.ftot} unsupported]",
-                                  "Subtype {$arg.subtype.ftot} unsupported",
+                            issue("[Subtype {$arg.subtypes[0].ftot} unsupported]",
+                                  "Subtype {$arg.subtypes[0].ftot} unsupported",
                                   $nofail);
                         }
                     }
@@ -493,10 +496,10 @@ sub isQtClass($arg --> Str) is export
         when "SPECIAL" { (Str) }
         when "COMPOSITE" {
             given $arg.fbase {
-                when "QFlags" {
-                    given $arg.subtype.ftot {
+                when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
                         when "ENUM" { (Str) }
-                        default { die "Subtype ", $arg.subtype.ftot,
+                        default { die "Subtype ", $arg.subtypes[0].ftot,
                                                         " unsupported]" }
                     }
                 }
@@ -522,10 +525,10 @@ sub isQtEnum($arg --> Str) is export
         when "SPECIAL" { (Str) }
         when "COMPOSITE" {
             given $arg.fbase {
-                when "QFlags" {
-                    given $arg.subtype.ftot {
+                when $_ eq "QFlags" && $arg.subtypes.elems == 1 {
+                    given $arg.subtypes[0].ftot {
                         when "ENUM" { $arg.fclass }
-                        default { die "Subtype ", $arg.subtype.ftot,
+                        default { die "Subtype ", $arg.subtypes[0].ftot,
                                                         " unsupported]" }
                     }
                 }
@@ -612,12 +615,15 @@ class Function does Validation {
                     die "More than one level of COMPOSITE type is not allowed";
                 }
 
-                $.returnType.subtype = SubType.new;
-                $.returnType.subtype.ftot = $stot;
-                $.returnType.subtype.fclass = $scl;
-                $.returnType.subtype.fbase = $sltype.base;
-                $.returnType.subtype.fpostop = $sltype.postop;
-                $.returnType.subtype.fname = "subType";  # Should never be used
+                my $nst = SubType.new;
+
+                $nst.ftot = $stot;
+                $nst.fclass = $scl;
+                $nst.fbase = $sltype.base;
+                $nst.fpostop = $sltype.postop;
+                $nst.fname = "subType";  # Should never be used
+
+                $.returnType.subtypes.push: $nst;
             }
         }
         for @.arguments Z (1..*) -> ($a, $count) {
@@ -650,12 +656,15 @@ class Function does Validation {
                     die "More than one level of COMPOSITE type is not allowed";
                 }
 
-                $a.subtype = SubType.new;
-                $a.subtype.ftot = $stot;
-                $a.subtype.fclass = $scl;
-                $a.subtype.fbase = $sltype.base;
-                $a.subtype.fpostop = $sltype.postop;
-                $a.subtype.fname = "subType";        # Should never be used
+                my $nst = SubType.new;
+
+                $nst.ftot = $stot;
+                $nst.fclass = $scl;
+                $nst.fbase = $sltype.base;
+                $nst.fpostop = $sltype.postop;
+                $nst.fname = "subType";        # Should never be used
+
+                $a.subtypes.push: $nst;
             }
         }
     }
@@ -1079,6 +1088,9 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
         # Class $from not found : shoud not occur ???
     }
 
+# YG : Note sure it works !!!
+# YG : Composite should now be parse with the grammar, not here !
+# YG : Output lists unmodified: Compatable with lists caller is waiting for ???
     # Is type a composite (i.e. "QXXX<YYY>") ?
     if $type.base ~~ /^ (\w+) '<' (\w+) '>' $/ {
         my $template = ~$0;

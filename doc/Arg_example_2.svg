@@ -233,6 +233,44 @@
          style="fill:context-stroke;fill-rule:evenodd;stroke:none"
          id="path7-8-9-2-75-52-9" />
     </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-1-5-0-0"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-8-4-6-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-53-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-5-1" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -242,15 +280,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.78493057"
-     inkscape:cx="229.95664"
-     inkscape:cy="491.12624"
+     inkscape:cx="582.2171"
+     inkscape:cy="716.62389"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1697"
+     inkscape:window-width="932"
      inkscape:window-height="894"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="420"
+     inkscape:window-y="59"
      inkscape:window-maximized="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
@@ -293,37 +331,21 @@
            y="57.134651"
            id="text7"><tspan
              sodipodi:role="line"
-             id="tspan23"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan23">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan24"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan24"></tspan><tspan
              sodipodi:role="line"
-             id="tspan25"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;NATIVE&quot;</tspan><tspan
+             id="tspan25">$.ftot = &quot;NATIVE&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan26"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             id="tspan26">$.fclass = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan27"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;void&quot;</tspan><tspan
+             id="tspan27">$.fbase = &quot;void&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan28"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan28">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan29"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;retVal&quot;</tspan><tspan
+             id="tspan29">$.fname = &quot;retVal&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan30"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan30">@.subtypes = ()</tspan></text>
       </g>
     </g>
     <text
@@ -584,7 +606,7 @@
        sodipodi:nodetypes="cssc" />
     <path
        style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-53);paint-order:markers fill stroke"
-       d="m 122.88635,240.81095 28.51274,-0.24027"
+       d="m 127.65336,240.81095 23.26903,-0.24027"
        id="path58-3-6"
        sodipodi:nodetypes="cc" />
     <g
@@ -609,37 +631,21 @@
            y="57.134651"
            id="text7-7"><tspan
              sodipodi:role="line"
-             id="tspan92"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan92">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan93"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan93"></tspan><tspan
              sodipodi:role="line"
-             id="tspan94"
-             x="36.663689"
-             y="67.315224">Str $.ftot = &quot;ENUM&quot;</tspan><tspan
+             id="tspan94">Str $.ftot = &quot;ENUM&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan95"
-             x="36.663689"
-             y="72.40551">Str $.fclass = &quot;Qt&quot;</tspan><tspan
+             id="tspan95">Str $.fclass = &quot;Qt&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan96"
-             x="36.663689"
-             y="77.495804">Str $.fbase = &quot;AlignmentFlag&quot;</tspan><tspan
+             id="tspan96">Str $.fbase = &quot;AlignmentFlag&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan97"
-             x="36.663689"
-             y="82.58609">Str $.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan97">Str $.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan98"
-             x="36.663689"
-             y="87.676376">Str $.fname = &quot;subType&quot;</tspan><tspan
+             id="tspan98">Str $.fname = &quot;subType&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan99"
-             x="36.663689"
-             y="92.766663">SubType $.subtype = Nil</tspan></text>
+             id="tspan99">SubType @.subtypes = ()</tspan></text>
       </g>
     </g>
     <g
@@ -664,37 +670,21 @@
            y="57.134651"
            id="text7-6"><tspan
              sodipodi:role="line"
-             id="tspan49"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan49">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan50"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan50"></tspan><tspan
              sodipodi:role="line"
-             id="tspan51"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;CLASS&quot;</tspan><tspan
+             id="tspan51">$.ftot = &quot;CLASS&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan52"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             id="tspan52">$.fclass = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan53"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;QWidget&quot;</tspan><tspan
+             id="tspan53">$.fbase = &quot;QWidget&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan54"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;*&quot;</tspan><tspan
+             id="tspan54">$.fpostop = &quot;*&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan55"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;arg1&quot;</tspan><tspan
+             id="tspan55">$.fname = &quot;arg1&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan56"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan56">@.subtypes = ()</tspan></text>
       </g>
     </g>
     <g
@@ -785,37 +775,21 @@
            y="57.134651"
            id="text7-6-8"><tspan
              sodipodi:role="line"
-             id="tspan65"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan65">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan66"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan66"></tspan><tspan
              sodipodi:role="line"
-             id="tspan67"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;NATIVE&quot;</tspan><tspan
+             id="tspan67">$.ftot = &quot;NATIVE&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan68"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             id="tspan68">$.fclass = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan69"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;int32&quot;</tspan><tspan
+             id="tspan69">$.fbase = &quot;int32&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan70"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan70">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan71"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;stretch&quot;</tspan><tspan
+             id="tspan71">$.fname = &quot;stretch&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan72"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan72">@.subtypes = ()</tspan></text>
       </g>
     </g>
     <g
@@ -840,37 +814,21 @@
            y="57.134651"
            id="text7-6-8-8"><tspan
              sodipodi:role="line"
-             id="tspan81"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan81">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan85"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan85"></tspan><tspan
              sodipodi:role="line"
-             id="tspan86"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;COMPOSITE&quot;</tspan><tspan
+             id="tspan86">$.ftot = &quot;COMPOSITE&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan87"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;Qt&quot;</tspan><tspan
+             id="tspan87">$.fclass = &quot;Qt&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan88"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;QFlags&quot;</tspan><tspan
+             id="tspan88">$.fbase = &quot;QFlags&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan89"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan89">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan90"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;alignment&quot;</tspan><tspan
+             id="tspan90">$.fname = &quot;alignment&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan91"
-             x="36.663689"
-             y="92.766663">$.subtype</tspan></text>
+             id="tspan91">@.subtypes[0]</tspan></text>
       </g>
     </g>
     <g
@@ -1001,5 +959,37 @@
          id="tspan100">From class QBoxLayout, method addWidget:</tspan><tspan
          sodipodi:role="line"
          id="tspan101">void addWidget(QWidget* arg1, int stretch = 0, Qt::Alignment alignment = Qt::Alignment())</tspan></text>
+    <path
+       style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-1-5-0-0);paint-order:markers fill stroke"
+       d="m 31.800998,263.65569 10.064516,-0.16566"
+       id="path2-3-1-8-3-2"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.3175;stroke-linecap:round;stroke-dasharray:1.905, 1.905;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-53-6);paint-order:markers fill stroke"
+       d="m 31.819036,269.00729 10.165095,-0.24027"
+       id="path58-3-6-8"
+       sodipodi:nodetypes="cc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;vector-effect:non-scaling-stroke;fill:#000000;fill-rule:evenodd;stroke-width:0.264583;-inkscape-stroke:hairline;paint-order:markers fill stroke"
+       x="46.47472"
+       y="264.1011"
+       id="text102"><tspan
+         sodipodi:role="line"
+         id="tspan102"
+         style="stroke-width:0.264583"
+         x="46.47472"
+         y="264.1011">is or does</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:2.19326px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;vector-effect:non-scaling-stroke;fill:#000000;fill-rule:evenodd;stroke-width:0.264583;-inkscape-stroke:hairline;paint-order:markers fill stroke"
+       x="46.432579"
+       y="269.45224"
+       id="text103"><tspan
+         sodipodi:role="line"
+         id="tspan103"
+         style="stroke-width:0.264583"
+         x="46.432579"
+         y="269.45224">references</tspan></text>
   </g>
 </svg>

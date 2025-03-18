@@ -30,10 +30,20 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
         $out ~= "\t\tfType = " ~ ($typedef.fType.base // "UD") ~ "\n";
         $out ~= "\t\tfClass = " ~ ($typedef.fClass // "UD") ~ "\n";
         $out ~= "\t\ttypeOfType = " ~ ($typedef.typeOfType // "UD") ~ "\n";
-        if $typedef.subType {
-            $out ~= "\t\t\tsubType = " ~ ($typedef.subType.base // "UD") ~ "\n";
-            $out ~= "\t\t\tsubType-tot = " ~ ($typedef.subType-tot // "UD") ~ "\n";
-            $out ~= "\t\t\tsubType-class = " ~ ($typedef.subType-class // "UD") ~  "\n";
+
+# # YGYGYG
+# say "TYPEDEF : ";
+# say $typedef;
+# say "TYPEDEF.SUBTYPES : ";
+# say $typedef.subTypes;
+# say "xxxxxxxx";
+# say "   SubTypes found !" if $typedef.subTypes;
+# say "yyyyyyyy";
+
+        for $typedef.subTypes Z 0..Inf -> ($st, $i) {
+            $out ~= "\t\t\tsubTypes[$i] = " ~ ($typedef.subTypes[$i].base // "UD") ~ "\n";
+            $out ~= "\t\t\tsubTypes-tot[$i] = " ~ ($typedef.subTypes-tot[$i] // "UD") ~ "\n";
+            $out ~= "\t\t\tsubTypes-class[$i] = " ~ ($typedef.subTypes-class[$i] // "UD") ~  "\n";
         }
 
         return $out;

@@ -137,8 +137,9 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
 
 
             for $m.arguments -> $a {
+                # TODO Needs modification to work wirh multi args templates TODO
                 my $tot = $a.ftot ~~ "COMPOSITE"
-                            ?? $a.subtype.ftot
+                            ?? $a.subtypes[0].ftot
                             !! $a.ftot;
                 my $pc = precall($k, $tot,
                                 cType($a), cPostop($a), $a.fname,
@@ -226,8 +227,9 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
             }
 
             for $m.arguments -> $a {
+                # TODO Needs modification to work wirh multi args templates TODO
                 my $tot = $a.ftot ~~ "COMPOSITE"
-                            ?? $a.subtype.ftot
+                            ?? $a.subtypes[0].ftot
                             !! $a.ftot;
                 my $pc = precall($k, $tot,
                                     cType($a), cPostop($a), $a.fname,
@@ -262,8 +264,9 @@ sub generate_cpp(Str $k, Qclass $v, %exceptions, %virtuals,
             }
 
             for $m.arguments -> $a {
+                # TODO Needs modification to work wirh multi args templates TODO
                 my $tot = $a.ftot ~~ "COMPOSITE"
-                            ?? $a.subtype.ftot
+                            ?? $a.subtypes[0].ftot
                             !! $a.ftot;
                 my $pc = postcall($m.name, $k, $tot, "arg",
                         qType($a), qPostop($a), $a.const, 'x' ~ $a.fname,

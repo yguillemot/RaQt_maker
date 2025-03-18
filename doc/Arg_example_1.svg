@@ -165,6 +165,44 @@
          style="fill:context-stroke;fill-rule:evenodd;stroke:none"
          id="path7-8-8-4" />
     </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-1-5-0-0"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-8-4-6-6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="ConcaveTriangle-2-6-7-36-53-6"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Concave triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="none">
+      <path
+         transform="scale(0.7)"
+         d="M -2,-4 9,0 -2,4 c 2,-2.33 2,-5.66 0,-8 z"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         id="path7-8-9-2-75-5-1" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -174,15 +212,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1100595"
-     inkscape:cx="273.40878"
-     inkscape:cy="301.33521"
+     inkscape:cx="400.87941"
+     inkscape:cy="415.74348"
      inkscape:document-units="mm"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g31-3-6"
      showgrid="false"
-     inkscape:window-width="1750"
+     inkscape:window-width="1024"
      inkscape:window-height="894"
-     inkscape:window-x="170"
-     inkscape:window-y="37"
+     inkscape:window-x="726"
+     inkscape:window-y="36"
      inkscape:window-maximized="0"
      inkscape:showpageshadow="2"
      inkscape:pagecheckerboard="0"
@@ -225,37 +263,21 @@
            y="57.134651"
            id="text7"><tspan
              sodipodi:role="line"
-             id="tspan48"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan1">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan49"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan2" /><tspan
              sodipodi:role="line"
-             id="tspan50"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;CLASS&quot;</tspan><tspan
+             id="tspan3">$.ftot = &quot;CLASS&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan51"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             id="tspan4">$.fclass = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan52"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;QPixmap&quot;</tspan><tspan
+             id="tspan5">$.fbase = &quot;QPixmap&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan53"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan6">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan54"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;retVal&quot;</tspan><tspan
+             id="tspan7">$.fname = &quot;retVal&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan55"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan8">@.subtypes = ()</tspan></text>
       </g>
     </g>
     <text
@@ -512,37 +534,21 @@
            y="57.134651"
            id="text7-6"><tspan
              sodipodi:role="line"
-             id="tspan64"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan11">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan65"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan12" /><tspan
              sodipodi:role="line"
-             id="tspan66"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;NATIVE&quot;</tspan><tspan
+             id="tspan13">$.ftot = &quot;NATIVE&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan67"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;&quot;</tspan><tspan
+             id="tspan14">$.fclass = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan68"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;int32&quot;</tspan><tspan
+             id="tspan15">$.fbase = &quot;int32&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan69"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan16">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan70"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;h&quot;</tspan><tspan
+             id="tspan17">$.fname = &quot;h&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan71"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan18">@.subtypes = ()</tspan></text>
       </g>
     </g>
     <g
@@ -633,37 +639,55 @@
            y="57.134651"
            id="text7-6-8"><tspan
              sodipodi:role="line"
-             id="tspan80"
-             x="36.663689"
-             y="57.134651">role FinalType</tspan><tspan
+             id="tspan19">role FinalType</tspan><tspan
              sodipodi:role="line"
-             id="tspan81"
-             x="36.663689"
-             y="62.224937" /><tspan
+             id="tspan20" /><tspan
              sodipodi:role="line"
-             id="tspan85"
-             x="36.663689"
-             y="67.315224">$.ftot = &quot;ENUM&quot;</tspan><tspan
+             id="tspan21">$.ftot = &quot;ENUM&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan86"
-             x="36.663689"
-             y="72.40551">$.fclass = &quot;Qt&quot;</tspan><tspan
+             id="tspan22">$.fclass = &quot;Qt&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan87"
-             x="36.663689"
-             y="77.495804">$.fbase = &quot;TransformationMode&quot;</tspan><tspan
+             id="tspan23">$.fbase = &quot;TransformationMode&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan88"
-             x="36.663689"
-             y="82.58609">$.fpostop = &quot;&quot;</tspan><tspan
+             id="tspan24">$.fpostop = &quot;&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan89"
-             x="36.663689"
-             y="87.676376">$.fname = &quot;mode&quot;</tspan><tspan
+             id="tspan25">$.fname = &quot;mode&quot;</tspan><tspan
              sodipodi:role="line"
-             id="tspan90"
-             x="36.663689"
-             y="92.766663">$.subtype = Nil</tspan></text>
+             id="tspan26">@.subtypes = ()</tspan></text>
+        <path
+           style="display:inline;fill:#000000;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.55701;stroke-linecap:round;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-1-5-0-0);paint-order:markers fill stroke"
+           d="m -144.40717,176.61193 18.6888,-0.30755"
+           id="path2-3-1-8-3-2"
+           sodipodi:nodetypes="cc" />
+        <path
+           style="display:inline;fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#000000;stroke-width:0.589502;stroke-linecap:round;stroke-dasharray:3.53701, 3.53701;stroke-dashoffset:0;marker-end:url(#ConcaveTriangle-2-6-7-36-53-6);paint-order:markers fill stroke"
+           d="m -144.37368,186.54716 18.87557,-0.44606"
+           id="path58-3-6-8"
+           sodipodi:nodetypes="cc" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07222px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;vector-effect:non-scaling-stroke;fill:#000000;fill-rule:evenodd;stroke-width:0.491251;-inkscape-stroke:hairline;paint-order:markers fill stroke"
+           x="-117.14683"
+           y="177.4581"
+           id="text102"
+           transform="scale(1.0001085,0.99989152)"><tspan
+             sodipodi:role="line"
+             id="tspan102-9"
+             style="stroke-width:0.491251"
+             x="-117.14683"
+             y="177.4581">is or does</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.07222px;font-family:Sans;-inkscape-font-specification:'Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;display:inline;vector-effect:non-scaling-stroke;fill:#000000;fill-rule:evenodd;stroke-width:0.491251;-inkscape-stroke:hairline;paint-order:markers fill stroke"
+           x="-117.22507"
+           y="187.39354"
+           id="text103"
+           transform="scale(1.0001085,0.99989152)"><tspan
+             sodipodi:role="line"
+             id="tspan103-2"
+             style="stroke-width:0.491251"
+             x="-117.22507"
+             y="187.39354">references</tspan></text>
       </g>
     </g>
     <g

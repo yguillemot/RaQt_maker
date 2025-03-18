@@ -36,7 +36,8 @@ sub writeEnumsCode(Qclass $cl --> Str) is export
         LOOPSUB: for $cl.typedefs.kv -> $k, $v {
             if $v.typeOfType ~~ "COMPOSITE"
                         && $v.fType.base ~~ "QFlags"
-                        && $v.subType.base ~~ $en {
+                        && $v.subTypes.elems == 1
+                        && $v.subTypes[0].base ~~ $en {
                 $o ~= IND ~ "our sub $k" ~ '($e? = ';
                 # $o ~= $ev.items[0][0];    # The first item of the enum
                 $o ~= "0";                # Always 0 (see QFileDialog::Option)
