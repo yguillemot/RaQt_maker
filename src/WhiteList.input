@@ -1053,3 +1053,4 @@ QDialogButtonBox
 # Version 0.0.8
 	QGraphicsScene::items(Qt::SortOrder)
 	QGraphicsItem::collidingItems(Qt::ItemSelectionMode)
+	QGraphicsScene::update(qreal, qreal, qreal, qreal)
