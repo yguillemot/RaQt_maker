@@ -5,6 +5,7 @@ use config;
 use gene::common;
 use gene::parser;
 use gene::natives;
+use gene::composite;
 use gene::blackAndWhite;
 use gene::virtual;
 use gene::output;
@@ -68,6 +69,17 @@ sub MAIN ( #| C++ filtered header (API description) to read
         $v.isAbstract = $pure;
     }
 
+    # Look for possible arrays with subtypes
+    unleafCompositeTypes($api);                      #YGYGYG
+
+        # RECOPIE PROVISOIRE DU CODE SUIVANT
+        # Creation of the api.lst file
+        say "Creation of the api.lst file";
+        dump_api($api, "api.lst") :very :verbose;
+        say "";
+        say "";
+
+    exit;
 
     # Create two lists of Qt classes :
     #   - one of classes which are QObject
@@ -125,6 +137,11 @@ sub MAIN ( #| C++ filtered header (API description) to read
     dump_api($api, "api.lst") :very :verbose;
     say "";
     say "";
+
+
+    ##########################################################################
+    # DEBUG : dump some sensible classes
+    dump_class($api, "QGraphicsScene", "QGraphicsScene-dumped.txt") :very :verbose;
 
 
     ##########################################################################

@@ -166,6 +166,164 @@ sub dump_api(API $api, Str $output_file, Bool :$very, Bool :$verbose) is export
 
 
 ###############################################################################
+# Dump a single class $name from the whole API $api in the file $output_file
+sub dump_class(API $api, Str $name, Str $output_file,
+                    Bool :$very, Bool :$verbose) is export
+{
+    # Plural form suffix
+    sub s($n) { $n > 1 ?? "s" !! "" }
+    sub ren($n) { $n > 1 ?? "ren" !! "" }
+
+    my $out = "";
+
+    { print "DUMP_CLASS($name): "; print "VERY " if $very; say "VERBOSE"; } if $verbose;
+
+
+    sub show_typedef($tname, $typedef, Bool :$very, Bool :$verbose --> Str) {
+        my $out;
+
+        $out ~= "------- $tname : " ~ $typedef.type.str ~ "\n";
+        $out ~= "\t\tsrcClass = " ~ $typedef.srcClass ~ "\n";
+        $out ~= "\t\tfType = " ~ ($typedef.fType.base // "UD") ~ "\n";
+        $out ~= "\t\tfClass = " ~ ($typedef.fClass // "UD") ~ "\n";
+        $out ~= "\t\ttypeOfType = " ~ ($typedef.typeOfType // "UD") ~ "\n";
+
+# # YGYGYG
+# say "TYPEDEF : ";
+# say $typedef;
+# say "TYPEDEF.SUBTYPES : ";
+# say $typedef.subTypes;
+# say "xxxxxxxx";
+# say "   SubTypes found !" if $typedef.subTypes;
+# say "yyyyyyyy";
+
+        for $typedef.subTypes Z 0..Inf -> ($st, $i) {
+            $out ~= "\t\t\tsubTypes[$i] = " ~ ($typedef.subTypes[$i].base // "UD") ~ "\n";
+            $out ~= "\t\t\tsubTypes-tot[$i] = " ~ ($typedef.subTypes-tot[$i] // "UD") ~ "\n";
+            $out ~= "\t\t\tsubTypes-class[$i] = " ~ ($typedef.subTypes-class[$i] // "UD") ~  "\n";
+        }
+
+        return $out;
+    }
+
+    my $qclass = $api.qclasses{$name};
+
+    $out ~= "=" x 70 ~ "\n";
+    $out ~= "class $name";
+    $out ~= " is QObj" if $qclass.isQObj;
+    $out ~= " :\n";
+
+    my $nb = $qclass.parents.elems;
+    if $nb {
+        $out ~= "\t$nb parent&s($nb) :\n";
+        $out ~= [~] "\t\t" <<~>> $qclass.parents.sort <<~>> "\n";
+    }
+
+    $nb = $qclass.ancestors.elems;
+    if $nb {
+        $out ~= "\t$nb ancestor&s($nb) :\n";
+        $out ~= [~] "\t\t" <<~>> $qclass.ancestors.sort <<~>> "\n";
+    }
+
+    $nb = $qclass.children.elems;
+    if $nb {
+        $out ~= "\t$nb child&ren($nb) :\n";
+        $out ~= [~] "\t\t" <<~>> $qclass.children.sort <<~>> "\n";
+    }
+
+    $nb = $qclass.descendants.elems;
+    if $nb {
+        $out ~= "\t$nb descendant&s($nb) :\n";
+        $out ~= [~] "\t\t" <<~>> $qclass.descendants.sort <<~>> "\n";
+    }
+
+    $nb = $qclass.enums.elems;
+    if $nb {
+        $out ~= "\t$nb enum&s($nb) :\n";
+        for $qclass.enums.sort>>.kv -> ($ename, $enum) {
+            my $nbe = $enum.items.elems;
+            $out ~= "\t\t$ename has $nbe element&s($nbe)\n";
+        }
+    }
+
+    $nb = $qclass.typedefs.keys.elems;
+    if $nb {
+        $out ~= "\t$nb typedef&s($nb) :\n";
+        for $qclass.typedefs.sort>>.kv -> ($tname, $typedef) {
+            $out ~= show_typedef($tname, $typedef);
+        }
+    }
+
+    my @prots = ();
+    my @ctors = ();
+    my @meths = ();
+    my @slots = ();
+    my @signals = ();
+    my @virtuals = ();
+    my @statics = ();
+    for $qclass.methods.sort({$^a.name cmp $^b.name}) -> $m {
+        if $m.isProtected {
+            @prots.push($m);
+        } elsif $m.name eq "ctor" {
+            @ctors.push($m);
+        } elsif $m.isSlot {
+            @slots.push($m);
+        } elsif $m.isSignal {
+            @signals.push($m);
+        } elsif $m.isVirtual {
+            @virtuals.push($m);
+        } elsif $m.isStatic {
+            @statics.push($m);
+        } else {
+            @meths.push($m);
+        }
+    }
+
+    sub show(@methods, $category, Bool :$very, Bool :$verbose --> Str) {
+        my $out = "";
+        my $n = @methods.elems;
+        if $n {
+            $out ~= "\t$n $category&s($n) :\n";
+            for @methods -> $m {
+                $out ~= "~~~~~~~ ";
+                # $out ~= "\t\t";
+                $out ~= $m.returnType.str ~ " " unless $m.name eq "ctor";
+                $out ~= $m.name;
+                $out ~= " [virtual]" if $m.isVirtual;
+                $out ~= "\n";
+                $out ~= "\t\t\t" ~ qSignature($m, showDefault => True) ~ "\n";
+                $out ~= "\t\tNumber = " ~ ($m.number // "UD") ~ "\n";
+                if $verbose {
+                    $out ~= show_verbose(0, $m.returnType)
+                                                    unless $m.name eq "ctor";
+                    { $out ~= dumpArg($m.returnType)
+                                unless $m.name eq "ctor"; } if $very;
+                    for (1..*) Z $m.arguments -> ($n, $a) {
+                        $out ~= show_verbose($n, $a);
+                        $out ~= dumpArg($a) if $very;
+                    }
+                }
+            }
+        }
+        return $out;
+    }
+
+    $out ~= show(@ctors, "ctor") :$very :$verbose;
+    $out ~= show(@slots, "slot") :$very :$verbose;
+    $out ~= show(@signals, "signal") :$very :$verbose;
+    $out ~= show(@virtuals, "virtual method");
+    $out ~= show(@meths, "method") :$very :$verbose;
+    $out ~= show(@statics, "static method") :$very :$verbose;
+    $out ~= show(@prots, "protected method") :$very :$verbose;
+
+    $out ~= "\n";
+
+
+    spurt $output_file, $out;
+}
+
+
+###############################################################################
 # Count types of types used by methods
 sub countTypesOfTypes(API $api) is export
 {

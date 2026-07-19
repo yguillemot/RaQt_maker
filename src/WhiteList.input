@@ -1054,3 +1054,5 @@ QDialogButtonBox
 	QGraphicsScene::items(Qt::SortOrder)
 	QGraphicsItem::collidingItems(Qt::ItemSelectionMode)
 	QGraphicsScene::update(qreal, qreal, qreal, qreal)
+
+	QPainter::drawLines(const QVector<QPointF>&)

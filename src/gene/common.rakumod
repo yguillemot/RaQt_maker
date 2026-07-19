@@ -317,6 +317,18 @@ sub cType($arg, Bool :$nofail --> Str) is export
                         }
                     }
                 }
+#                 when $_ eq "QList" && $arg.subtypes.elems == 1 {
+#                     given $arg.subtypes[0].ftot {
+#
+#                         when "ENUM" { "int" }
+#
+#                         default {
+#                             issue($arg.subtypes[0].ftot ~ ":UNSUPPORTED",
+#                                   "Subtype {$arg.subtypes[0].ftot} unsupported",
+#                                   $nofail);
+#                         }
+#                     }
+#                 }
                 default {
                     issue($arg.fbase ~ ":UNSUPPORTED",
                           "Composite {$arg.fbase} unsupported",
@@ -984,8 +996,9 @@ sub rSignature(Function $f,
 
 #   //    [3] : Str : The template method name if the type is COMPOSITE
 
-#       [3] : List : Idem [0] to [3] but related to the subtype
-#                    when type is COMPOSITE
+#       [3] : List : Idem [0] to [3] but related to the subtype when type
+#                    is COMPOSITE,
+
 
 sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
 {
@@ -1091,16 +1104,17 @@ sub finalTypeOf(API :$api, Str :$from, Ltype :$type --> List) is export
 # YG : Note sure it works !!!
 # YG : Composite should now be parse with the grammar, not here !
 # YG : Output lists unmodified: Compatable with lists caller is waiting for ???
-    # Is type a composite (i.e. "QXXX<YYY>") ?
-    if $type.base ~~ /^ (\w+) '<' (\w+) '>' $/ {
+    # Is type a composite (i.e. "QXXX<YYY>" or "QXXX<YYY op>") ?
+    if $type.base ~~ /^ (\w+) '<' (\w+) \s* ( '**' | '&&' | '*' | '&' )? '>' $/ {
         my $template = ~$0;
         my $arg = ~$1;
+        my $postop = $2 ?? ~$2 !! "";
 
-        # say " COMPOSITE : ", $type.base, " template=$template, arg=$arg";
+        # say " COMPOSITE : ", $type.base, " template=$template, arg=$arg, postop=$postop";
         # say "   from=$from";
 
         my @argft = finalTypeOf(:$api, :$from,
-                              type => Ltype.new(base => $arg, postop => ''));
+                              type => Ltype.new(base => $arg, postop => $postop));
 
         # say @argft[0], " ", @argft[1], '::', @argft[2];
 
